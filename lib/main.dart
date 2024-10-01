@@ -9,7 +9,6 @@ Future<void> main() async {
     supportedLocales: [
       'en',
       'it',
-      'zh',
     ],
   );
 
@@ -36,6 +35,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate, 
         localizationDelegate
       ],
       supportedLocales: localizationDelegate.supportedLocales,

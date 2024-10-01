@@ -1,9 +1,11 @@
-import 'dart:io';
+import 'dart:io' show File; // Import for mobile file handling
+import 'dart:typed_data';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:exel_category/model/excel_element.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class InsertFile extends StatefulWidget {
   final Function(Map<String, List<String>>, List<ExcelElement>) onFileLoaded;
@@ -50,11 +52,19 @@ class _InsertFileState extends State<InsertFile> {
                       onPressed: () async {
                         FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-                        if (result != null) {
+                        if (result != null && result.files.isNotEmpty) {
                           setState(() {
                             fileName = result.files.single.name;
                           });
-                          await loadExcelFile(result.files.single.path!);
+
+                          // Check if we are on the web or mobile
+                          if (kIsWeb) {
+                            // For web, use bytes
+                            await loadExcelFileFromBytes(result.files.single.bytes!);
+                          } else {
+                            // For mobile, use path
+                            await loadExcelFileFromPath(result.files.single.path!);
+                          }
                         }
                       },
                       child: Text(translate('Select File')),
@@ -69,31 +79,38 @@ class _InsertFileState extends State<InsertFile> {
     );
   }
 
-  Future<void> loadExcelFile(String path) async {
+  Future<void> loadExcelFileFromBytes(Uint8List bytes) async {
+    // Decode the Excel file from bytes
+    var file = Excel.decodeBytes(bytes);
+    await processExcelFile(file);
+  }
+
+  Future<void> loadExcelFileFromPath(String path) async {
+    // Decode the Excel file from the file path
     var file = Excel.decodeBytes(await File(path).readAsBytes());
+    await processExcelFile(file);
+  }
+
+  Future<void> processExcelFile(Excel file) async {
     List<ExcelElement> elements = [];
-    Map<String, List<String>> columnItems = {}; // Per salvare gli oggetti per le colonne
+    Map<String, List<String>> columnItems = {}; // To save column items
 
     for (var table in file.tables.keys) {
-      // Assumiamo che la prima riga contenga i titoli delle colonne
       var headerRow = file.tables[table]?.rows[0];
 
-      // Salva i titoli delle colonne in una lista
+      // Save column titles in a list
       List<String> columnTitles =
           headerRow?.map((cell) => cell?.value?.toString() ?? '').toList() ?? [];
 
-      // Inizia a iterare sulle righe dopo la prima
+      // Start iterating over rows after the header
       for (var row in file.tables[table]!.rows.skip(1)) {
-        // Salta la prima riga
         if (row.isNotEmpty) {
           Map<String, dynamic> rowDetails = {};
 
-          // Popola il Map utilizzando i titoli delle colonne come chiavi
+          // Populate the Map using column titles as keys
           for (var i = 0; i < row.length; i++) {
             if (i < columnTitles.length) {
-              rowDetails[columnTitles[i]] =
-                  row[i]?.value; // Associa il valore della cella alla chiave
-              // Aggiungi il valore alla mappa di colonne
+              rowDetails[columnTitles[i]] = row[i]?.value; // Associate cell value with key
               columnItems.putIfAbsent(columnTitles[i], () => []).add(row[i]?.value.toString() ?? '');
             }
           }
@@ -103,7 +120,7 @@ class _InsertFileState extends State<InsertFile> {
       }
     }
 
-    // Passa i dati al widget genitore
+    // Pass the data to the parent widget
     widget.onFileLoaded(columnItems, elements);
   }
 }
