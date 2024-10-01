@@ -50,7 +50,6 @@ class _HomePageState extends State<HomePage> {
             onPressed: () => changeLocale(context, 'it'),
             tooltip: translate('it'),
           ),
-          
           if (elements.isNotEmpty && filtersApplied)
             IconButton(
               icon: const Icon(Icons.refresh),
@@ -96,8 +95,13 @@ class _HomePageState extends State<HomePage> {
                             onDeleted: () {
                               // Rimuove il filtro selezionato per una colonna specifica
                               setState(() {
+                                // Rimuovi l'elemento dalla lista di filtri
                                 selectedFilters.remove(entry.key);
                               });
+                              // Verifica se ci sono filtri attivi dopo la rimozione
+                              if (selectedFilters.isEmpty) {
+                                filtersApplied = false; // Se non ci sono filtri, resetta lo stato
+                              }
                             },
                           );
                         }).toList(),
@@ -123,7 +127,11 @@ class _HomePageState extends State<HomePage> {
                         loadedElements: elements,
                         onSelectionChanged: (columnName, selectedItems) {
                           setState(() {
-                            selectedFilters[columnName] = selectedItems;
+                            if (selectedItems.isEmpty) {
+                              selectedFilters.remove(columnName); // Rimuovi il filtro se vuoto
+                            } else {
+                              selectedFilters[columnName] = selectedItems; // Aggiorna i filtri
+                            }
                           });
                         },
                       ),
@@ -143,8 +151,9 @@ class _HomePageState extends State<HomePage> {
                   final filteredElements = elements.where((element) {
                     bool matchesAllFilters = true;
                     selectedFilters.forEach((columnName, selectedValues) {
-                      if (!selectedValues
-                          .contains(element.details[columnName]?.toString())) {
+                      // Controlla solo i filtri attivi
+                      if (selectedValues.isNotEmpty && 
+                          !selectedValues.contains(element.details[columnName]?.toString())) {
                         matchesAllFilters = false;
                       }
                     });
