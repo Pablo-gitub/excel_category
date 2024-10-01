@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:exel_category/model/element.dart';
+import 'package:exel_category/model/excel_element.dart';
 
 class ColumnFilterCard extends StatefulWidget {
   final String columnName;
-  final List<ExcelElement> loadedElements; // Passa gli elementi caricati
-  final Function(List<ExcelElement>) onFilterApplied; // Callback per i filtri applicati
+  final List<ExcelElement> loadedElements;
+  final Function(String, List<String>) onSelectionChanged; // Funzione callback per comunicare i valori selezionati
 
   const ColumnFilterCard({
     Key? key,
     required this.columnName,
     required this.loadedElements,
-    required this.onFilterApplied,
+    required this.onSelectionChanged,
   }) : super(key: key);
 
   @override
@@ -48,20 +48,10 @@ class _ColumnFilterCardState extends State<ColumnFilterCard> {
                   } else {
                     selectedItems.remove(item);
                   }
+                  widget.onSelectionChanged(widget.columnName, selectedItems); // Comunica i valori selezionati
                 });
               },
             ),
-          ElevatedButton(
-            onPressed: () {
-              // Applica i filtri e passa gli elementi filtrati
-              final filteredElements = widget.loadedElements.where((element) {
-                return selectedItems.contains(element.details[widget.columnName]?.toString());
-              }).toList();
-
-              widget.onFilterApplied(filteredElements); // Chiama il callback per applicare i filtri
-            },
-            child: const Text('Filter'),
-          ),
         ],
       ),
     );

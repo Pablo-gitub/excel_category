@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:exel_category/model/element.dart';
+import 'package:exel_category/model/excel_element.dart';
 
 class FilterDetails extends StatelessWidget {
   final List<ExcelElement> filteredVehicles;

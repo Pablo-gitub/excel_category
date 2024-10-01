@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:exel_category/model/element.dart';
+import 'package:exel_category/model/excel_element.dart';
 
 class InsertFile extends StatefulWidget {
   final Function(Map<String, List<String>>, List<ExcelElement>) onFileLoaded;
