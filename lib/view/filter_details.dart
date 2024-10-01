@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:exel_category/model/excel_element.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class FilterDetails extends StatelessWidget {
   final List<ExcelElement> filteredVehicles;
@@ -10,7 +11,7 @@ class FilterDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Filtered Vehicle Details'),
+        title: Text(translate('Filtred Elements')),
       ),
       body: ListView.builder(
         itemCount: filteredVehicles.length,

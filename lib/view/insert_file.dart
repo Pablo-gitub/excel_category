@@ -3,6 +3,7 @@ import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:exel_category/model/excel_element.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class InsertFile extends StatefulWidget {
   final Function(Map<String, List<String>>, List<ExcelElement>) onFileLoaded;
@@ -29,8 +30,8 @@ class _InsertFileState extends State<InsertFile> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Insert File Here:',
+                Text(
+                  translate('Insert File Here:'),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
@@ -39,7 +40,7 @@ class _InsertFileState extends State<InsertFile> {
                   children: [
                     Flexible(
                       child: Text(
-                        fileName ?? 'No file selected',
+                        fileName ?? translate('No file selected'),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: const TextStyle(fontSize: 16),
@@ -56,7 +57,7 @@ class _InsertFileState extends State<InsertFile> {
                           await loadExcelFile(result.files.single.path!);
                         }
                       },
-                      child: const Text('Select File'),
+                      child: Text(translate('Select File')),
                     ),
                   ],
                 ),

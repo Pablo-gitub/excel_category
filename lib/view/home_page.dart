@@ -3,6 +3,7 @@ import 'package:exel_category/view/column_filter_card.dart';
 import 'package:exel_category/view/insert_file.dart';
 import 'package:exel_category/model/excel_element.dart';
 import 'package:exel_category/view/filter_details.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,6 +26,31 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
         title: const Text('Exceletor'),
         actions: [
+          // IconButton per la lingua inglese
+          IconButton(
+            icon: Image.asset(
+              'assets/uk_flag.png',
+              width: 30,
+              height: 20,
+              fit: BoxFit.cover,
+              semanticLabel: translate('en'),
+            ),
+            onPressed: () => changeLocale(context, 'en'),
+            tooltip: translate('en'),
+          ),
+          // IconButton per la lingua italiana
+          IconButton(
+            icon: Image.asset(
+              'assets/it_flag.png',
+              width: 30,
+              height: 20,
+              fit: BoxFit.cover,
+              semanticLabel: translate('it'),
+            ),
+            onPressed: () => changeLocale(context, 'it'),
+            tooltip: translate('it'),
+          ),
+          
           if (elements.isNotEmpty && filtersApplied)
             IconButton(
               icon: const Icon(Icons.refresh),
@@ -80,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                     // Pulsante per resettare tutti i filtri
                     TextButton(
                       onPressed: resetFilters,
-                      child: const Text('Reset All'),
+                      child: Text(translate('Reset All')),
                     ),
                   ],
                 ),
@@ -145,8 +171,8 @@ class _HomePageState extends State<HomePage> {
                   } else {
                     // Mostra un messaggio se nessun filtro è stato applicato o nessun risultato è stato trovato
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('No results match the selected filters.'),
+                      SnackBar(
+                        content: Text(translate('No results match the selected filters.')),
                       ),
                     );
                   }
@@ -163,8 +189,8 @@ class _HomePageState extends State<HomePage> {
                         BorderRadius.circular(25), // Angoli arrotondati
                   ),
                 ),
-                child: const Text(
-                  'Apply Filters',
+                child: Text(
+                  translate('Apply Filters'),
                   style: TextStyle(fontSize: 22),
                 ),
               ),
