@@ -34,5 +34,10 @@
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
+  <script type="module">
+    import firebaseConfig from '../assets/api_key/web_api_firebase.js'; // Assicurati che il percorso sia corretto
+    // Inizializza Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+</script>
 </body>
 </html>
