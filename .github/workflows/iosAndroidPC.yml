@@ -119,5 +119,5 @@ jobs:
             build/windows/Runner.exe, # Sostituisci con il percorso corretto
             build/macos/Runner.app, # Sostituisci con il percorso corretto
             build/linux/Runner, # Sostituisci con il percorso corretto
-          tag: v1.0.${{ github.run_number }}
+          tag: v1.0.${{ github.run_id }}
           token: ${{ secrets.TRY_EXCELETOR_TOKEN }}
