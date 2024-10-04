@@ -1,4 +1,4 @@
-name: Exceletor
+name: Exceletor APK Android
 
 # Questo workflow viene attivato con i push nel repository.
 on:
@@ -18,8 +18,10 @@ jobs:
       # Imposta l'ambiente Java per costruire l'app Android
       - uses: actions/setup-java@v3
         with:
-          java-version: '17'  # Versione di Java da utilizzare (17.x è già coperta da '17')
-      
+          java-version: '17.x'  # Versione di Java da utilizzare (17.x è già coperta da '17')
+
+      # Verifica la versione di Java
+      - run: java -version
       # Imposta l'ambiente Flutter
       - uses: subosito/flutter-action@v2
         with:
