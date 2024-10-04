@@ -1,0 +1,32 @@
+name: Android APK Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    name: 🎉 Android Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      
+      # Get flutter dependencies
+      - run: flutter pub get
+      
+      # Build the APK
+      - run: flutter build apk --release
+
+      # Upload the APK as a release asset
+      - name: Upload APK to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/app/outputs/flutter-apk/app-release.apk
+          tag: v1.0
+          overwrite: true
+          body: "This is the first Android release"
