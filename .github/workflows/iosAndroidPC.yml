@@ -12,7 +12,6 @@ on:
 name: "Build & Release"
 
 jobs:
-  # Job per Android
   build-android:
     name: Build Android
     runs-on: ubuntu-latest
@@ -23,16 +22,15 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'zulu'  # Puoi usare 'adopt' o 'temurin' se preferisci
+          distribution: 'zulu'
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
       - run: flutter pub get
       - run: flutter build apk --release --split-per-abi
+      - run: ls -R build/app/outputs/apk/release/
 
-      
-  # Job per iOS
   build-ios:
     name: Build iOS
     runs-on: macos-latest
@@ -53,8 +51,8 @@ jobs:
           ln -s ../Runner.app
           cd ..
           zip -r app.ipa Payload
-      
-  # Job per Windows
+      - run: ls -R build/ios/iphoneos/
+
   build-windows:
     name: Build Windows
     runs-on: windows-latest
@@ -68,8 +66,8 @@ jobs:
           channel: stable
       - run: flutter pub get
       - run: flutter build windows --release
-      
-  # Job per macOS
+      - run: dir build/windows/Runner/Release/
+
   build-macos:
     name: Build macOS
     runs-on: macos-latest
@@ -83,8 +81,8 @@ jobs:
           channel: stable
       - run: flutter pub get
       - run: flutter build macos --release
-      
-  # Job per Linux
+      - run: ls -R build/macos/Build/Products/Release/
+
   build-linux:
     name: Build Linux
     runs-on: ubuntu-latest
@@ -101,8 +99,8 @@ jobs:
           sudo apt-get install -y ninja-build libgtk-3-dev
       - run: flutter pub get
       - run: flutter build linux --release
+      - run: ls -R build/linux/x64/release/bundle/
 
-  # Job per il rilascio
   release:
     name: Release Artifacts
     runs-on: ubuntu-latest
@@ -113,11 +111,6 @@ jobs:
       - name: Push to Releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: |
-            build/app/outputs/apk/release/*,
-            build/ios/iphoneos/app.ipa,
-            build/windows/Runner.exe, # Sostituisci con il percorso corretto
-            build/macos/Runner.app, # Sostituisci con il percorso corretto
-            build/linux/Runner, # Sostituisci con il percorso corretto
-          tag: v1.0.${{ github.run_id }}
+          artifacts: "build/app/outputs/apk/release/*.apk,build/ios/iphoneos/*.ipa,build/windows/Runner/Release/*.exe,build/linux/x64/release/bundle/*,build/macos/Build/Products/Release/*.app"
+          tag: v1.0.${{ github.run_number }}-${{ github.sha }}
           token: ${{ secrets.TRY_EXCELETOR_TOKEN }}
