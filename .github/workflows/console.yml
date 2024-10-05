@@ -2,21 +2,19 @@ name: Desktop release
 
 on:
   push:
-    tags:
-      - 'v*'  # Trigger only for tags starting with "v"
-    branches:
-      - main
+    tags: 
+      - 'v*'  # Trigger on version tags
 
 jobs:
   build-and-release-linux:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2  # Updated to v2 for stability
         with:
           channel: 'stable'
-          flutter-version: '3.10.0'  # Specify a concrete version
+          flutter-version: '3.24.3'  # Update to a Flutter version compatible with Dart 3.5.3
       - name: Install dependencies
         run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
       - name: Install project dependencies
@@ -31,7 +29,7 @@ jobs:
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          filename: MacRecoveryX-${{ github.ref_name }}-linux.zip
+          filename: MacRecoveryX-${{github.ref_name}}-linux.zip
           directory: build/linux/x64/release/bundle
       - name: Linux Release
         uses: softprops/action-gh-release@v1
@@ -39,17 +37,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/linux/x64/release/bundle/MacRecoveryX-${{ github.ref_name }}-linux.zip
+          files: build/linux/x64/release/bundle/MacRecoveryX-${{github.ref_name}}-linux.zip
 
   build-and-release-windows:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.10.0'  # Specify a concrete version
+          flutter-version: '3.24.3'  # Match Flutter version
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
@@ -62,7 +60,7 @@ jobs:
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          filename: MacRecoveryX-${{ github.ref_name }}-windows.zip
+          filename: MacRecoveryX-${{github.ref_name}}-windows.zip
           directory: build/windows/runner/Release
       - name: Windows Release
         uses: softprops/action-gh-release@v1
@@ -70,17 +68,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/windows/runner/Release/MacRecoveryX-${{ github.ref_name }}-windows.zip
+          files: build/windows/runner/Release/MacRecoveryX-${{github.ref_name}}-windows.zip
 
   build-and-release-macos:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.10.0'  # Specify a concrete version
+          flutter-version: '3.24.3'  # Match Flutter version
       - name: Install project dependencies
         run: flutter pub get
       - name: Generate intermediates
@@ -93,7 +91,7 @@ jobs:
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          filename: MacRecoveryX-${{ github.ref_name }}-macos.zip
+          filename: MacRecoveryX-${{github.ref_name}}-macos.zip
           directory: build/macos/Build/Products/Release
       - name: macOS Release
         uses: softprops/action-gh-release@v1
@@ -101,4 +99,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/macos/Build/Products/Release/MacRecoveryX-${{ github.ref_name }}-macos.zip
+          files: build/macos/Build/Products/Release/MacRecoveryX-${{github.ref_name}}-macos.zip
