@@ -3,19 +3,20 @@ name: Desktop release
 on:
   push:
     tags:
-      - 'v*' # Attiva solo per i tag che iniziano con "v"
+      - 'v*' # Trigger only for tags starting with "v"
     branches:
       - main
 
 jobs:
   build-and-release-linux:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: 'latest'
+          flutter-version: 'latest'  # Alternatively, specify a fixed version
       - name: Install dependencies
         run: sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
       - name: Install project dependencies
@@ -40,4 +41,4 @@ jobs:
         with:
           files: build/linux/x64/release/bundle/MacRecoveryX-${{github.ref_name}}-linux.zip
 
-# Ripeti per Windows e macOS...
+  # Repeat for Windows and macOS...
