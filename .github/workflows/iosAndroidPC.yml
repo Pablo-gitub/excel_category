@@ -66,7 +66,7 @@ jobs:
           channel: stable
       - run: flutter pub get
       - run: flutter build windows --release
-      - run: dir build/windows/Runner/Release/
+      - run: dir build/windows/runner/Release/
 
   build-macos:
     name: Build macOS
@@ -111,6 +111,6 @@ jobs:
       - name: Push to Releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/apk/release/*.apk,build/ios/iphoneos/*.ipa,build/windows/Runner/Release/*.exe,build/linux/x64/release/bundle/*,build/macos/Build/Products/Release/*.app"
+          artifacts: "build/app/outputs/apk/release/*.apk,build/ios/iphoneos/*.ipa,build/windows/runner/Release/*.exe,build/linux/x64/release/bundle/*,build/macos/Build/Products/Release/*.app"
           tag: v1.0.${{ github.run_number }}-${{ github.sha }}
           token: ${{ secrets.TRY_EXCELETOR_TOKEN }}
