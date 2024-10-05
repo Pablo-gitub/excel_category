@@ -45,13 +45,12 @@ jobs:
       - run: flutter pub get
       - run: flutter build ios --release --no-codesign
       - run: |
-          cd build/ios/ipa
+          cd build/ios/iphoneos
           mkdir Payload
-          cd Payload
-          ln -s ../Runner.app
-          cd ..
+          cp -r Runner.app Payload/
           zip -r app.ipa Payload
-      - run: ls -R build/ios/ipa/
+      - run: ls -R build/ios/iphoneos/
+
 
   build-windows:
     name: Build Windows
