@@ -24,7 +24,7 @@ this file allow you to release iOS version
 ### iosAndroid.yml
 this file allow you to release mobile version iOS and Android
 
-'''
+```bash
 name: "Desktop Build & Release"
 
 on:
@@ -36,11 +36,11 @@ on:
     branches:
       - main
       - develop
-'''
+```
 
 this part specify when you want the release to get update
 
-'''
+```bash
 jobs:
   build-linux:
     name: Build Linux
@@ -67,7 +67,7 @@ jobs:
         with:
           name: linux-build
           path: linux-build.zip
-'''
+```
 
 ## Important Points About This Portion of the GitHub Actions Configuration for Linux Build
 ### Cloning the Repository
@@ -85,7 +85,7 @@ jobs:
 ### Uploading the Build Artifact
 *Importance*: Using 'actions/upload-artifact' allows you to save the build artifact (the zip file) so that it can be easily downloaded later. This is useful for releasing and debugging built versions.
 
-'''
+```bash
 build-windows:
     name: Build Windows
     runs-on: windows-latest
@@ -129,7 +129,7 @@ build-windows:
         with:
           name: macos-build
           path: macos-build.zip
-'''
+```
 
 Windows and macOS builds share similarities with the Linux build process but have key distinctions due to their operating system environments and specific requirements. Here’s a comparison highlighting the differences:
 
