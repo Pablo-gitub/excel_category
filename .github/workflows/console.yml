@@ -30,7 +30,7 @@ jobs:
       - name: Build Linux
         run: flutter build linux --release
       - name: Archive Linux Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux-build
           path: build/linux/x64/release/bundle/
@@ -50,7 +50,7 @@ jobs:
       - name: Build Windows
         run: flutter build windows --release
       - name: Archive Windows Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-build
           path: build/windows/x64/runner/Release/
@@ -70,7 +70,7 @@ jobs:
       - name: Build macOS
         run: flutter build macos --release
       - name: Archive macOS Build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-build
           path: build/macos/Build/Products/Release/
@@ -81,20 +81,20 @@ jobs:
     needs: [build-linux, build-windows, build-macos]
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-build
           path: ./builds/linux
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: windows-build
           path: ./builds/windows
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: macos-build
           path: ./builds/macos
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
           files: |
             ./builds/linux/**
