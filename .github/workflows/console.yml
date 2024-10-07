@@ -2,9 +2,8 @@ name: Flutter Desktop Deployment
 
 on:
   push:
-    tags: 
-      - 'v*'  # Trigger on version tags
-
+    branches:
+      - main  
 jobs:
   linux:
     runs-on: ubuntu-latest
