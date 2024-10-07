@@ -1,16 +1,16 @@
-# exel_category
+# ExcelCategory
 
-A new Flutter project.
+Welcome to ExcelCategory! This application allows you to easily view and filter Excel files across multiple platforms. It has been realized with Flutter.
 
-## Getting Started
+### 🌐 Web Version
+You can access the web version of the app [here](https://excelcategory.web.app). This version allows users to upload and filter Excel files directly from their browsers.
 
-This project is a starting point for a Flutter application.
+### 📱 Mobile Versions
+- **[Android & iOS v1.0.16](https://github.com/Pablo-gitub/excel_category/releases/tag/v1.0.16)**: The Android version can be installed on any compatible device. However, please note that the iOS version is uncertified. It can only be installed on jailbroken devices or by those familiar with alternative installation methods.
 
-A few resources to get you started if this is your first Flutter project:
+### 💻 Desktop Versions
+- **[Desktop v1.0.16](https://github.com/Pablo-gitub/excel_category/releases/tag/desktop-v1.0.16)**: The app is also available for **MacOS**, **Linux**, and **Windows** in downloadable ZIP files. Each ZIP file contains the build files for the corresponding platform, making it easy to run the app on your desktop.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+> **Note:** The links provided above may not point to the latest version of the app. Please check the [releases page](https://github.com/Pablo-gitub/excel_category/releases) for the most recent updates.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Feel free to explore the app on your preferred platform, and thank you for checking out ExcelCategory!
