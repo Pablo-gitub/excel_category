@@ -30,10 +30,12 @@ jobs:
       - name: Build Linux
         run: flutter build linux --release
       - name: Archive Linux Build
+        run: zip -r linux-build.zip build/linux/x64/release/bundle/
+      - name: Upload Linux Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-build
-          path: build/linux/x64/release/bundle/
+          path: linux-build.zip
 
   build-windows:
     name: Build Windows
@@ -50,10 +52,12 @@ jobs:
       - name: Build Windows
         run: flutter build windows --release
       - name: Archive Windows Build
+        run: Compress-Archive -Path build/windows/x64/runner/Release -DestinationPath windows-build.zip
+      - name: Upload Windows Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: build/windows/x64/runner/Release/
+          path: windows-build.zip
 
   build-macos:
     name: Build macOS
@@ -70,10 +74,12 @@ jobs:
       - name: Build macOS
         run: flutter build macos --release
       - name: Archive macOS Build
+        run: zip -r macos-build.zip build/macos/Build/Products/Release/
+      - name: Upload macOS Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos-build
-          path: build/macos/Build/Products/Release/
+          path: macos-build.zip
 
   release:
     name: Release Desktop Artifacts
@@ -84,22 +90,24 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: linux-build
-          path: ./builds/linux
+          path: ./builds/
       - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
           name: windows-build
-          path: ./builds/windows
+          path: ./builds/
       - name: Download macOS artifact
         uses: actions/download-artifact@v4
         with:
           name: macos-build
-          path: ./builds/macos
+          path: ./builds/
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./builds/linux/**, ./builds/windows/**, ./builds/macos/**
+          artifacts: |
+            ./builds/linux-build.zip
+            ./builds/windows-build.zip
+            ./builds/macos-build.zip
           tag: desktop-v1.0.${{ github.run_number }}
         env:
           GITHUB_TOKEN: ${{ secrets.TRY_EXCELETOR_TOKEN }}
-
