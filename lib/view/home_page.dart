@@ -92,7 +92,8 @@ class HomePage extends ConsumerWidget {
                             ),
                             onDeleted: () {
                               // Remove the selected filter for a specific column
-                              filtersProvider.removeFilter(entry.key, entry.value.first);
+                              filtersProvider.removeFilter(
+                                  entry.key, entry.value.first);
                             },
                           );
                         }).toList(),
@@ -138,15 +139,16 @@ class HomePage extends ConsumerWidget {
                         .forEach((columnName, selectedValues) {
                       // Check only active filters
                       if (selectedValues.isNotEmpty &&
-                          !selectedValues.contains(
-                              element.details[columnName])) {
+                          !selectedValues
+                              .contains(element.details[columnName])) {
                         matchesAllFilters = false;
                       }
                     });
                     return matchesAllFilters;
                   }).toList();
 
-                  print('first check ${filtersProvider.filters.selectedFilters.isNotEmpty}');
+                  print(
+                      'first check ${filtersProvider.filters.selectedFilters.isNotEmpty}');
                   print('Second check ${filteredElements.isNotEmpty}');
 
                   // Check if any filters are applied

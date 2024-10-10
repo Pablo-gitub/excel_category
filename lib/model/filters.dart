@@ -79,7 +79,7 @@ class Filters {
       for (var key in selectedFilters.keys) {
         if (selectedFilters[key]!.isNotEmpty) {
           filteredElements = filteredElements.where((element) {
-            return selectedFilters[key]!.contains(element.details[key]!);
+            return selectedFilters[key]!.contains(element.details[key]);
           }).toList(); // Keep only elements matching the selected filters
         }
       }
