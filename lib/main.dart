@@ -2,6 +2,7 @@ import 'package:exel_category/view/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> main() async {
   var delegate = await LocalizationDelegate.create(
@@ -13,7 +14,7 @@ Future<void> main() async {
   );
 
   runApp(
-    LocalizedApp(delegate, const MyApp()),
+    LocalizedApp(delegate, const ProviderScope(child: MyApp())),
   );
 }
 

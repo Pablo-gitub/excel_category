@@ -3,9 +3,9 @@ import 'package:exel_category/model/excel_element.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 class FilterDetails extends StatelessWidget {
-  final List<ExcelElement> filteredVehicles;
+  final List<ExcelElement> filteredElements;
 
-  const FilterDetails({super.key, required this.filteredVehicles});
+  const FilterDetails({super.key, required this.filteredElements});
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +14,9 @@ class FilterDetails extends StatelessWidget {
         title: Text(translate('Filtred Elements')),
       ),
       body: ListView.builder(
-        itemCount: filteredVehicles.length,
+        itemCount: filteredElements.length,
         itemBuilder: (context, index) {
-          var element = filteredVehicles[index];
+          var element = filteredElements[index];
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: Padding(

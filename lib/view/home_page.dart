@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:exel_category/view/column_filter_card.dart';
 import 'package:exel_category/view/insert_file.dart';
 import 'package:exel_category/model/excel_element.dart';
 import 'package:exel_category/view/filter_details.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:exel_category/provider/filters_provider.dart'; // Import the FiltersProvider
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filtersProvider =
+        ref.watch(filtersProviderInstance); // Watch the FiltersProvider
 
-class _HomePageState extends State<HomePage> {
-  Map<String, List<String>> selectedFilters = {}; // Filtri selezionati
-  List<ExcelElement> elements = [];
-  bool filtersApplied = false; // Traccia lo stato dei filtri
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -26,7 +22,7 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
         title: const Text('Exceletor'),
         actions: [
-          // IconButton per la lingua inglese
+          // IconButton for English language
           IconButton(
             icon: Image.asset(
               'assets/uk_flag.png',
@@ -38,7 +34,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: () => changeLocale(context, 'en'),
             tooltip: translate('en'),
           ),
-          // IconButton per la lingua italiana
+          // IconButton for Italian language
           IconButton(
             icon: Image.asset(
               'assets/it_flag.png',
@@ -50,11 +46,13 @@ class _HomePageState extends State<HomePage> {
             onPressed: () => changeLocale(context, 'it'),
             tooltip: translate('it'),
           ),
-          if (elements.isNotEmpty && filtersApplied)
+          if (filtersProvider.filters.elements.isNotEmpty &&
+              filtersProvider.filters.selectedFilters.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: () {
-                resetFilters(); // Resetta i filtri quando si clicca su "Refresh"
+                filtersProvider
+                    .resetFilters(); // Reset filters when clicking "Refresh"
               },
             ),
         ],
@@ -67,73 +65,58 @@ class _HomePageState extends State<HomePage> {
               child: InsertFile(
                 onFileLoaded: (Map<String, List<String>> columnItems,
                     List<ExcelElement> loadedElements) {
-                  setState(() {
-                    elements = loadedElements; // Carica gli elementi Excel
-                    resetFilters(); // Resetta i filtri quando si carica un nuovo file
-                  });
+                  filtersProvider
+                      .initializeFilters(); // Initialize filters when a file is loaded
                 },
               ),
             ),
-            if (selectedFilters.isNotEmpty)
+            if (filtersProvider.filters.selectedFilters.isNotEmpty)
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Mostra i filtri selezionati per ogni colonna
+                    // Show selected filters for each column
                     Expanded(
                       child: Wrap(
                         spacing: 8.0,
                         runSpacing: 4.0,
-                        children: selectedFilters.entries.map((entry) {
+                        children: filtersProvider
+                            .filters.selectedFilters.entries
+                            .map((entry) {
                           return Chip(
                             label: Text(
                               '${entry.key}: ${entry.value.join(', ')}',
                               overflow: TextOverflow.ellipsis,
                             ),
                             onDeleted: () {
-                              // Rimuove il filtro selezionato per una colonna specifica
-                              setState(() {
-                                // Rimuovi l'elemento dalla lista di filtri
-                                selectedFilters.remove(entry.key);
-                              });
-                              // Verifica se ci sono filtri attivi dopo la rimozione
-                              if (selectedFilters.isEmpty) {
-                                filtersApplied = false; // Se non ci sono filtri, resetta lo stato
-                              }
+                              // Remove the selected filter for a specific column
+                              filtersProvider.removeFilter(entry.key, entry.value.first);
                             },
                           );
                         }).toList(),
                       ),
                     ),
-                    // Pulsante per resettare tutti i filtri
+                    // Button to reset all filters
                     TextButton(
-                      onPressed: resetFilters,
+                      onPressed: filtersProvider.resetFilters,
                       child: Text(translate('Reset All')),
                     ),
                   ],
                 ),
               ),
-            if (elements.isNotEmpty)
+            if (filtersProvider.filters.elements.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    // Mostra le carte per ogni colonna
-                    for (var column in elements.first.details.keys)
+                    // Show cards for each column
+                    for (var column
+                        in filtersProvider.filters.elements.first.details.keys)
                       ColumnFilterCard(
                         columnName: column,
-                        loadedElements: elements,
-                        onSelectionChanged: (columnName, selectedItems) {
-                          setState(() {
-                            if (selectedItems.isEmpty) {
-                              selectedFilters.remove(columnName); // Rimuovi il filtro se vuoto
-                            } else {
-                              selectedFilters[columnName] = selectedItems; // Aggiorna i filtri
-                            }
-                          });
-                        },
+                        // Removed the onSelectionChanged parameter
                       ),
                   ],
                 ),
@@ -141,47 +124,49 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      // BottomSheet con il pulsante "Filter"
-      bottomSheet: elements.isNotEmpty
+      // BottomSheet with the "Filter" button
+      bottomSheet: filtersProvider.filters.elements.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: ElevatedButton(
                 onPressed: () {
-                  // Filtra gli elementi in base ai filtri selezionati
-                  final filteredElements = elements.where((element) {
+                  // Filter elements based on selected filters
+                  final filteredElements =
+                      filtersProvider.filters.elements.where((element) {
                     bool matchesAllFilters = true;
-                    selectedFilters.forEach((columnName, selectedValues) {
-                      // Controlla solo i filtri attivi
-                      if (selectedValues.isNotEmpty && 
-                          !selectedValues.contains(element.details[columnName]?.toString())) {
+                    filtersProvider.filters.selectedFilters
+                        .forEach((columnName, selectedValues) {
+                      // Check only active filters
+                      if (selectedValues.isNotEmpty &&
+                          !selectedValues.contains(
+                              element.details[columnName])) {
                         matchesAllFilters = false;
                       }
                     });
                     return matchesAllFilters;
                   }).toList();
 
-                  // Verifica se ci sono filtri applicati
-                  if (selectedFilters.isNotEmpty &&
-                      filteredElements.isNotEmpty) {
-                    setState(() {
-                      filtersApplied =
-                          true; // Imposta lo stato come "filtri applicati"
-                    });
+                  print('first check ${filtersProvider.filters.selectedFilters.isNotEmpty}');
+                  print('Second check ${filteredElements.isNotEmpty}');
 
-                    // Naviga alla pagina dei dettagli con gli elementi filtrati
+                  // Check if any filters are applied
+                  if (filtersProvider.filters.selectedFilters.isNotEmpty &&
+                      filteredElements.isNotEmpty) {
+                    // Navigate to the details page with the filtered elements
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => FilterDetails(
-                          filteredVehicles: filteredElements,
+                          filteredElements: filteredElements,
                         ),
                       ),
                     );
                   } else {
-                    // Mostra un messaggio se nessun filtro è stato applicato o nessun risultato è stato trovato
+                    // Show a message if no results are found
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(translate('No results match the selected filters.')),
+                        content: Text(translate(
+                            'No results match the selected filters.')),
                       ),
                     );
                   }
@@ -189,13 +174,12 @@ class _HomePageState extends State<HomePage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
-                  shadowColor: Colors.black, // Colore dell'ombra
-                  elevation: 5, // Livello di elevazione
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 32, vertical: 12), // Padding interno
+                  shadowColor: Colors.black,
+                  elevation: 5,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(25), // Angoli arrotondati
+                    borderRadius: BorderRadius.circular(25),
                   ),
                 ),
                 child: Text(
@@ -206,12 +190,5 @@ class _HomePageState extends State<HomePage> {
             )
           : null,
     );
-  }
-
-  void resetFilters() {
-    setState(() {
-      selectedFilters.clear(); // Resetta i filtri selezionati
-      filtersApplied = false; // Rimuove lo stato "filtri applicati"
-    });
   }
 }

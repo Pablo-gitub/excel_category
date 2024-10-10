@@ -1,55 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:exel_category/model/excel_element.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:exel_category/provider/filters_provider.dart';
 
-class ColumnFilterCard extends StatefulWidget {
+class ColumnFilterCard extends ConsumerWidget {
   final String columnName;
-  final List<ExcelElement> loadedElements;
-  final Function(String, List<String>) onSelectionChanged; // Funzione callback per comunicare i valori selezionati
 
   const ColumnFilterCard({
     Key? key,
     required this.columnName,
-    required this.loadedElements,
-    required this.onSelectionChanged,
   }) : super(key: key);
 
   @override
-  _ColumnFilterCardState createState() => _ColumnFilterCardState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filtersProvider = ref.watch(filtersProviderInstance); // Access the FiltersProvider
 
-class _ColumnFilterCardState extends State<ColumnFilterCard> {
-  List<String> selectedItems = []; // Per tenere traccia degli elementi selezionati
+    // Get the available items for this column from availableFilters
+    final uniqueItems = filtersProvider.filters.availableFilters[columnName] ?? [];
 
-  @override
-  Widget build(BuildContext context) {
-    // Estrai i valori unici per la colonna specificata
-    final uniqueItems = widget.loadedElements
-        .map((element) => element.details[widget.columnName]?.toString())
-        .toSet() // Usa un Set per ottenere valori unici
-        .where((value) => value != null) // Filtra i valori null
-        .cast<String>() // Cast al tipo String
-        .toList();
+    // Get currently selected items for this column
+    final selectedItems = filtersProvider.filters.selectedFilters[columnName] ?? [];
 
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ExpansionTile(
-        title: Text(widget.columnName),
+        title: Text(columnName),
         children: [
-          // Mostra le checkbox per i valori unici
+          // Show checkboxes for unique values
           for (var item in uniqueItems)
             CheckboxListTile(
-              title: Text(item),
+              title: Text(item.toString()), // Convert item to String for display
               value: selectedItems.contains(item),
               onChanged: (bool? value) {
-                setState(() {
-                  if (value == true) {
-                    selectedItems.add(item);
-                  } else {
-                    selectedItems.remove(item);
-                  }
-                  widget.onSelectionChanged(widget.columnName, selectedItems); // Comunica i valori selezionati
-                });
+                if (value == true) {
+                  // Add item if checked
+                  filtersProvider.addFilter(columnName, item);
+                } else {
+                  // Remove item if unchecked
+                  filtersProvider.removeFilter(columnName, item);
+                }
               },
             ),
         ],
