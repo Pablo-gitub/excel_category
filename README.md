@@ -147,3 +147,113 @@ Windows and macOS builds share similarities with the Linux build process but hav
 *macOS*: Uses the 'zip -r' command to create a zip archive of the build products, with different paths and structures.
 ## Output Path
 The output paths differ for Windows and macOS, reflecting the specific file structures and naming conventions of each operating system.
+
+```bash
+  release:
+    name: Release Desktop Artifacts
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-windows, build-macos]
+    steps:
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-build
+          path: ./builds/
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+          path: ./builds/
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-build
+          path: ./builds/
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: |
+            ./builds/linux-build.zip
+            ./builds/windows-build.zip
+            ./builds/macos-build.zip
+          tag: desktop-v1.0.${{ github.run_number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TRY_EXCELETOR_TOKEN }}
+```
+
+### Steps Breakdown
+
+1. **Job Name and Environment**:
+   - The job is named **Release Desktop Artifacts** and runs on the `ubuntu-latest` environment, ensuring a consistent platform for the release process.
+
+2. **Dependencies**:
+   - The job specifies `needs: [build-linux, build-windows, build-macos]`, indicating that it must wait for the completion of the build jobs for Linux, Windows, and macOS before executing.
+
+3. **Downloading Artifacts**:
+   - Each of the three steps uses `actions/download-artifact@v4` to download the built artifacts from the previous jobs.
+   - The artifacts are downloaded into a local `./builds/` directory, facilitating organization and access during the release process.
+
+4. **Creating the Release**:
+   - The final step uses `ncipollo/release-action@v1` to create a release on GitHub.
+   - The artifacts (Linux, Windows, and macOS builds) are specified in the `artifacts` section, ensuring they are included in the release.
+   - A version tag is generated using the pattern `desktop-v1.0.${{ github.run_number }}`, where `github.run_number` provides a unique number for each run, helping to track releases effectively.
+   - The `GITHUB_TOKEN` is set to `${{ secrets.TRY_EXCELETOR_TOKEN }}`, which is required for authentication to create the release in the repository.
+
+```bash
+jobs:
+  build:
+    name: Build & Release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+
+      - run: flutter build apk --release --split-per-abi
+      - run: |
+          flutter build ios --no-codesign
+          cd build/ios/iphoneos
+          mkdir Payload
+          cd Payload
+          ln -s ../Runner.app
+          cd ..
+          zip -r app.ipa Payload
+      - name: Push to Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/apk/release/*,build/ios/iphoneos/app.ipa"
+          tag: v1.0.${{ github.run_number }}
+          token: ${{ secrets.TRY_EXCELETOR_TOKEN }}
+```
+### Build and Release Job Breakdown
+
+1. **Job Name and Environment**:
+   - The job is named **Build & Release** and runs on the `macos-latest` environment, ensuring compatibility with macOS-specific build processes.
+
+2. **Checkout Repository**:
+   - The first step uses `actions/checkout@v4` to clone the repository, providing access to the project files needed for the build.
+
+3. **Set Up Java**:
+   - The job uses `actions/setup-java@v4` to set up Java, specifying the **Zulu** distribution and version **17**. This step is essential for projects that require Java for building dependencies or plugins.
+
+4. **Set Up Flutter**:
+   - The `subosito/flutter-action@v2` is used to set up Flutter, specifying the **stable** channel and architecture **x64**. This ensures the build process uses a reliable version of Flutter.
+
+5. **Build APK for Android**:
+   - The command `flutter build apk --release --split-per-abi` builds the Android APK in release mode, generating separate APKs for each ABI (Application Binary Interface) to optimize app performance.
+
+6. **Build IPA for iOS**:
+   - The command `flutter build ios --no-codesign` builds the iOS application without code signing, which is useful for creating an IPA for distribution.
+   - The subsequent commands create a directory structure and symlink to package the app into a ZIP file, resulting in `app.ipa`.
+
+7. **Push to Releases**:
+   - The final step uses `ncipollo/release-action@v1` to push the built artifacts to the GitHub Releases section.
+   - The artifacts specified include the APK files from the Android build and the IPA file for iOS, ensuring both are available for download.
+   - A version tag is created using the pattern `v1.0.${{ github.run_number }}`, where `github.run_number` provides a unique identifier for each run.
+   - The `token` is set to `${{ secrets.TRY_EXCELETOR_TOKEN }}`, which is necessary for authentication to create the release.
