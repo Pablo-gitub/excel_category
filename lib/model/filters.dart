@@ -37,6 +37,7 @@ class Filters {
 
   // Adds a filter to the selected filters map
   void addFilter(String key, dynamic value) {
+    List<dynamic> temp = List.from(availableFilters[key]!);
     if (!selectedFilters.containsKey(key)) {
       selectedFilters[key] = []; // Initialize the list if the key doesn't exist
     }
@@ -45,6 +46,7 @@ class Filters {
           .add(value); // Add the value if it's not already selected
     }
     updateAvailableFilters(); // Update available filters after adding a new one
+    availableFilters[key] = temp;
   }
 
   // Removes a filter from the selected filters map
