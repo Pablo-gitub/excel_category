@@ -35,6 +35,20 @@ class Filters {
     print('Aveilable filters after initialize: ${availableFilters}');
   }
 
+  void addMissingFilters(){
+    selectedFilters.forEach((k, values) {
+      // If the current key exists in availableFilters
+      if (availableFilters.containsKey(k)) {
+        for (var value in values) {
+          // If the value is not present in availableFilters, add it back
+          if (!_filterPresent(availableFilters[k]!, value)) {
+            availableFilters[k]!.add(value);
+          }
+        }
+      }
+    });
+  }
+
   // Adds a filter to the selected filters map
   void addFilter(String key, dynamic value) {
     List<dynamic> temp = List.from(availableFilters[key]!);
@@ -47,6 +61,7 @@ class Filters {
     }
     updateAvailableFilters(); // Update available filters after adding a new one
     availableFilters[key] = temp;
+    addMissingFilters();
   }
 
   // Removes a filter from the selected filters map
@@ -61,6 +76,8 @@ class Filters {
       }
     }
     updateAvailableFilters(); // Update available filters after removal
+    // Check if any selected values are missing in available filters
+    addMissingFilters();
   }
 
   // Updates the selected filters based on a column name and a list of values
