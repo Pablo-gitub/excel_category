@@ -1,6 +1,7 @@
 import 'dart:io' show File; // Import for mobile file handling
 import 'dart:typed_data';
 import 'package:excel/excel.dart';
+import 'package:exel_category/control/file_controller.dart';
 import 'package:exel_category/provider/filters_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class InsertFile extends StatefulWidget {
 }
 
 class _InsertFileState extends State<InsertFile> {
+  final FileController fileController = FileController();
   String? fileName;
 
   @override
@@ -58,17 +60,20 @@ class _InsertFileState extends State<InsertFile> {
                               await FilePicker.platform.pickFiles();
 
                           if (result != null && result.files.isNotEmpty) {
-                            setState(() {
-                              fileName = result.files.single.name;
-                            });
-
-                            // Check if we are on the web or mobile
-                            if (kIsWeb) {
-                              // For web, use bytes
-                              await loadExcelFileFromBytes(result.files.single.bytes!, ref);
+                            if (await fileController.isValidExcelFile(result.files.single.name)) {
+                              setState(() {
+                                fileName = result.files.single.name;
+                              });
+                              Excel file;
+                              if (kIsWeb) {
+                                file = await fileController.loadExcelFileFromBytes(result.files.single.bytes!);
+                              } else {
+                                file = await fileController.loadExcelFileFromPath(result.files.single.path!);
+                              }
+                              Map<String, List<String>> columnItems = await fileController.processExcelFile(file, ref);
+                              widget.onFileLoaded(columnItems, []);
                             } else {
-                              // For mobile, use path
-                              await loadExcelFileFromPath(result.files.single.path!, ref);
+                              _showInvalidFileDialog(context);
                             }
                           }
                         },
@@ -85,55 +90,25 @@ class _InsertFileState extends State<InsertFile> {
     );
   }
 
-  Future<void> loadExcelFileFromBytes(Uint8List bytes, WidgetRef ref) async {
-    // Decode the Excel file from bytes
-    var file = Excel.decodeBytes(bytes);
-    await processExcelFile(file, ref);
-  }
+  
 
-  Future<void> loadExcelFileFromPath(String path, WidgetRef ref) async {
-    // Decode the Excel file from the file path
-    var file = Excel.decodeBytes(await File(path).readAsBytes());
-    await processExcelFile(file, ref);
-  }
-
-  Future<void> processExcelFile(Excel file, WidgetRef ref) async {
-    List<ExcelElement> elements = [];
-    Map<String, List<String>> columnItems = {}; // To save column items
-
-    for (var table in file.tables.keys) {
-      var headerRow = file.tables[table]?.rows[0];
-
-      // Save column titles in a list
-      List<String> columnTitles =
-          headerRow?.map((cell) => cell?.value?.toString() ?? '').toList() ??
-              [];
-
-      // Start iterating over rows after the header
-      for (var row in file.tables[table]!.rows.skip(1)) {
-        if (row.isNotEmpty) {
-          Map<String, dynamic> rowDetails = {};
-
-          // Populate the Map using column titles as keys
-          for (var i = 0; i < row.length; i++) {
-            if (i < columnTitles.length) {
-              rowDetails[columnTitles[i]] =
-                  row[i]?.value; // Associate cell value with key
-              columnItems
-                  .putIfAbsent(columnTitles[i], () => [])
-                  .add(row[i]?.value.toString() ?? '');
-            }
-          }
-
-          elements.add(ExcelElement(details: rowDetails));
-        }
-      }
-    }
-
-    // Initialize Filters with the loaded elements and update the provider
-    ref.read(filtersProviderInstance).updateFilters(elements);
-
-    // Pass the data to the parent widget
-    widget.onFileLoaded(columnItems, elements);
+  void _showInvalidFileDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(translate('Invalid File')),
+          content: Text(translate('Invalid File Selection')),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text(translate('OK')),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

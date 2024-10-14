@@ -5,5 +5,7 @@
     "Select File":"Seleziona File",
     "No results match the selected filters.":"Non sono stati trovati file per i filtri selezionati.",
     "Apply Filters":"Applica Filtri",
-    "No file selected":"Nessun File selezionato"
+    "No file selected":"Nessun File selezionato",
+    "Invalid File":"File Non Valido",
+    "Invalid File Selection":"Il file selezionato non è un valido file Excel. Per favore seleziona un file con estensione .xls o .xlsx"
 }
