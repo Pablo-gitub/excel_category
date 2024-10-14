@@ -3,7 +3,6 @@ import 'dart:io' show File;
 import 'package:excel/excel.dart';
 import 'package:exel_category/model/excel_element.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:exel_category/provider/filters_provider.dart';
 
 class FileController {

@@ -1,8 +1,6 @@
-import 'dart:io' show File; // Import for mobile file handling
-import 'dart:typed_data';
+// Import for mobile file handling
 import 'package:excel/excel.dart';
 import 'package:exel_category/control/file_controller.dart';
-import 'package:exel_category/provider/filters_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:exel_category/model/excel_element.dart';
