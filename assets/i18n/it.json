@@ -7,5 +7,6 @@
     "Apply Filters":"Applica Filtri",
     "No file selected":"Nessun File selezionato",
     "Invalid File":"File Non Valido",
-    "Invalid File Selection":"Il file selezionato non è un valido file Excel. Per favore seleziona un file con estensione .xls o .xlsx"
+    "Invalid File Selection":"Il file selezionato non è un valido file Excel. Per favore seleziona un file con estensione .xls o .xlsx",
+    "items match":" elementi trovati"
 }
