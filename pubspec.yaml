@@ -45,6 +45,7 @@ dependencies:
   path_provider: ^2.1.4
   fl_chart: ^0.69.0
   flutter_excel: ^1.0.1
+  file_saver: ^0.2.14
 
 dev_dependencies:
   flutter_test:
