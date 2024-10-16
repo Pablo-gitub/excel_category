@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:io' show File;
 import 'package:excel/excel.dart';
 import 'package:exel_category/model/excel_element.dart';
+import 'package:exel_category/provider/column_titles_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:exel_category/provider/filters_provider.dart';
 
@@ -18,15 +19,20 @@ class FileController {
     return Excel.decodeBytes(await File(path).readAsBytes());
   }
 
-  Future<Map<String, List<String>>> processExcelFile(Excel file, WidgetRef ref) async {
+  Future<Map<String, List<String>>> processExcelFile(
+      Excel file, WidgetRef ref) async {
     List<ExcelElement> elements = [];
     Map<String, List<String>> columnItems = {};
+    List<dynamic> originalColumnTitles = [];
 
     for (var table in file.tables.keys) {
       var headerRow = file.tables[table]?.rows[0];
       List<String> columnTitles =
           headerRow?.map((cell) => cell?.value?.toString() ?? '').toList() ??
-          [];
+              [];
+
+      originalColumnTitles =
+          headerRow?.map((cell) => cell?.value ?? '').toList() ?? [];
 
       for (var row in file.tables[table]!.rows.skip(1)) {
         if (row.isNotEmpty) {
@@ -46,6 +52,12 @@ class FileController {
 
     // Update the filters provider
     ref.read(filtersProviderInstance).updateFilters(elements);
+
+    // Update the column titles provider with the original titles
+    ref
+        .read(columnTitlesProviderInstance)
+        .originalTitles
+        .addAll(originalColumnTitles);
 
     return columnItems;
   }

@@ -73,22 +73,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-  community_charts_common:
-    dependency: transitive
-    description:
-      name: community_charts_common
-      sha256: d997ade57f15490346de46efbe23805d378a672aafbf5e47e19517964b671009
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
-  community_charts_flutter:
-    dependency: transitive
-    description:
-      name: community_charts_flutter
-      sha256: "4614846b99782ab79b613687704865e5468ecada3f0ad1afe1cdc3ff5b727f72"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
   cross_file:
     dependency: transitive
     description:
@@ -113,14 +97,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
-  d_chart:
-    dependency: "direct main"
-    description:
-      name: d_chart
-      sha256: ec26b2e43cff2dfa2a89a35ba87716e2079b3205c9e6121dac14c6b036cd032e
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.9.1"
   equatable:
     dependency: transitive
     description:
@@ -182,6 +158,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_excel:
+    dependency: "direct main"
+    description:
+      name: flutter_excel
+      sha256: "2e0daa4e8f8d318306e87e9758e0a2d153f21c9989df0ca36a801d566a3bfd31"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -341,6 +325,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  path_provider:
+    dependency: "direct main"
+    description:
+      name: path_provider
+      sha256: fec0d61223fba3154d87759e3cc27fe2c8dc498f6386c6d6fc80d1afdd1bf378
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.4"
+  path_provider_android:
+    dependency: transitive
+    description:
+      name: path_provider_android
+      sha256: c464428172cb986b758c6d1724c603097febb8fb855aa265aeecc9280c294d4a
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.12"
+  path_provider_foundation:
+    dependency: transitive
+    description:
+      name: path_provider_foundation
+      sha256: f234384a3fdd67f989b4d54a5d73ca2a6c422fa55ae694381ae0f4375cd1ea16
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
   path_provider_linux:
     dependency: transitive
     description:
@@ -596,4 +604,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=3.5.3 <4.0.0"
-  flutter: ">=3.22.0"
+  flutter: ">=3.24.0"
