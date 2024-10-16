@@ -32,7 +32,7 @@ class Filters {
         }
       });
     }
-    print('Aveilable filters after initialize: ${availableFilters}');
+    // print('Aveilable filters after initialize: ${availableFilters}');
   }
 
   void addMissingFilters(){

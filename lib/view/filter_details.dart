@@ -1,36 +1,53 @@
+import 'package:exel_category/view/filter_details_widgets/details_element.dart';
+import 'package:exel_category/view/filter_details_widgets/row_filters.dart';
 import 'package:flutter/material.dart';
 import 'package:exel_category/model/excel_element.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:exel_category/provider/filters_provider.dart';
 
-class FilterDetails extends StatelessWidget {
+class FilterDetails extends ConsumerWidget {
   final List<ExcelElement> filteredElements;
 
   const FilterDetails({super.key, required this.filteredElements});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final filtersProvider = ref.watch(filtersProviderInstance);
+    
+    // Get the available column names for filtering
+    final availableColumns = filtersProvider.filters.availableFilters.keys.toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(translate('Filtred Elements')),
+        title: Text(translate('Filtered Elements')),
       ),
-      body: ListView.builder(
-        itemCount: filteredElements.length,
-        itemBuilder: (context, index) {
-          var element = filteredElements[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: element.details.entries.map((entry) {
-                  return Text('${entry.key}: ${entry.value}');
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            // Horizontal scroll for filters
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+              child: Row(
+                children: availableColumns.map((columnName) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add spacing between filters
+                    child: RowFilters(columnName: columnName), // Your RowFilters widget
+                  );
                 }).toList(),
               ),
             ),
-          );
-        },
+            // Provide some spacing below the filters
+            const SizedBox(height: 16.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DetailsElement(),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+

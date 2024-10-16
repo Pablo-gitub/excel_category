@@ -30,15 +30,15 @@ class FiltersProvider with ChangeNotifier {
 
   // Method to add a filter
   void addFilter(String key, dynamic value) {
-    print('Adding filter: $key - $value');
+    // print('Adding filter: $key - $value');
     _filters.addFilter(key, value);
-    print('Aveilable filters: ${_filters.availableFilters}');
+    // print('Aveilable filters: ${_filters.availableFilters}');
     notifyListeners(); // Notify listeners about the change
   }
 
   // Method to remove a filter
   void removeFilter(String key, dynamic value) {
-    print('Removing filter: $key - $value');
+    // print('Removing filter: $key - $value');
     _filters.removeFilter(key, value);
     notifyListeners(); // Notify listeners about the change
   }
