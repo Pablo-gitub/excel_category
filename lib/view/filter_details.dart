@@ -49,7 +49,7 @@ class FilterDetails extends ConsumerWidget {
                 .watch(rowFiltersHeightProvider)
                 .value; // Osserva l'altezza dal provider
 
-            return Container(
+            return SizedBox(
               height: height, // Imposta l'altezza basata sul provider
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal, // Enable horizontal scrolling

@@ -2,15 +2,14 @@ import 'dart:typed_data';
 import 'package:excel/excel.dart';
 import 'package:exel_category/model/excel_element.dart';
 import 'package:exel_category/provider/column_titles_provider.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'dart:io' as io;
-
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ExcelExportController {
-  Future<void> exportToExcel(
-      List<ExcelElement> filteredElements,
+  Future<void> exportToExcel(List<ExcelElement> filteredElements,
       ColumnTitlesProvider titlesProvider) async {
     // Create a new Excel file
     var excel = Excel.createExcel(); // Create a new Excel instance
@@ -36,6 +35,7 @@ class ExcelExportController {
         cell.value = element.details[headers[colIndex]]; // Set cell value
       }
     }
+    excel.delete('Sheet1');
 
     // Get the bytes of the file
     var fileBytes = excel.save();
@@ -43,34 +43,26 @@ class ExcelExportController {
     if (kIsWeb) {
       // Web specific code for file saving
       final Uint8List excelData = Uint8List.fromList(fileBytes!);
-      final String fileName = 'filtered_data.xlsx';
+      const String fileName = 'filtered_data.xlsx';
 
-      // Save the file using FileSaver
       await FileSaver.instance.saveFile(
         name: fileName,
         bytes: excelData,
         ext: 'xlsx',
         mimeType: MimeType.other,
       );
-
-      print('File saved successfully on web.');
+      print('File salvato con successo su web.');
     } else {
       // Mobile platforms: Use File Picker to save the file
-      String? filePath = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save Excel File',
-        fileName: 'filtered_data.xlsx',
-        type: FileType.custom,
-        allowedExtensions: ['xlsx'],
-      );
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/filtered_data.xlsx';
+      final file = await io.File(filePath).writeAsBytes(fileBytes!);
 
-      if (filePath != null) {
-        io.File(filePath)
-          ..createSync(recursive: true)
-          ..writeAsBytesSync(fileBytes!);
-        print('Excel file saved at: $filePath');
-      } else {
-        print('File save operation was cancelled.');
-      }
+      // Usa share_plus per condividere o salvare il file
+      await Share.shareXFiles(
+        [XFile(file.path)],
+      );
+      print('Pannello di condivisione aperto.');
     }
   }
 }
