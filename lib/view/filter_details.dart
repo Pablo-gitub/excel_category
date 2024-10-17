@@ -18,14 +18,10 @@ class FilterDetails extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filtersProvider = ref.watch(filtersProviderInstance);
-    final titlesProvider = ref.watch(columnTitlesProviderInstance);
 
     // Get the available column names for filtering
     final availableColumns =
         filtersProvider.filters.availableFilters.keys.toList();
-
-    // Create an instance of ExcelExportController
-    final excelExportController = ExcelExportController();
 
     return Scaffold(
       appBar: AppBar(
@@ -33,9 +29,8 @@ class FilterDetails extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.download),
-            onPressed: () async {
-              await excelExportController.exportToExcel(
-                  filteredElements, titlesProvider);
+            onPressed: () {
+              _showExportOptions(context, ref); // Mostra il popup
             },
             tooltip: 'Esporta in Excel',
           ),
@@ -74,6 +69,45 @@ class FilterDetails extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showExportOptions(BuildContext context, WidgetRef ref) {
+    final titlesProvider = ref.watch(columnTitlesProviderInstance);
+    // Create an instance of ExcelExportController
+    final excelExportController = ExcelExportController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seleziona formato di esportazione'),
+          content: const Text('Come vuoi scaricare il file?'),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Chiudi il dialogo
+                await excelExportController.exportToExcel(
+                    titlesProvider, ref);
+              },
+              child: const Text('Esporta in Excel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // Chiudi il dialogo
+                await excelExportController.exportToPdf(
+                    titlesProvider, ref);
+              },
+              child: const Text('Esporta in PDF'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Chiudi il dialogo
+              },
+              child: const Text('Annulla'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

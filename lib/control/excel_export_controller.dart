@@ -1,16 +1,22 @@
 import 'dart:typed_data';
 import 'package:excel/excel.dart';
-import 'package:exel_category/model/excel_element.dart';
 import 'package:exel_category/provider/column_titles_provider.dart';
+import 'package:exel_category/provider/elements_provider.dart';
 import 'package:file_saver/file_saver.dart';
 import 'dart:io' as io;
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class ExcelExportController {
-  Future<void> exportToExcel(List<ExcelElement> filteredElements,
-      ColumnTitlesProvider titlesProvider) async {
+  Future<void> exportToExcel(
+      ColumnTitlesProvider titlesProvider, WidgetRef ref) async {
+    final filteredElements =
+        ref.watch(elementsProviderInstance).filteredElements;
     // Create a new Excel file
     var excel = Excel.createExcel(); // Create a new Excel instance
     Sheet sheet = excel['Filtered Data']; // Create a new sheet
@@ -43,7 +49,7 @@ class ExcelExportController {
     if (kIsWeb) {
       // Web specific code for file saving
       final Uint8List excelData = Uint8List.fromList(fileBytes!);
-      const String fileName = 'filtered_data.xlsx';
+      const String fileName = 'filtered_data';
 
       await FileSaver.instance.saveFile(
         name: fileName,
@@ -51,7 +57,6 @@ class ExcelExportController {
         ext: 'xlsx',
         mimeType: MimeType.other,
       );
-      print('File salvato con successo su web.');
     } else {
       // Mobile platforms: Use File Picker to save the file
       final tempDir = await getTemporaryDirectory();
@@ -62,7 +67,68 @@ class ExcelExportController {
       await Share.shareXFiles(
         [XFile(file.path)],
       );
-      print('Pannello di condivisione aperto.');
+    }
+  }
+
+  Future<void> exportToPdf(
+      ColumnTitlesProvider titlesProvider, WidgetRef ref) async {
+    // Create a new PDF document
+    final filteredElements =
+        ref.watch(elementsProviderInstance).filteredElements;
+
+    final pdf = pw.Document();
+
+    // Define headers based on your data model
+    List<dynamic> headers = titlesProvider.originalTitles;
+
+    // Prepare data for the PDF table
+    List<List<String>> data = [];
+    for (var element in filteredElements) {
+      List<String> row = [];
+      element.details.forEach((key, value) {
+        row.add(value.toString());
+      });
+      data.add(row);
+    }
+
+    // Add a page with a table to the PDF document
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat:
+            PdfPageFormat.a4.landscape, // Set the page format to landscape
+        build: (pw.Context context) {
+          return [TableHelper.fromTextArray(
+            headers: headers,
+            data: data,
+            headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            cellStyle: const pw.TextStyle(fontSize: 10),
+          )
+          ];
+        },
+      ),
+    );
+
+    // Save the PDF document
+    final output = await pdf.save();
+
+    if (kIsWeb) {
+      // Web specific saving logic
+      await FileSaver.instance.saveFile(
+        name: 'filtered_data',
+        bytes: output,
+        ext: 'pdf',
+        mimeType: MimeType.pdf,
+      );
+    } else {
+      // Mobile specific saving logic
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/filtered_data.pdf';
+      final file = await io.File(filePath).writeAsBytes(output);
+
+      // Share or save the file
+      await Share.shareXFiles(
+        [XFile(file.path)],
+      );
     }
   }
 }
