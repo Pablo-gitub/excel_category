@@ -81,7 +81,7 @@ class _ColumnFilterCardState extends ConsumerState<ColumnFilterCard> {
                     subtitle: Text(
                       '${_countMatchingElements(elementsProvider.filteredElements, uniqueItems[i])} ${translate('items match')}',
                       style: TextStyle(
-                          color: colors[i]), // Applica il colore qui
+                          color: colors[i]), // Apply color here
                     ),
                   ),
               ],
@@ -92,7 +92,7 @@ class _ColumnFilterCardState extends ConsumerState<ColumnFilterCard> {
   }
 
   int _countMatchingElements(List<ExcelElement> elements, dynamic item) {
-    // Conta il numero di elementi corrispondenti all'item selezionato
+    // Count number of elemnts for the selcted item
     return elements
         .where((element) => element.details[widget.columnName] == item)
         .length;
@@ -112,18 +112,18 @@ class _ColumnFilterCardState extends ConsumerState<ColumnFilterCard> {
     final totalWidth =
         MediaQuery.of(context).size.width - 32; // Adjust for card's margin
 
-    // Limita il numero di elementi visualizzati
+    // limit visible number of elements
     const maxVisibleItems = 5;
     List<double> relevantPercentages;
     List<dynamic> relevantItems;
     List<Color> relevantColors;
 
     if (percentages.length > maxVisibleItems) {
-      // Ordina gli elementi per percentuale (decrescente)
+      // Order elements based on percentage (descending)
       final sortedIndexes = List<int>.generate(percentages.length, (i) => i)
         ..sort((a, b) => percentages[b].compareTo(percentages[a]));
 
-      // Seleziona i primi maxVisibleItems
+      // Select firsts visible items maxVisibleItems
       relevantPercentages = sortedIndexes
           .take(maxVisibleItems)
           .map((index) => percentages[index])
@@ -137,15 +137,15 @@ class _ColumnFilterCardState extends ConsumerState<ColumnFilterCard> {
           .map((index) => colors[index])
           .toList();
 
-      // Aggiungi una voce "Altri" per i rimanenti
+      // add element for "Other"
       final othersPercentage = sortedIndexes
           .skip(maxVisibleItems)
           .map((index) => percentages[index])
           .fold(0.0, (sum, p) => sum + p);
 
       relevantPercentages.add(othersPercentage);
-      relevantItems.add("Altri");
-      relevantColors.add(Colors.grey); // Colore fisso per "Altri"
+      relevantItems.add("Other");
+      relevantColors.add(Colors.grey); // blocked color for "Other"
     } else {
       relevantPercentages = percentages;
       relevantItems = uniqueItems;

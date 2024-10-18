@@ -11,11 +11,11 @@ class RowFiltersHeight extends ValueNotifier<double> {
   }
 
   void updateHeight(double newHeight) {
-    value = newHeight.clamp(0.0, 90.0); // Mantieni l'altezza tra 0 e 90
+    value = newHeight.clamp(0.0, 90.0); // kepp height between 0 and 90
   }
 }
 
-// Definisci il provider
+// Define the provider
 final rowFiltersHeightProvider = ChangeNotifierProvider<RowFiltersHeight>(
-  (ref) => RowFiltersHeight(90.0), // Altezza iniziale
+  (ref) => RowFiltersHeight(90.0), // start height
 );

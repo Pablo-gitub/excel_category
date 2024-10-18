@@ -8,5 +8,10 @@
     "No file selected":"No file selected",
     "Invalid File":"Invalid File",
     "Invalid File Selection":"The selected file is not a valid Excel file. Please select a file with a .xls or .xlsx extension.",
-    "items match":" items match"
+    "items match":" items match",
+    "FormatSelection":"Select Export Format",
+    "HowDownload":"How do you want to download the file?",
+    "ExcelExport":"Export To Excel",
+    "ExportPDF":"Export To PDF",
+    "cancel":"Cancel"
 }

@@ -150,10 +150,6 @@ class HomePage extends ConsumerWidget {
                     return matchesAllFilters;
                   }).toList();
 
-                  print(
-                      'first check ${filtersProvider.filters.selectedFilters.isNotEmpty}');
-                  print('Second check ${filteredElements.isNotEmpty}');
-
                   // Check if any filters are applied
                   if (filtersProvider.filters.selectedFilters.isNotEmpty &&
                       filteredElements.isNotEmpty) {
@@ -189,7 +185,7 @@ class HomePage extends ConsumerWidget {
                 ),
                 child: Text(
                   translate('Apply Filters'),
-                  style: TextStyle(fontSize: 22),
+                  style: const TextStyle(fontSize: 22),
                 ),
               ),
             )

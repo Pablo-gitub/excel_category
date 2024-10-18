@@ -30,7 +30,7 @@ class FilterDetails extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: () {
-              _showExportOptions(context, ref); // Mostra il popup
+              _showExportOptions(context, ref); // Show popup
             },
             tooltip: 'Esporta in Excel',
           ),
@@ -42,10 +42,10 @@ class FilterDetails extends ConsumerWidget {
           Consumer(builder: (context, ref, child) {
             final height = ref
                 .watch(rowFiltersHeightProvider)
-                .value; // Osserva l'altezza dal provider
+                .value; // watch height from provider
 
             return SizedBox(
-              height: height, // Imposta l'altezza basata sul provider
+              height: height, // Personalize height based on provider
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal, // Enable horizontal scrolling
                 child: Row(
@@ -80,30 +80,30 @@ class FilterDetails extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Seleziona formato di esportazione'),
-          content: const Text('Come vuoi scaricare il file?'),
+          title:  Text(translate('FormatSelection')),
+          content:  Text(translate('HowDownload')),
           actions: [
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop(); // Chiudi il dialogo
+                Navigator.of(context).pop(); // Close dialog
                 await excelExportController.exportToExcel(
                     titlesProvider, ref);
               },
-              child: const Text('Esporta in Excel'),
+              child: Text(translate('ExcelExport')),
             ),
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop(); // Chiudi il dialogo
+                Navigator.of(context).pop(); //  Close dialog
                 await excelExportController.exportToPdf(
                     titlesProvider, ref);
               },
-              child: const Text('Esporta in PDF'),
+              child: Text(translate('ExportPDF')),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Chiudi il dialogo
+                Navigator.of(context).pop(); //  Close dialog
               },
-              child: const Text('Annulla'),
+              child: Text(translate('cancel')),
             ),
           ],
         );

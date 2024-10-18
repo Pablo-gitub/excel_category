@@ -14,18 +14,18 @@ class ElementsProvider {
   ElementsProvider(this.filters);
 
   List<ExcelElement> get filteredElements {
-    // Recuperiamo gli elementi filtrati in base ai filtri selezionati
+    // Retrieve filtered elements based on selected filters
     if (filters.selectedFilters.isEmpty) {
-      // Restituiamo tutti gli elementi se non ci sono filtri selezionati
+      // Return all elements if no filters are selected
       return filters.elements;
     }
     
-    // Applichiamo i filtri agli elementi
+    // Apply filters to the elements
     return filters.elements.where((element) {
       return filters.selectedFilters.entries.every((filterEntry) {
         final columnName = filterEntry.key;
         final selectedValues = filterEntry.value;
-        // Verifichiamo che l'elemento corrisponda a tutti i filtri selezionati
+        // Check that the element matches all selected filters
         return selectedValues.contains(element.details[columnName]);
       });
     }).toList();

@@ -1,5 +1,5 @@
 {
-    "Reset All":"Cancella tutto",
+    "Reset All":"Restta tutto",
     "Insert File Here:":"Inserisci il file:",
     "Filtred Elements":"Elementi Filtrati",
     "Select File":"Seleziona File",
@@ -8,5 +8,10 @@
     "No file selected":"Nessun File selezionato",
     "Invalid File":"File Non Valido",
     "Invalid File Selection":"Il file selezionato non è un valido file Excel. Per favore seleziona un file con estensione .xls o .xlsx",
-    "items match":" elementi trovati"
+    "items match":" elementi trovati",
+    "FormatSelection":"Seleziona Formato Di Esportazione",
+    "HowDownload":"Come vuoi scaricare il file?",
+    "ExcelExport":"Esporta in Excel",
+    "ExportPDF":"Esport in PDF",
+    "cancel":"Cancel"
 }
