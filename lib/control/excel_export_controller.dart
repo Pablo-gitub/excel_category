@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -91,22 +90,57 @@ class ExcelExportController {
       data.add(row);
     }
 
-    // Add a page with a table to the PDF document
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat:
-            PdfPageFormat.a4.landscape, // Set the page format to landscape
-        build: (pw.Context context) {
-          return [TableHelper.fromTextArray(
-            headers: headers,
-            data: data,
-            headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-            cellStyle: const pw.TextStyle(fontSize: 10),
-          )
-          ];
-        },
-      ),
-    );
+    // Maximum number of rows per page (adjust as needed)
+    const int rowsPerPage = 12;
+    final int totalRows = data.length;
+
+    // Add pages with tables to the PDF document
+    for (int startRow = 0; startRow < totalRows; startRow += rowsPerPage) {
+      final endRow = (startRow + rowsPerPage < totalRows)
+          ? startRow + rowsPerPage
+          : totalRows;
+
+      // Create a page for the current set of rows
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4.landscape,
+          build: (pw.Context context) {
+            return pw.Column(
+              children: [
+                pw.Table(
+                  border: pw.TableBorder.all(),
+                  children: [
+                    // Add headers
+                    pw.TableRow(
+                      children: headers
+                          .map((header) => pw.Padding(
+                                padding: const pw.EdgeInsets.all(3.0),
+                                child: pw.Text(
+                                  header.toString(),
+                                  style: pw.TextStyle(
+                                      fontWeight: pw.FontWeight.bold),
+                                ),
+                              ))
+                          .toList(),
+                    ),
+                    // Add rows for the current page
+                    for (var rowIndex = startRow; rowIndex < endRow; rowIndex++)
+                      pw.TableRow(
+                        children: data[rowIndex]
+                            .map((cell) => pw.Padding(
+                                  padding: const pw.EdgeInsets.all(3.0),
+                                  child: pw.Text(cell),
+                                ))
+                            .toList(),
+                      ),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      );
+    }
 
     // Save the PDF document
     final output = await pdf.save();
