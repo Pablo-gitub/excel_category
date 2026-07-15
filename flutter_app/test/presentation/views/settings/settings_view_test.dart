@@ -3,6 +3,7 @@ import 'package:exlser/application/services/update_service.dart';
 import 'package:exlser/data/services/github_release_models.dart';
 import 'package:exlser/presentation/providers/immersive_mode_provider.dart';
 import 'package:exlser/presentation/providers/service_providers.dart';
+import 'package:exlser/presentation/views/settings/settings_update_controller.dart';
 import 'package:exlser/presentation/views/settings/settings_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,23 @@ void main() {
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
+  });
+
+  test('disables desktop updates in web builds', () {
+    expect(
+      desktopUpdatePlatformFromTarget(
+        TargetPlatform.macOS,
+        isWeb: true,
+      ),
+      DesktopUpdatePlatform.unsupported,
+    );
+    expect(
+      desktopUpdatePlatformFromTarget(
+        TargetPlatform.windows,
+        isWeb: true,
+      ),
+      DesktopUpdatePlatform.unsupported,
+    );
   });
 
   testWidgets('shows and toggles full immersion only on Android',

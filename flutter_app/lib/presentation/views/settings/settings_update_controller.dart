@@ -49,7 +49,10 @@ class SettingsUpdateState {
 }
 
 final desktopUpdatePlatformProvider = Provider<DesktopUpdatePlatform>((ref) {
-  return desktopUpdatePlatformFromTarget(defaultTargetPlatform);
+  return desktopUpdatePlatformFromTarget(
+    defaultTargetPlatform,
+    isWeb: kIsWeb,
+  );
 });
 
 final settingsUpdateControllerProvider = StateNotifierProvider.autoDispose<
@@ -60,7 +63,14 @@ final settingsUpdateControllerProvider = StateNotifierProvider.autoDispose<
   );
 });
 
-DesktopUpdatePlatform desktopUpdatePlatformFromTarget(TargetPlatform platform) {
+DesktopUpdatePlatform desktopUpdatePlatformFromTarget(
+  TargetPlatform platform, {
+  bool isWeb = false,
+}) {
+  if (isWeb) {
+    return DesktopUpdatePlatform.unsupported;
+  }
+
   return switch (platform) {
     TargetPlatform.macOS => DesktopUpdatePlatform.macos,
     TargetPlatform.windows => DesktopUpdatePlatform.windows,
