@@ -8,6 +8,7 @@ import '../views/dataset/dataset_view.dart';
 import '../views/dataset_list/datasets_list_view.dart';
 import '../views/home/home_view.dart';
 import '../views/multi_dataset_analytics/multi_dataset_analytics_view.dart';
+import '../views/sheet_joins/sheet_joins_view.dart';
 import '../views/onboarding/onboarding_view.dart';
 import '../views/settings/settings_view.dart';
 import '../views/splash/splash_view.dart';
@@ -110,6 +111,17 @@ class AppRouter {
               },
             ),
             GoRoute(
+              name: AppRoutes.sheetJoinsName,
+              path: AppRoutes.sheetJoinsPath,
+              pageBuilder: (BuildContext context, GoRouterState state) {
+                final int datasetId = _getDatasetId(state);
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: SheetJoinsView(datasetId: datasetId),
+                );
+              },
+            ),
+            GoRoute(
               name: AppRoutes.settingsName,
               path: AppRoutes.settingsPath,
               pageBuilder: (BuildContext context, GoRouterState state) {
@@ -139,6 +151,9 @@ String _shellTitle(BuildContext context, GoRouterState state) {
   if (location.startsWith('/datasets/')) {
     if (location.endsWith('/analytics')) {
       return AppStrings.datasetWorkspaceAnalyticsTitle.tr();
+    }
+    if (location.endsWith('/joins')) {
+      return AppStrings.datasetJoinsTitle.tr();
     }
     return AppStrings.datasetWorkspaceTitle.tr();
   }

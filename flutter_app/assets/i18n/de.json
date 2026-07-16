@@ -1,342 +1,391 @@
 {
-    "app": {
-        "name": "Exlser"
+  "app": {
+    "name": "Exlser"
+  },
+  "home": {
+    "select_file": "CSV- oder XLSX-Datei auswählen",
+    "drop_file": "CSV- oder XLSX-Datei hierher ziehen",
+    "process_file": "Datei verarbeiten",
+    "browse_file": "Datei suchen"
+  },
+  "onboarding": {
+    "title": "Willkommen bei Exlser",
+    "button": "Loslegen",
+    "welcome": {
+      "title": "Willkommen bei Exlser"
     },
-    "home": {
-        "select_file": "CSV- oder XLSX-Datei auswählen",
-        "drop_file": "CSV- oder XLSX-Datei hierher ziehen",
-        "process_file": "Datei verarbeiten",
-        "browse_file": "Datei suchen"
+    "data": {
+      "title": "Holen Sie das Beste aus Ihren Daten heraus!"
     },
-    "onboarding": {
-        "title": "Willkommen bei Exlser",
-        "button": "Loslegen",
-        "welcome": {
-            "title": "Willkommen bei Exlser"
-        },
-        "data": {
-            "title": "Holen Sie das Beste aus Ihren Daten heraus!"
-        },
-        "cross_platform": {
-            "title": "Die volle Leistung von Exlser auf jedem Gerät"
-        },
-        "play_preview": "Vorschau ansehen",
-        "replay_preview": "Video erneut abspielen"
+    "cross_platform": {
+      "title": "Die volle Leistung von Exlser auf jedem Gerät"
     },
-    "common": {
-        "skip": "Überspringen",
-        "previous": "Zurück",
-        "next": "Weiter",
-        "start": "Starten",
-        "retry": "Erneut versuchen",
-        "cancel": "Abbrechen",
-        "delete": "Löschen",
-        "refresh": "Aktualisieren",
-        "open": "Öffnen",
-        "add": "Hinzufügen",
-        "clear": "Leeren",
-        "apply": "Anwenden",
-        "run": "Ausführen",
-        "close": "Schließen",
-        "expand": "Erweitern"
-    },
-    "menu": {
-        "home": "Start",
-        "works": "Arbeiten",
-        "settings": "Einstellungen",
-        "developer": "Entwickler",
-        "developer_website": "paolopietrelli.com",
-        "open_website": "Website öffnen",
-        "open_github": "GitHub öffnen",
-        "open_linkedin": "LinkedIn öffnen",
-        "open_instagram": "Instagram öffnen"
-    },
-    "works": {
-        "empty": "Hier wird Ihre Liste der Arbeiten angezeigt",
-        "go_home": "Zur Startseite",
-        "source_file": "Quelldatei",
-        "created_at": "Erstellt",
-        "last_opened_at": "Zuletzt geöffnet",
-        "never_opened": "Nie geöffnet",
-        "delete_title": "Dataset löschen",
-        "delete_message": "Dadurch werden Dataset, Schema, Zeilen und Dateireferenz entfernt.",
-        "search_hint": "Nach Name oder Datei suchen",
-        "no_results": "Keine Datasets entsprechen Ihrer Suche.",
-        "error": {
-            "load_failed": "Datasets konnten nicht geladen werden.",
-            "open_failed": "Das ausgewählte Dataset konnte nicht geöffnet werden.",
-            "delete_failed": "Das ausgewählte Dataset konnte nicht gelöscht werden."
-        }
-    },
-    "dataset": {
-        "workspace": {
-            "title": "Dataset-Arbeitsbereich",
-            "source_file": "Quelldatei",
-            "sheets": "Blätter",
-            "columns": "Spalten",
-            "visible_columns": "Sichtbare Spalten",
-            "visible_columns_hint": "Blenden Sie Spalten aus, die Sie in Tabelle und Exporten nicht benötigen.",
-            "rows": "Zeilen",
-            "loaded_rows": "Geladene Zeilen",
-            "initial_row_limit": "Die ersten {count} Zeilen werden angezeigt.",
-            "rows_per_page": "Zeilen pro Seite",
-            "pagination": {
-                "range": "Zeilen {from}-{to} von {total}",
-                "page": "Seite {page} von {pages}",
-                "invalid_limit": "Geben Sie eine positive Zahl ein."
-            },
-            "select_sheet": "Blatt",
-            "table_view": "Tabelle",
-            "card_view": "Karten",
-            "qr": {
-                "tooltip": "Zeilen-JSON-QR-Code",
-                "unavailable": "Diese Zeile ist zu groß für einen QR-Code."
-            },
-            "no_tables": "Dieses Dataset enthält keine anzeigbaren Blätter.",
-            "no_rows": "Für dieses Blatt sind keine Zeilen verfügbar.",
-            "filters": {
-                "title": "Filter",
-                "column": "Spalte",
-                "operator": "Operator",
-                "value": "Wert",
-                "second_value": "Zweiter Wert",
-                "add": "Filter hinzufügen",
-                "active": "Aktive Filter",
-                "clear": "Filter löschen",
-                "invalid_value": "Geben Sie einen gültigen Wert für den ausgewählten Spaltentyp ein.",
-                "advanced": "Erweitert",
-                "text_value": "Suchtext",
-                "from": "Von",
-                "to": "Bis",
-                "range": "Bereich",
-                "no_range": "In den geladenen Zeilen sind keine numerischen Werte verfügbar.",
-                "true_value": "Wahr",
-                "false_value": "Falsch",
-                "operator_labels": {
-                    "contains": "enthält",
-                    "equals": "ist gleich",
-                    "not_equals": "ist nicht gleich",
-                    "starts_with": "beginnt mit",
-                    "ends_with": "endet mit",
-                    "greater_than": "größer als",
-                    "greater_or_equal": "größer oder gleich",
-                    "less_than": "kleiner als",
-                    "less_or_equal": "kleiner oder gleich",
-                    "between": "zwischen",
-                    "on": "am",
-                    "before": "vor",
-                    "after": "nach",
-                    "is_empty": "ist leer",
-                    "is_not_empty": "ist nicht leer",
-                    "is_true": "ist wahr",
-                    "is_false": "ist falsch"
-                }
-            },
-            "query": {
-                "tabs": {
-                    "filters": "Filter",
-                    "sql": "Abfrage"
-                },
-                "title": "Schreibgeschützte Abfrage",
-                "intro": "Schreiben Sie eine SELECT-Abfrage für erweiterte Analysen. Es sind nur Leseabfragen erlaubt und die Ergebnisse sind begrenzt.",
-                "editor": "SQL-Abfrage",
-                "limit": "Max. Zeilen",
-                "reset": "Auf aktuelles Blatt zurücksetzen",
-                "result_count": "{count} Zeile(n) zurückgegeben",
-                "result_summary": "Zeige {shown} von {total} passenden Zeile(n)",
-                "schema": "Schema-Hilfe",
-                "active_context": "Verwenden Sie sheet als Alias für das aktuelle Blatt: {table}",
-                "insert_table": "Tabellennamen einfügen",
-                "insert_column": "Spaltennamen einfügen",
-                "empty_result": "Führen Sie eine Abfrage aus, um hier Ergebnisse anzuzeigen.",
-                "errors": {
-                    "empty": "Schreiben Sie vor dem Ausführen eine SELECT-Abfrage.",
-                    "not_select": "Es sind nur SELECT-Abfragen erlaubt.",
-                    "unsafe_statement": "Diese Abfrage enthält einen blockierten SQL-Befehl.",
-                    "multiple_statements": "Führen Sie jeweils nur eine SELECT-Abfrage ohne Kommentare oder Semikolons aus.",
-                    "unknown_table": "Verwenden Sie nur Tabellen, die zu diesem Dataset gehören.",
-                    "invalid_limit": "Geben Sie ein positives Zeilenlimit ein.",
-                    "execution_failed": "Diese Abfrage konnte nicht ausgeführt werden."
-                }
-            },
-            "error": {
-                "load_failed": "Dataset-Arbeitsbereich konnte nicht geladen werden.",
-                "sheet_failed": "Das ausgewählte Blatt konnte nicht geladen werden.",
-                "refresh_failed": "Zeilen konnten nicht aktualisiert werden.",
-                "filter_failed": "Filter konnten nicht angewendet werden.",
-                "sort_failed": "Zeilen konnten nicht sortiert werden.",
-                "pagination_failed": "Die angeforderte Seite konnte nicht geladen werden."
-            },
-            "export": {
-                "tooltip": "Dataset exportieren",
-                "excel": "Excel exportieren",
-                "csv": "CSV exportieren",
-                "pdf": "PDF exportieren",
-                "sql": "SQL exportieren",
-                "json": "JSON exportieren",
-                "dialog_title": "Exportieren",
-                "sheets": "Blätter",
-                "current_sheet": "Aktuelles Blatt",
-                "all_sheets": "Alle Blätter",
-                "format": "Format",
-                "pdf_layout": "PDF-Layout",
-                "pdf_table": "Tabelle",
-                "pdf_cards": "Karten mit QR",
-                "no_sheet_selected": "Wählen Sie mindestens ein Blatt aus.",
-                "started": "Dataset wird exportiert...",
-                "success": "Export bereit: {count} Datei(en).",
-                "failed": "Dieses Dataset konnte nicht exportiert werden."
-            },
-            "analytics": {
-                "title": "Analysen",
-                "no_chart": "Für die aktuellen Datentypen ist kein Diagramm verfügbar.",
-                "no_data": "Für die aktuelle Konfiguration sind keine Daten verfügbar.",
-                "error": "Analysen konnten nicht geladen werden.",
-                "error_messages": {
-                    "invalid_aggregation": "Wählen Sie eine numerische Spalte aus, um diese Aggregation zu verwenden.",
-                    "no_rows_after_filter": "Keine Zeilen entsprechen den aktuellen Filtern.",
-                    "unsupported": "Dieses Diagramm ist für die ausgewählten Spalten nicht verfügbar.",
-                    "internal": "Dieses Diagramm konnte nicht geladen werden. Versuchen Sie, Spalten oder Filter zu ändern.",
-                    "no_numeric_column": "Wählen Sie eine numerische Spalte aus, um dieses Diagramm zu zeichnen."
-                },
-                "aggregation": "Aggregation",
-                "filtered_result": "Gefiltertes Ergebnis: {count} aktive Filter",
-                "updating": "Diagramm wird aktualisiert...",
-                "labels": {
-                    "group_by": "Gruppieren nach",
-                    "value": "Wert",
-                    "date": "Datum",
-                    "value_over_time": "Wert über Zeit"
-                },
-                "title_sentence": {
-                    "count_by": "Anzahl nach {group}",
-                    "count_over": "Anzahl über {date}",
-                    "aggregation_by": "{aggregation} von {value} nach {group}",
-                    "aggregation_over": "{aggregation} von {value} über {date}"
-                },
-                "x_column": "X-Achse",
-                "y_column": "Y-Achse",
-                "add_chart": "Diagramm hinzufügen",
-                "add_chart_options": {
-                    "line": {
-                        "title": "Trend über Zeit",
-                        "description": "Verwendet eine Datumsspalte und einen numerischen Wert, um Veränderungen über die Zeit zu zeigen."
-                    },
-                    "bar": {
-                        "title": "Kategorievergleich",
-                        "description": "Vergleicht Gruppen anhand einer Anzahl oder eines numerischen Werts."
-                    },
-                    "pie": {
-                        "title": "Anteil nach Kategorie",
-                        "description": "Zeigt, wie sich ein Gesamtwert auf wenige Gruppen verteilt."
-                    }
-                },
-                "agg": {
-                    "count": "Anzahl",
-                    "sum": "Summe",
-                    "avg": "Durchschnitt",
-                    "min": "Minimum",
-                    "max": "Maximum"
-                },
-                "aggregation_info": {
-                    "tooltip": "Was bedeuten Aggregationen?",
-                    "title": "Aggregationen",
-                    "intro": "Die Aggregation steuert, wie mehrere Zeilen zusammengefasst werden, bevor das Diagramm gezeichnet wird. Wenn jede Gruppe nur eine Zeile enthält, können Summe, Durchschnitt, Minimum und Maximum gleich aussehen.",
-                    "count": "Anzahl der Zeilen in jeder Gruppe.",
-                    "sum": "Summe der ausgewählten numerischen Werte.",
-                    "avg": "Mittelwert jeder Gruppe.",
-                    "min": "Niedrigster Wert in jeder Gruppe.",
-                    "max": "Höchster Wert in jeder Gruppe."
-                }
-            }
-        }
-    },
-    "settings": {
-        "language": "Sprache",
-        "full_immersion": "Vollbild",
-        "language_english": "English",
-        "language_italian": "Italiano",
-        "language_spanish": "Español",
-        "language_french": "Français",
-        "language_german": "Deutsch",
-        "language_chinese": "中文",
-        "language_russian": "Русский",
-        "language_japanese": "日本語",
-        "language_portuguese": "Português",
-        "app_version_label": "App-Version",
-        "app_version_value": "Version {version}",
-        "update_check": "Nach Updates suchen",
-        "update_checking": "Suche nach Updates...",
-        "update_available_title": "Update verfügbar",
-        "update_available_message": "Exlser {version} ist verfügbar.",
-        "update_download": "Update herunterladen",
-        "update_open_release": "Release öffnen",
-        "update_up_to_date": "Du verwendest die neueste Desktop-Version.",
-        "update_unsupported": "Desktop-Updates sind auf dieser Plattform nicht verfügbar.",
-        "update_error": "Es konnte nicht nach Updates gesucht werden.",
-        "update_open_failed": "Der Update-Link konnte nicht geöffnet werden."
-    },
-    "import": {
-        "title": "Neues Dataset erstellen",
-        "dataset_name": "Dataset-Name",
-        "save_locally": "Datei lokal speichern",
-        "next": "Weiter",
-        "finish": "Fertigstellen",
-        "column_types": {
-            "title": "Spaltentypen prüfen",
-            "empty": "Keine vorbereiteten Spalten verfügbar",
-            "rows": "Zeilen",
-            "original_name": "Excel-Name",
-            "database_name": "App-Name",
-            "inferred_type": "Datentyp",
-            "info": {
-                "tooltip": "Was bedeuten Datentypen?",
-                "title": "Datentypen",
-                "intro": "Der Datentyp teilt der App mit, wie Werte in dieser Spalte interpretiert und gespeichert werden. Sie können den erkannten Typ beibehalten oder ihn vor dem Erstellen des Datasets ändern.",
-                "text": "Text: Wörter, Codes, IDs, Notizen oder gemischte Werte.",
-                "integer": "Ganzzahl: ganze Zahlen ohne Dezimalstellen.",
-                "real": "Reell: Zahlen mit Dezimalstellen oder Geldwerte.",
-                "boolean": "Boolesch: wahr/falsch, ja/nein oder ähnliche binäre Werte.",
-                "date": "Datum: Datumswerte, die als Kalenderwerte behandelt werden sollen."
-            },
-            "selected_type": "Ausgewählter Typ",
-            "type": {
-                "text": "Text",
-                "integer": "Ganzzahl",
-                "real": "Reell",
-                "boolean": "Boolesch",
-                "date": "Datum"
-            }
-        },
-        "confirmation": {
-            "title": "Import bestätigen",
-            "dataset_name": "Dataset",
-            "source_file": "Quelldatei",
-            "file_storage": "Dateispeicher",
-            "sheets": "Blätter",
-            "columns": "Spalten",
-            "rows": "Zeilen",
-            "column_types": "Bestätigte Spaltentypen",
-            "storage": {
-                "original_path": "Originalen Dateipfad referenzieren",
-                "app_copy": "Datei in den App-Speicher kopieren",
-                "web_temporary": "Temporäre Browser-Dateireferenz"
-            }
-        },
-        "error": {
-            "empty_file_name": "Die ausgewählte Datei hat keinen Namen. Wählen Sie die Datei erneut aus.",
-            "empty_file_path": "Die App kann nicht auf den Pfad der ausgewählten Datei zugreifen. Wählen Sie die Datei erneut aus.",
-            "empty_file_bytes": "Die ausgewählte Datei ist leer oder nicht verfügbar. Wählen Sie die Datei erneut aus.",
-            "no_extension": "Die ausgewählte Datei hat keine Erweiterung. Verwenden Sie eine CSV- oder XLSX-Datei.",
-            "unsupported_format": "Dieses Dateiformat wird nicht unterstützt. Verwenden Sie eine CSV- oder XLSX-Datei. Ältere XLS-Dateien werden noch nicht unterstützt.",
-            "parser_not_found": "Die App kann diesen Dateityp noch nicht lesen. Verwenden Sie eine CSV- oder XLSX-Datei.",
-            "parsing_failed": "Die Datei konnte nicht gelesen werden. Prüfen Sie, ob sie beschädigt oder passwortgeschützt ist.",
-            "no_sheets": "In der Datei wurden keine lesbaren Blätter gefunden.",
-            "no_valid_sheets": "Die Datei wurde gelesen, aber kein Blatt enthält verwendbare tabellarische Daten.",
-            "schema_failed": "Die App konnte keine verwendbare Tabellenstruktur in der Datei erkennen.",
-            "unexpected_error": "Beim Import ist ein Fehler aufgetreten. Versuchen Sie es erneut oder wählen Sie eine andere Datei.",
-            "creation_failed": "Das Dataset konnte nicht erstellt werden. Prüfen Sie die Importeinstellungen und versuchen Sie es erneut.",
-            "file_access_error": "Auf die Datei konnte nicht zugegriffen werden. Stellen Sie sicher, dass sie vorhanden und nicht verschoben wurde."
-        }
+    "play_preview": "Vorschau ansehen",
+    "replay_preview": "Video erneut abspielen"
+  },
+  "common": {
+    "skip": "Überspringen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "start": "Starten",
+    "retry": "Erneut versuchen",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "refresh": "Aktualisieren",
+    "open": "Öffnen",
+    "add": "Hinzufügen",
+    "clear": "Leeren",
+    "apply": "Anwenden",
+    "run": "Ausführen",
+    "close": "Schließen",
+    "expand": "Erweitern"
+  },
+  "menu": {
+    "home": "Start",
+    "works": "Arbeiten",
+    "settings": "Einstellungen",
+    "developer": "Entwickler",
+    "developer_website": "paolopietrelli.com",
+    "open_website": "Website öffnen",
+    "open_github": "GitHub öffnen",
+    "open_linkedin": "LinkedIn öffnen",
+    "open_instagram": "Instagram öffnen"
+  },
+  "works": {
+    "empty": "Hier wird Ihre Liste der Arbeiten angezeigt",
+    "go_home": "Zur Startseite",
+    "source_file": "Quelldatei",
+    "created_at": "Erstellt",
+    "last_opened_at": "Zuletzt geöffnet",
+    "never_opened": "Nie geöffnet",
+    "delete_title": "Dataset löschen",
+    "delete_message": "Dadurch werden Dataset, Schema, Zeilen und Dateireferenz entfernt.",
+    "search_hint": "Nach Name oder Datei suchen",
+    "no_results": "Keine Datasets entsprechen Ihrer Suche.",
+    "error": {
+      "load_failed": "Datasets konnten nicht geladen werden.",
+      "open_failed": "Das ausgewählte Dataset konnte nicht geöffnet werden.",
+      "delete_failed": "Das ausgewählte Dataset konnte nicht gelöscht werden."
     }
+  },
+  "dataset": {
+    "workspace": {
+      "title": "Dataset-Arbeitsbereich",
+      "source_file": "Quelldatei",
+      "sheets": "Blätter",
+      "columns": "Spalten",
+      "visible_columns": "Sichtbare Spalten",
+      "visible_columns_hint": "Blenden Sie Spalten aus, die Sie in Tabelle und Exporten nicht benötigen.",
+      "rows": "Zeilen",
+      "loaded_rows": "Geladene Zeilen",
+      "initial_row_limit": "Die ersten {count} Zeilen werden angezeigt.",
+      "rows_per_page": "Zeilen pro Seite",
+      "pagination": {
+        "range": "Zeilen {from}-{to} von {total}",
+        "page": "Seite {page} von {pages}",
+        "invalid_limit": "Geben Sie eine positive Zahl ein."
+      },
+      "select_sheet": "Blatt",
+      "table_view": "Tabelle",
+      "card_view": "Karten",
+      "qr": {
+        "tooltip": "Zeilen-JSON-QR-Code",
+        "unavailable": "Diese Zeile ist zu groß für einen QR-Code."
+      },
+      "no_tables": "Dieses Dataset enthält keine anzeigbaren Blätter.",
+      "no_rows": "Für dieses Blatt sind keine Zeilen verfügbar.",
+      "filters": {
+        "title": "Filter",
+        "column": "Spalte",
+        "operator": "Operator",
+        "value": "Wert",
+        "second_value": "Zweiter Wert",
+        "add": "Filter hinzufügen",
+        "active": "Aktive Filter",
+        "clear": "Filter löschen",
+        "invalid_value": "Geben Sie einen gültigen Wert für den ausgewählten Spaltentyp ein.",
+        "advanced": "Erweitert",
+        "text_value": "Suchtext",
+        "from": "Von",
+        "to": "Bis",
+        "range": "Bereich",
+        "no_range": "In den geladenen Zeilen sind keine numerischen Werte verfügbar.",
+        "true_value": "Wahr",
+        "false_value": "Falsch",
+        "operator_labels": {
+          "contains": "enthält",
+          "equals": "ist gleich",
+          "not_equals": "ist nicht gleich",
+          "starts_with": "beginnt mit",
+          "ends_with": "endet mit",
+          "greater_than": "größer als",
+          "greater_or_equal": "größer oder gleich",
+          "less_than": "kleiner als",
+          "less_or_equal": "kleiner oder gleich",
+          "between": "zwischen",
+          "on": "am",
+          "before": "vor",
+          "after": "nach",
+          "is_empty": "ist leer",
+          "is_not_empty": "ist nicht leer",
+          "is_true": "ist wahr",
+          "is_false": "ist falsch"
+        }
+      },
+      "query": {
+        "tabs": {
+          "filters": "Filter",
+          "sql": "Abfrage"
+        },
+        "title": "Schreibgeschützte Abfrage",
+        "intro": "Schreiben Sie eine SELECT-Abfrage für erweiterte Analysen. Es sind nur Leseabfragen erlaubt und die Ergebnisse sind begrenzt.",
+        "editor": "SQL-Abfrage",
+        "limit": "Max. Zeilen",
+        "reset": "Auf aktuelles Blatt zurücksetzen",
+        "result_count": "{count} Zeile(n) zurückgegeben",
+        "result_summary": "Zeige {shown} von {total} passenden Zeile(n)",
+        "schema": "Schema-Hilfe",
+        "active_context": "Verwenden Sie sheet als Alias für das aktuelle Blatt: {table}",
+        "insert_table": "Tabellennamen einfügen",
+        "insert_column": "Spaltennamen einfügen",
+        "empty_result": "Führen Sie eine Abfrage aus, um hier Ergebnisse anzuzeigen.",
+        "errors": {
+          "empty": "Schreiben Sie vor dem Ausführen eine SELECT-Abfrage.",
+          "not_select": "Es sind nur SELECT-Abfragen erlaubt.",
+          "unsafe_statement": "Diese Abfrage enthält einen blockierten SQL-Befehl.",
+          "multiple_statements": "Führen Sie jeweils nur eine SELECT-Abfrage ohne Kommentare oder Semikolons aus.",
+          "unknown_table": "Verwenden Sie nur Tabellen, die zu diesem Dataset gehören.",
+          "invalid_limit": "Geben Sie ein positives Zeilenlimit ein.",
+          "execution_failed": "Diese Abfrage konnte nicht ausgeführt werden."
+        }
+      },
+      "error": {
+        "load_failed": "Dataset-Arbeitsbereich konnte nicht geladen werden.",
+        "sheet_failed": "Das ausgewählte Blatt konnte nicht geladen werden.",
+        "refresh_failed": "Zeilen konnten nicht aktualisiert werden.",
+        "filter_failed": "Filter konnten nicht angewendet werden.",
+        "sort_failed": "Zeilen konnten nicht sortiert werden.",
+        "pagination_failed": "Die angeforderte Seite konnte nicht geladen werden."
+      },
+      "export": {
+        "tooltip": "Dataset exportieren",
+        "excel": "Excel exportieren",
+        "csv": "CSV exportieren",
+        "pdf": "PDF exportieren",
+        "sql": "SQL exportieren",
+        "json": "JSON exportieren",
+        "dialog_title": "Exportieren",
+        "sheets": "Blätter",
+        "current_sheet": "Aktuelles Blatt",
+        "all_sheets": "Alle Blätter",
+        "format": "Format",
+        "pdf_layout": "PDF-Layout",
+        "pdf_table": "Tabelle",
+        "pdf_cards": "Karten mit QR",
+        "no_sheet_selected": "Wählen Sie mindestens ein Blatt aus.",
+        "started": "Dataset wird exportiert...",
+        "success": "Export bereit: {count} Datei(en).",
+        "failed": "Dieses Dataset konnte nicht exportiert werden."
+      },
+      "analytics": {
+        "title": "Analysen",
+        "no_chart": "Für die aktuellen Datentypen ist kein Diagramm verfügbar.",
+        "no_data": "Für die aktuelle Konfiguration sind keine Daten verfügbar.",
+        "error": "Analysen konnten nicht geladen werden.",
+        "error_messages": {
+          "invalid_aggregation": "Wählen Sie eine numerische Spalte aus, um diese Aggregation zu verwenden.",
+          "no_rows_after_filter": "Keine Zeilen entsprechen den aktuellen Filtern.",
+          "unsupported": "Dieses Diagramm ist für die ausgewählten Spalten nicht verfügbar.",
+          "internal": "Dieses Diagramm konnte nicht geladen werden. Versuchen Sie, Spalten oder Filter zu ändern.",
+          "no_numeric_column": "Wählen Sie eine numerische Spalte aus, um dieses Diagramm zu zeichnen."
+        },
+        "aggregation": "Aggregation",
+        "filtered_result": "Gefiltertes Ergebnis: {count} aktive Filter",
+        "updating": "Diagramm wird aktualisiert...",
+        "labels": {
+          "group_by": "Gruppieren nach",
+          "value": "Wert",
+          "date": "Datum",
+          "value_over_time": "Wert über Zeit"
+        },
+        "title_sentence": {
+          "count_by": "Anzahl nach {group}",
+          "count_over": "Anzahl über {date}",
+          "aggregation_by": "{aggregation} von {value} nach {group}",
+          "aggregation_over": "{aggregation} von {value} über {date}"
+        },
+        "x_column": "X-Achse",
+        "y_column": "Y-Achse",
+        "add_chart": "Diagramm hinzufügen",
+        "add_chart_options": {
+          "line": {
+            "title": "Trend über Zeit",
+            "description": "Verwendet eine Datumsspalte und einen numerischen Wert, um Veränderungen über die Zeit zu zeigen."
+          },
+          "bar": {
+            "title": "Kategorievergleich",
+            "description": "Vergleicht Gruppen anhand einer Anzahl oder eines numerischen Werts."
+          },
+          "pie": {
+            "title": "Anteil nach Kategorie",
+            "description": "Zeigt, wie sich ein Gesamtwert auf wenige Gruppen verteilt."
+          }
+        },
+        "agg": {
+          "count": "Anzahl",
+          "sum": "Summe",
+          "avg": "Durchschnitt",
+          "min": "Minimum",
+          "max": "Maximum"
+        },
+        "aggregation_info": {
+          "tooltip": "Was bedeuten Aggregationen?",
+          "title": "Aggregationen",
+          "intro": "Die Aggregation steuert, wie mehrere Zeilen zusammengefasst werden, bevor das Diagramm gezeichnet wird. Wenn jede Gruppe nur eine Zeile enthält, können Summe, Durchschnitt, Minimum und Maximum gleich aussehen.",
+          "count": "Anzahl der Zeilen in jeder Gruppe.",
+          "sum": "Summe der ausgewählten numerischen Werte.",
+          "avg": "Mittelwert jeder Gruppe.",
+          "min": "Niedrigster Wert in jeder Gruppe.",
+          "max": "Höchster Wert in jeder Gruppe."
+        }
+      }
+    },
+    "joins": {
+      "action": "Tabellen kombinieren",
+      "title": "Tabellen kombinieren",
+      "subtitle": "Verbinde zwei oder mehr Tabellenblätter und sieh eine Vorschau des Ergebnisses.",
+      "select_sheets": "Zu kombinierende Blätter",
+      "base_sheet": "Basisblatt",
+      "base_sheet_hint": "Das Ausgangsblatt. LEFT Joins behalten alle seine Zeilen.",
+      "output_columns": "Anzuzeigende Spalten",
+      "output_columns_hint": "Im Ergebnis erscheinen nur die ausgewählten Spalten.",
+      "relationships": "Beziehungen",
+      "no_relationships": "Noch keine Beziehung. Füge eine hinzu, um die Blätter zu kombinieren.",
+      "suggest": "Beziehungen finden",
+      "suggestions": "Vorgeschlagene Beziehungen",
+      "no_suggestions": "Keine Beziehung vorgeschlagen. Wähle die Spalten selbst.",
+      "confirm": "Bestätigen",
+      "remove": "Entfernen",
+      "flip": "Seiten tauschen",
+      "join_type": "Join-Typ",
+      "join_inner": "Nur übereinstimmende Zeilen",
+      "join_left": "Alle Zeilen des Basisblatts behalten",
+      "run": "Vorschau ausführen",
+      "preview": "Vorschau",
+      "preview_limited": "Vorschau auf {limit} Zeilen begrenzt",
+      "preview_truncated": "Ergebnis gekürzt: es können weitere Zeilen existieren.",
+      "empty_result": "Keine Zeile passt zu den gewählten Beziehungen.",
+      "generated_sql": "Generiertes SQL",
+      "save": "Konfiguration speichern",
+      "saved_queries": "Gespeicherte Konfigurationen",
+      "save_name": "Name der Konfiguration",
+      "delete": "Löschen",
+      "confidence_high": "Hoch",
+      "confidence_medium": "Mittel",
+      "confidence_low": "Niedrig",
+      "reason_name_match": "übereinstimmende Namen",
+      "reason_common_identifier": "Identifikator-Spalte",
+      "reason_value_overlap": "gemeinsame Werte",
+      "reason_type_match": "kompatible Typen",
+      "warning_many_to_many": "{left} und {right} haben keinen eindeutigen Schlüssel: Zeilen können sich vervielfachen.",
+      "stale_spec": "Diese gespeicherte Konfiguration nutzt Blätter oder Spalten, die es nicht mehr gibt.",
+      "error_not_enough_tables": "Wähle mindestens zwei Blätter.",
+      "error_unavailable_table_or_column": "Ein Blatt oder eine Spalte ist nicht mehr verfügbar.",
+      "error_incomplete_relationship": "Eine Beziehung ist unvollständig.",
+      "error_duplicate_relationship": "Diese Beziehung existiert bereits.",
+      "error_disconnected_graph": "Jedes Blatt muss mit den anderen verbunden sein.",
+      "error_cycle_detected": "Die Beziehungen bilden einen Zyklus.",
+      "error_invalid_left_join_direction": "Tausche die Seiten: ein LEFT Join muss das bereits verbundene Blatt behalten.",
+      "error_no_output_columns": "Wähle mindestens eine anzuzeigende Spalte.",
+      "error_generic": "Die Vorschau konnte nicht ausgeführt werden."
+    }
+  },
+  "settings": {
+    "language": "Sprache",
+    "full_immersion": "Vollbild",
+    "language_english": "English",
+    "language_italian": "Italiano",
+    "language_spanish": "Español",
+    "language_french": "Français",
+    "language_german": "Deutsch",
+    "language_chinese": "中文",
+    "language_russian": "Русский",
+    "language_japanese": "日本語",
+    "language_portuguese": "Português",
+    "app_version_label": "App-Version",
+    "app_version_value": "Version {version}",
+    "update_check": "Nach Updates suchen",
+    "update_checking": "Suche nach Updates...",
+    "update_available_title": "Update verfügbar",
+    "update_available_message": "Exlser {version} ist verfügbar.",
+    "update_download": "Update herunterladen",
+    "update_open_release": "Release öffnen",
+    "update_up_to_date": "Du verwendest die neueste Desktop-Version.",
+    "update_unsupported": "Desktop-Updates sind auf dieser Plattform nicht verfügbar.",
+    "update_error": "Es konnte nicht nach Updates gesucht werden.",
+    "update_open_failed": "Der Update-Link konnte nicht geöffnet werden."
+  },
+  "import": {
+    "title": "Neues Dataset erstellen",
+    "dataset_name": "Dataset-Name",
+    "save_locally": "Datei lokal speichern",
+    "next": "Weiter",
+    "finish": "Fertigstellen",
+    "column_types": {
+      "title": "Spaltentypen prüfen",
+      "empty": "Keine vorbereiteten Spalten verfügbar",
+      "rows": "Zeilen",
+      "original_name": "Excel-Name",
+      "database_name": "App-Name",
+      "inferred_type": "Datentyp",
+      "info": {
+        "tooltip": "Was bedeuten Datentypen?",
+        "title": "Datentypen",
+        "intro": "Der Datentyp teilt der App mit, wie Werte in dieser Spalte interpretiert und gespeichert werden. Sie können den erkannten Typ beibehalten oder ihn vor dem Erstellen des Datasets ändern.",
+        "text": "Text: Wörter, Codes, IDs, Notizen oder gemischte Werte.",
+        "integer": "Ganzzahl: ganze Zahlen ohne Dezimalstellen.",
+        "real": "Reell: Zahlen mit Dezimalstellen oder Geldwerte.",
+        "boolean": "Boolesch: wahr/falsch, ja/nein oder ähnliche binäre Werte.",
+        "date": "Datum: Datumswerte, die als Kalenderwerte behandelt werden sollen."
+      },
+      "selected_type": "Ausgewählter Typ",
+      "type": {
+        "text": "Text",
+        "integer": "Ganzzahl",
+        "real": "Reell",
+        "boolean": "Boolesch",
+        "date": "Datum"
+      }
+    },
+    "confirmation": {
+      "title": "Import bestätigen",
+      "dataset_name": "Dataset",
+      "source_file": "Quelldatei",
+      "file_storage": "Dateispeicher",
+      "sheets": "Blätter",
+      "columns": "Spalten",
+      "rows": "Zeilen",
+      "column_types": "Bestätigte Spaltentypen",
+      "storage": {
+        "original_path": "Originalen Dateipfad referenzieren",
+        "app_copy": "Datei in den App-Speicher kopieren",
+        "web_temporary": "Temporäre Browser-Dateireferenz"
+      }
+    },
+    "error": {
+      "empty_file_name": "Die ausgewählte Datei hat keinen Namen. Wählen Sie die Datei erneut aus.",
+      "empty_file_path": "Die App kann nicht auf den Pfad der ausgewählten Datei zugreifen. Wählen Sie die Datei erneut aus.",
+      "empty_file_bytes": "Die ausgewählte Datei ist leer oder nicht verfügbar. Wählen Sie die Datei erneut aus.",
+      "no_extension": "Die ausgewählte Datei hat keine Erweiterung. Verwenden Sie eine CSV- oder XLSX-Datei.",
+      "unsupported_format": "Dieses Dateiformat wird nicht unterstützt. Verwenden Sie eine CSV- oder XLSX-Datei. Ältere XLS-Dateien werden noch nicht unterstützt.",
+      "parser_not_found": "Die App kann diesen Dateityp noch nicht lesen. Verwenden Sie eine CSV- oder XLSX-Datei.",
+      "parsing_failed": "Die Datei konnte nicht gelesen werden. Prüfen Sie, ob sie beschädigt oder passwortgeschützt ist.",
+      "no_sheets": "In der Datei wurden keine lesbaren Blätter gefunden.",
+      "no_valid_sheets": "Die Datei wurde gelesen, aber kein Blatt enthält verwendbare tabellarische Daten.",
+      "schema_failed": "Die App konnte keine verwendbare Tabellenstruktur in der Datei erkennen.",
+      "unexpected_error": "Beim Import ist ein Fehler aufgetreten. Versuchen Sie es erneut oder wählen Sie eine andere Datei.",
+      "creation_failed": "Das Dataset konnte nicht erstellt werden. Prüfen Sie die Importeinstellungen und versuchen Sie es erneut.",
+      "file_access_error": "Auf die Datei konnte nicht zugegriffen werden. Stellen Sie sicher, dass sie vorhanden und nicht verschoben wurde."
+    }
+  }
 }

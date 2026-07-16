@@ -432,4 +432,76 @@ class AppStrings {
   static const String importUnexpectedError = 'import.error.unexpected_error';
   static const String importCreationFailed = 'import.error.creation_failed';
   static const String importFileAccessError = 'import.error.file_access_error';
+
+  // --- Combine sheets (guided multi-sheet joins) ---
+  static const String datasetJoinsAction = 'dataset.joins.action';
+  static const String datasetJoinsTitle = 'dataset.joins.title';
+  static const String datasetJoinsSubtitle = 'dataset.joins.subtitle';
+  static const String datasetJoinsSelectSheets = 'dataset.joins.select_sheets';
+  static const String datasetJoinsBaseSheet = 'dataset.joins.base_sheet';
+  static const String datasetJoinsBaseSheetHint =
+      'dataset.joins.base_sheet_hint';
+  static const String datasetJoinsOutputColumns =
+      'dataset.joins.output_columns';
+  static const String datasetJoinsOutputColumnsHint =
+      'dataset.joins.output_columns_hint';
+  static const String datasetJoinsRelationships = 'dataset.joins.relationships';
+  static const String datasetJoinsNoRelationships =
+      'dataset.joins.no_relationships';
+  static const String datasetJoinsSuggest = 'dataset.joins.suggest';
+  static const String datasetJoinsSuggestions = 'dataset.joins.suggestions';
+  static const String datasetJoinsNoSuggestions =
+      'dataset.joins.no_suggestions';
+  static const String datasetJoinsConfirm = 'dataset.joins.confirm';
+  static const String datasetJoinsRemove = 'dataset.joins.remove';
+  static const String datasetJoinsFlip = 'dataset.joins.flip';
+  static const String datasetJoinsJoinType = 'dataset.joins.join_type';
+  static const String datasetJoinsJoinInner = 'dataset.joins.join_inner';
+  static const String datasetJoinsJoinLeft = 'dataset.joins.join_left';
+  static const String datasetJoinsRun = 'dataset.joins.run';
+  static const String datasetJoinsPreview = 'dataset.joins.preview';
+  static const String datasetJoinsPreviewLimited =
+      'dataset.joins.preview_limited';
+  static const String datasetJoinsPreviewTruncated =
+      'dataset.joins.preview_truncated';
+  static const String datasetJoinsEmptyResult = 'dataset.joins.empty_result';
+  static const String datasetJoinsGeneratedSql = 'dataset.joins.generated_sql';
+  static const String datasetJoinsSave = 'dataset.joins.save';
+  static const String datasetJoinsSavedQueries = 'dataset.joins.saved_queries';
+  static const String datasetJoinsSaveName = 'dataset.joins.save_name';
+  static const String datasetJoinsDelete = 'dataset.joins.delete';
+  static const String datasetJoinsConfidenceHigh =
+      'dataset.joins.confidence_high';
+  static const String datasetJoinsConfidenceMedium =
+      'dataset.joins.confidence_medium';
+  static const String datasetJoinsConfidenceLow =
+      'dataset.joins.confidence_low';
+  static const String datasetJoinsReasonNameMatch =
+      'dataset.joins.reason_name_match';
+  static const String datasetJoinsReasonCommonIdentifier =
+      'dataset.joins.reason_common_identifier';
+  static const String datasetJoinsReasonValueOverlap =
+      'dataset.joins.reason_value_overlap';
+  static const String datasetJoinsReasonTypeMatch =
+      'dataset.joins.reason_type_match';
+  static const String datasetJoinsWarningManyToMany =
+      'dataset.joins.warning_many_to_many';
+  static const String datasetJoinsStaleSpec = 'dataset.joins.stale_spec';
+  static const String datasetJoinsErrorNotEnoughTables =
+      'dataset.joins.error_not_enough_tables';
+  static const String datasetJoinsErrorUnavailableTableOrColumn =
+      'dataset.joins.error_unavailable_table_or_column';
+  static const String datasetJoinsErrorIncompleteRelationship =
+      'dataset.joins.error_incomplete_relationship';
+  static const String datasetJoinsErrorDuplicateRelationship =
+      'dataset.joins.error_duplicate_relationship';
+  static const String datasetJoinsErrorDisconnectedGraph =
+      'dataset.joins.error_disconnected_graph';
+  static const String datasetJoinsErrorCycleDetected =
+      'dataset.joins.error_cycle_detected';
+  static const String datasetJoinsErrorInvalidLeftJoinDirection =
+      'dataset.joins.error_invalid_left_join_direction';
+  static const String datasetJoinsErrorNoOutputColumns =
+      'dataset.joins.error_no_output_columns';
+  static const String datasetJoinsErrorGeneric = 'dataset.joins.error_generic';
 }

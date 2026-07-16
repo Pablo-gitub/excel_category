@@ -20,6 +20,10 @@ class AppRoutes {
   static const String multiDatasetAnalyticsPath =
       '/datasets/:datasetId/analytics';
 
+  /// Guided multi-sheet join workspace ("Combine sheets").
+  static const String sheetJoinsName = 'sheetJoins';
+  static const String sheetJoinsPath = '/datasets/:datasetId/joins';
+
   static const String settingsName = 'settings';
   static const String settingsPath = '/settings';
 

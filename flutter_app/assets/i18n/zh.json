@@ -1,342 +1,391 @@
 {
-    "app": {
-        "name": "Exlser"
+  "app": {
+    "name": "Exlser"
+  },
+  "home": {
+    "select_file": "选择 CSV 或 XLSX 文件",
+    "drop_file": "将 CSV 或 XLSX 文件拖放到此处",
+    "process_file": "处理文件",
+    "browse_file": "浏览文件"
+  },
+  "onboarding": {
+    "title": "欢迎使用 Exlser",
+    "button": "开始使用",
+    "welcome": {
+      "title": "欢迎使用 Exlser"
     },
-    "home": {
-        "select_file": "选择 CSV 或 XLSX 文件",
-        "drop_file": "将 CSV 或 XLSX 文件拖放到此处",
-        "process_file": "处理文件",
-        "browse_file": "浏览文件"
+    "data": {
+      "title": "充分发挥数据价值！"
     },
-    "onboarding": {
-        "title": "欢迎使用 Exlser",
-        "button": "开始使用",
-        "welcome": {
-            "title": "欢迎使用 Exlser"
-        },
-        "data": {
-            "title": "充分发挥数据价值！"
-        },
-        "cross_platform": {
-            "title": "Exlser 的全部能力，适用于每台设备"
-        },
-        "play_preview": "观看预览",
-        "replay_preview": "重新播放视频"
+    "cross_platform": {
+      "title": "Exlser 的全部能力，适用于每台设备"
     },
-    "common": {
-        "skip": "跳过",
-        "previous": "上一步",
-        "next": "下一步",
-        "start": "开始",
-        "retry": "重试",
-        "cancel": "取消",
-        "delete": "删除",
-        "refresh": "刷新",
-        "open": "打开",
-        "add": "添加",
-        "clear": "清除",
-        "apply": "应用",
-        "run": "运行",
-        "close": "关闭",
-        "expand": "展开"
-    },
-    "menu": {
-        "home": "首页",
-        "works": "工作",
-        "settings": "设置",
-        "developer": "开发者",
-        "developer_website": "paolopietrelli.com",
-        "open_website": "打开网站",
-        "open_github": "打开 GitHub",
-        "open_linkedin": "打开 LinkedIn",
-        "open_instagram": "打开 Instagram"
-    },
-    "works": {
-        "empty": "这里将显示你的工作列表",
-        "go_home": "返回首页",
-        "source_file": "源文件",
-        "created_at": "已创建",
-        "last_opened_at": "上次打开",
-        "never_opened": "从未打开",
-        "delete_title": "删除 dataset",
-        "delete_message": "这将删除 dataset、架构、行以及文件引用。",
-        "search_hint": "按名称或文件搜索",
-        "no_results": "没有符合搜索条件的 dataset。",
-        "error": {
-            "load_failed": "无法加载 datasets。",
-            "open_failed": "无法打开所选 dataset。",
-            "delete_failed": "无法删除所选 dataset。"
-        }
-    },
-    "dataset": {
-        "workspace": {
-            "title": "Dataset 工作区",
-            "source_file": "源文件",
-            "sheets": "工作表",
-            "columns": "列",
-            "visible_columns": "可见列",
-            "visible_columns_hint": "隐藏表格和导出中不需要的列。",
-            "rows": "行",
-            "loaded_rows": "已加载行",
-            "initial_row_limit": "显示前 {count} 行。",
-            "rows_per_page": "每页行数",
-            "pagination": {
-                "range": "第 {from}-{to} 行，共 {total} 行",
-                "page": "第 {page} 页，共 {pages} 页",
-                "invalid_limit": "请输入正数。"
-            },
-            "select_sheet": "工作表",
-            "table_view": "表格",
-            "card_view": "卡片",
-            "qr": {
-                "tooltip": "行 JSON 二维码",
-                "unavailable": "该行太大，无法生成二维码。"
-            },
-            "no_tables": "此 dataset 没有可显示的工作表。",
-            "no_rows": "此工作表没有可用行。",
-            "filters": {
-                "title": "筛选器",
-                "column": "列",
-                "operator": "运算符",
-                "value": "值",
-                "second_value": "第二个值",
-                "add": "添加筛选器",
-                "active": "活动筛选器",
-                "clear": "清除筛选器",
-                "invalid_value": "请输入适合所选列类型的有效值。",
-                "advanced": "高级",
-                "text_value": "搜索文本",
-                "from": "从",
-                "to": "到",
-                "range": "范围",
-                "no_range": "已加载行中没有可用的数值。",
-                "true_value": "真",
-                "false_value": "假",
-                "operator_labels": {
-                    "contains": "包含",
-                    "equals": "等于",
-                    "not_equals": "不等于",
-                    "starts_with": "开头为",
-                    "ends_with": "结尾为",
-                    "greater_than": "大于",
-                    "greater_or_equal": "大于或等于",
-                    "less_than": "小于",
-                    "less_or_equal": "小于或等于",
-                    "between": "介于",
-                    "on": "在",
-                    "before": "早于",
-                    "after": "晚于",
-                    "is_empty": "为空",
-                    "is_not_empty": "不为空",
-                    "is_true": "为真",
-                    "is_false": "为假"
-                }
-            },
-            "query": {
-                "tabs": {
-                    "filters": "筛选器",
-                    "sql": "查询"
-                },
-                "title": "只读查询",
-                "intro": "编写 SELECT 查询进行高级分析。仅允许只读查询，并且结果数量受限制。",
-                "editor": "SQL 查询",
-                "limit": "最大行数",
-                "reset": "重置为当前工作表",
-                "result_count": "返回 {count} 行",
-                "result_summary": "显示 {total} 条匹配结果中的 {shown} 条",
-                "schema": "架构助手",
-                "active_context": "使用 sheet 作为当前工作表的别名：{table}",
-                "insert_table": "插入表名",
-                "insert_column": "插入列名",
-                "empty_result": "运行查询以在此显示结果。",
-                "errors": {
-                    "empty": "请先编写 SELECT 查询再运行。",
-                    "not_select": "只允许 SELECT 查询。",
-                    "unsafe_statement": "此查询包含被阻止的 SQL 命令。",
-                    "multiple_statements": "每次只能运行一个 SELECT 查询，不要使用注释或分号。",
-                    "unknown_table": "只能使用属于此 dataset 的表。",
-                    "invalid_limit": "请输入正的行数限制。",
-                    "execution_failed": "无法运行此查询。"
-                }
-            },
-            "error": {
-                "load_failed": "无法加载 dataset 工作区。",
-                "sheet_failed": "无法加载所选工作表。",
-                "refresh_failed": "无法刷新行。",
-                "filter_failed": "无法应用筛选器。",
-                "sort_failed": "无法排序行。",
-                "pagination_failed": "无法加载请求的页面。"
-            },
-            "export": {
-                "tooltip": "导出 dataset",
-                "excel": "导出 Excel",
-                "csv": "导出 CSV",
-                "pdf": "导出 PDF",
-                "sql": "导出 SQL",
-                "json": "导出 JSON",
-                "dialog_title": "导出",
-                "sheets": "工作表",
-                "current_sheet": "当前工作表",
-                "all_sheets": "所有工作表",
-                "format": "格式",
-                "pdf_layout": "PDF 布局",
-                "pdf_table": "表格",
-                "pdf_cards": "带二维码的卡片",
-                "no_sheet_selected": "请选择至少一个工作表。",
-                "started": "正在导出 dataset...",
-                "success": "导出完成：{count} 个文件。",
-                "failed": "无法导出此 dataset。"
-            },
-            "analytics": {
-                "title": "分析",
-                "no_chart": "当前数据类型没有可用图表。",
-                "no_data": "当前配置没有可用数据。",
-                "error": "无法加载分析。",
-                "error_messages": {
-                    "invalid_aggregation": "请选择数值列以使用此聚合。",
-                    "no_rows_after_filter": "没有行符合当前筛选器。",
-                    "unsupported": "所选列不支持此图表。",
-                    "internal": "无法加载此图表。请尝试更改列或筛选器。",
-                    "no_numeric_column": "请选择数值列来绘制此图表。"
-                },
-                "aggregation": "聚合",
-                "filtered_result": "筛选结果：{count} 个活动筛选器",
-                "updating": "正在更新图表...",
-                "labels": {
-                    "group_by": "分组依据",
-                    "value": "值",
-                    "date": "日期",
-                    "value_over_time": "随时间变化的值"
-                },
-                "title_sentence": {
-                    "count_by": "按 {group} 计数",
-                    "count_over": "按 {date} 计数",
-                    "aggregation_by": "按 {group} 统计 {value} 的 {aggregation}",
-                    "aggregation_over": "按 {date} 统计 {value} 的 {aggregation}"
-                },
-                "x_column": "X 轴",
-                "y_column": "Y 轴",
-                "add_chart": "添加图表",
-                "add_chart_options": {
-                    "line": {
-                        "title": "时间趋势",
-                        "description": "使用日期列和数值显示值如何随时间变化。"
-                    },
-                    "bar": {
-                        "title": "类别比较",
-                        "description": "使用计数或数值比较不同组。"
-                    },
-                    "pie": {
-                        "title": "按类别占比",
-                        "description": "显示总量如何分布在少量组中。"
-                    }
-                },
-                "agg": {
-                    "count": "计数",
-                    "sum": "求和",
-                    "avg": "平均值",
-                    "min": "最小值",
-                    "max": "最大值"
-                },
-                "aggregation_info": {
-                    "tooltip": "聚合是什么意思？",
-                    "title": "聚合",
-                    "intro": "聚合控制绘制图表前如何合并多行。如果每个组只有一行，求和、平均值、最小值和最大值可能看起来相同。",
-                    "count": "每个组中的行数。",
-                    "sum": "所选数值的总和。",
-                    "avg": "每个组的平均值。",
-                    "min": "每个组中的最低值。",
-                    "max": "每个组中的最高值。"
-                }
-            }
-        }
-    },
-    "settings": {
-        "language": "语言",
-        "full_immersion": "全屏模式",
-        "language_english": "English",
-        "language_italian": "Italiano",
-        "language_spanish": "Español",
-        "language_french": "Français",
-        "language_german": "Deutsch",
-        "language_chinese": "中文",
-        "language_russian": "Русский",
-        "language_japanese": "日本語",
-        "language_portuguese": "Português",
-        "app_version_label": "应用版本",
-        "app_version_value": "版本 {version}",
-        "update_check": "检查更新",
-        "update_checking": "正在检查更新...",
-        "update_available_title": "有可用更新",
-        "update_available_message": "Exlser {version} 已可用。",
-        "update_download": "下载更新",
-        "update_open_release": "打开 release",
-        "update_up_to_date": "你正在使用最新的桌面版本。",
-        "update_unsupported": "此平台不支持桌面更新。",
-        "update_error": "无法检查更新。",
-        "update_open_failed": "无法打开更新链接。"
-    },
-    "import": {
-        "title": "创建新 dataset",
-        "dataset_name": "Dataset 名称",
-        "save_locally": "本地保存文件",
-        "next": "下一步",
-        "finish": "完成",
-        "column_types": {
-            "title": "检查列类型",
-            "empty": "没有可用的已准备列",
-            "rows": "行",
-            "original_name": "Excel 名称",
-            "database_name": "应用内名称",
-            "inferred_type": "数据类型",
-            "info": {
-                "tooltip": "数据类型是什么意思？",
-                "title": "数据类型",
-                "intro": "数据类型告诉应用如何解释和存储此列中的值。创建 dataset 前，你可以保留检测到的类型，也可以更改它。",
-                "text": "文本：单词、代码、ID、备注或混合值。",
-                "integer": "整数：没有小数的整数。",
-                "real": "实数：带小数的数字或金额。",
-                "boolean": "布尔值：真/假、是/否或类似的二元值。",
-                "date": "日期：应作为日历值处理的日期。"
-            },
-            "selected_type": "所选类型",
-            "type": {
-                "text": "文本",
-                "integer": "整数",
-                "real": "实数",
-                "boolean": "布尔值",
-                "date": "日期"
-            }
-        },
-        "confirmation": {
-            "title": "确认导入",
-            "dataset_name": "Dataset",
-            "source_file": "源文件",
-            "file_storage": "文件存储",
-            "sheets": "工作表",
-            "columns": "列",
-            "rows": "行",
-            "column_types": "已确认的列类型",
-            "storage": {
-                "original_path": "引用原始文件路径",
-                "app_copy": "将文件复制到应用存储",
-                "web_temporary": "临时浏览器文件引用"
-            }
-        },
-        "error": {
-            "empty_file_name": "所选文件没有名称。请重新选择文件。",
-            "empty_file_path": "应用无法访问所选文件路径。请重新选择文件。",
-            "empty_file_bytes": "所选文件为空或不可用。请重新选择文件。",
-            "no_extension": "所选文件没有扩展名。请使用 CSV 或 XLSX 文件。",
-            "unsupported_format": "不支持此文件格式。请使用 CSV 或 XLSX 文件。暂不支持旧版 XLS 文件。",
-            "parser_not_found": "应用暂时无法读取此文件类型。请使用 CSV 或 XLSX 文件。",
-            "parsing_failed": "无法读取文件。请检查文件是否损坏或受密码保护。",
-            "no_sheets": "文件中未找到可读取的工作表。",
-            "no_valid_sheets": "文件已读取，但没有工作表包含可用的表格数据。",
-            "schema_failed": "应用无法检测到文件中的可用表格结构。",
-            "unexpected_error": "导入过程中出现问题。请重试或选择其他文件。",
-            "creation_failed": "无法创建 dataset。请检查导入设置并重试。",
-            "file_access_error": "无法访问该文件。请确保文件存在且未被移动。"
-        }
+    "play_preview": "观看预览",
+    "replay_preview": "重新播放视频"
+  },
+  "common": {
+    "skip": "跳过",
+    "previous": "上一步",
+    "next": "下一步",
+    "start": "开始",
+    "retry": "重试",
+    "cancel": "取消",
+    "delete": "删除",
+    "refresh": "刷新",
+    "open": "打开",
+    "add": "添加",
+    "clear": "清除",
+    "apply": "应用",
+    "run": "运行",
+    "close": "关闭",
+    "expand": "展开"
+  },
+  "menu": {
+    "home": "首页",
+    "works": "工作",
+    "settings": "设置",
+    "developer": "开发者",
+    "developer_website": "paolopietrelli.com",
+    "open_website": "打开网站",
+    "open_github": "打开 GitHub",
+    "open_linkedin": "打开 LinkedIn",
+    "open_instagram": "打开 Instagram"
+  },
+  "works": {
+    "empty": "这里将显示你的工作列表",
+    "go_home": "返回首页",
+    "source_file": "源文件",
+    "created_at": "已创建",
+    "last_opened_at": "上次打开",
+    "never_opened": "从未打开",
+    "delete_title": "删除 dataset",
+    "delete_message": "这将删除 dataset、架构、行以及文件引用。",
+    "search_hint": "按名称或文件搜索",
+    "no_results": "没有符合搜索条件的 dataset。",
+    "error": {
+      "load_failed": "无法加载 datasets。",
+      "open_failed": "无法打开所选 dataset。",
+      "delete_failed": "无法删除所选 dataset。"
     }
+  },
+  "dataset": {
+    "workspace": {
+      "title": "Dataset 工作区",
+      "source_file": "源文件",
+      "sheets": "工作表",
+      "columns": "列",
+      "visible_columns": "可见列",
+      "visible_columns_hint": "隐藏表格和导出中不需要的列。",
+      "rows": "行",
+      "loaded_rows": "已加载行",
+      "initial_row_limit": "显示前 {count} 行。",
+      "rows_per_page": "每页行数",
+      "pagination": {
+        "range": "第 {from}-{to} 行，共 {total} 行",
+        "page": "第 {page} 页，共 {pages} 页",
+        "invalid_limit": "请输入正数。"
+      },
+      "select_sheet": "工作表",
+      "table_view": "表格",
+      "card_view": "卡片",
+      "qr": {
+        "tooltip": "行 JSON 二维码",
+        "unavailable": "该行太大，无法生成二维码。"
+      },
+      "no_tables": "此 dataset 没有可显示的工作表。",
+      "no_rows": "此工作表没有可用行。",
+      "filters": {
+        "title": "筛选器",
+        "column": "列",
+        "operator": "运算符",
+        "value": "值",
+        "second_value": "第二个值",
+        "add": "添加筛选器",
+        "active": "活动筛选器",
+        "clear": "清除筛选器",
+        "invalid_value": "请输入适合所选列类型的有效值。",
+        "advanced": "高级",
+        "text_value": "搜索文本",
+        "from": "从",
+        "to": "到",
+        "range": "范围",
+        "no_range": "已加载行中没有可用的数值。",
+        "true_value": "真",
+        "false_value": "假",
+        "operator_labels": {
+          "contains": "包含",
+          "equals": "等于",
+          "not_equals": "不等于",
+          "starts_with": "开头为",
+          "ends_with": "结尾为",
+          "greater_than": "大于",
+          "greater_or_equal": "大于或等于",
+          "less_than": "小于",
+          "less_or_equal": "小于或等于",
+          "between": "介于",
+          "on": "在",
+          "before": "早于",
+          "after": "晚于",
+          "is_empty": "为空",
+          "is_not_empty": "不为空",
+          "is_true": "为真",
+          "is_false": "为假"
+        }
+      },
+      "query": {
+        "tabs": {
+          "filters": "筛选器",
+          "sql": "查询"
+        },
+        "title": "只读查询",
+        "intro": "编写 SELECT 查询进行高级分析。仅允许只读查询，并且结果数量受限制。",
+        "editor": "SQL 查询",
+        "limit": "最大行数",
+        "reset": "重置为当前工作表",
+        "result_count": "返回 {count} 行",
+        "result_summary": "显示 {total} 条匹配结果中的 {shown} 条",
+        "schema": "架构助手",
+        "active_context": "使用 sheet 作为当前工作表的别名：{table}",
+        "insert_table": "插入表名",
+        "insert_column": "插入列名",
+        "empty_result": "运行查询以在此显示结果。",
+        "errors": {
+          "empty": "请先编写 SELECT 查询再运行。",
+          "not_select": "只允许 SELECT 查询。",
+          "unsafe_statement": "此查询包含被阻止的 SQL 命令。",
+          "multiple_statements": "每次只能运行一个 SELECT 查询，不要使用注释或分号。",
+          "unknown_table": "只能使用属于此 dataset 的表。",
+          "invalid_limit": "请输入正的行数限制。",
+          "execution_failed": "无法运行此查询。"
+        }
+      },
+      "error": {
+        "load_failed": "无法加载 dataset 工作区。",
+        "sheet_failed": "无法加载所选工作表。",
+        "refresh_failed": "无法刷新行。",
+        "filter_failed": "无法应用筛选器。",
+        "sort_failed": "无法排序行。",
+        "pagination_failed": "无法加载请求的页面。"
+      },
+      "export": {
+        "tooltip": "导出 dataset",
+        "excel": "导出 Excel",
+        "csv": "导出 CSV",
+        "pdf": "导出 PDF",
+        "sql": "导出 SQL",
+        "json": "导出 JSON",
+        "dialog_title": "导出",
+        "sheets": "工作表",
+        "current_sheet": "当前工作表",
+        "all_sheets": "所有工作表",
+        "format": "格式",
+        "pdf_layout": "PDF 布局",
+        "pdf_table": "表格",
+        "pdf_cards": "带二维码的卡片",
+        "no_sheet_selected": "请选择至少一个工作表。",
+        "started": "正在导出 dataset...",
+        "success": "导出完成：{count} 个文件。",
+        "failed": "无法导出此 dataset。"
+      },
+      "analytics": {
+        "title": "分析",
+        "no_chart": "当前数据类型没有可用图表。",
+        "no_data": "当前配置没有可用数据。",
+        "error": "无法加载分析。",
+        "error_messages": {
+          "invalid_aggregation": "请选择数值列以使用此聚合。",
+          "no_rows_after_filter": "没有行符合当前筛选器。",
+          "unsupported": "所选列不支持此图表。",
+          "internal": "无法加载此图表。请尝试更改列或筛选器。",
+          "no_numeric_column": "请选择数值列来绘制此图表。"
+        },
+        "aggregation": "聚合",
+        "filtered_result": "筛选结果：{count} 个活动筛选器",
+        "updating": "正在更新图表...",
+        "labels": {
+          "group_by": "分组依据",
+          "value": "值",
+          "date": "日期",
+          "value_over_time": "随时间变化的值"
+        },
+        "title_sentence": {
+          "count_by": "按 {group} 计数",
+          "count_over": "按 {date} 计数",
+          "aggregation_by": "按 {group} 统计 {value} 的 {aggregation}",
+          "aggregation_over": "按 {date} 统计 {value} 的 {aggregation}"
+        },
+        "x_column": "X 轴",
+        "y_column": "Y 轴",
+        "add_chart": "添加图表",
+        "add_chart_options": {
+          "line": {
+            "title": "时间趋势",
+            "description": "使用日期列和数值显示值如何随时间变化。"
+          },
+          "bar": {
+            "title": "类别比较",
+            "description": "使用计数或数值比较不同组。"
+          },
+          "pie": {
+            "title": "按类别占比",
+            "description": "显示总量如何分布在少量组中。"
+          }
+        },
+        "agg": {
+          "count": "计数",
+          "sum": "求和",
+          "avg": "平均值",
+          "min": "最小值",
+          "max": "最大值"
+        },
+        "aggregation_info": {
+          "tooltip": "聚合是什么意思？",
+          "title": "聚合",
+          "intro": "聚合控制绘制图表前如何合并多行。如果每个组只有一行，求和、平均值、最小值和最大值可能看起来相同。",
+          "count": "每个组中的行数。",
+          "sum": "所选数值的总和。",
+          "avg": "每个组的平均值。",
+          "min": "每个组中的最低值。",
+          "max": "每个组中的最高值。"
+        }
+      }
+    },
+    "joins": {
+      "action": "合并工作表",
+      "title": "合并工作表",
+      "subtitle": "连接两个或多个工作表，并预览合并结果。",
+      "select_sheets": "要合并的工作表",
+      "base_sheet": "基准工作表",
+      "base_sheet_hint": "起始工作表。LEFT 连接会保留它的全部行。",
+      "output_columns": "要显示的列",
+      "output_columns_hint": "结果中只显示所选的列。",
+      "relationships": "关系",
+      "no_relationships": "尚无关系。添加一个以合并工作表。",
+      "suggest": "查找关系",
+      "suggestions": "建议的关系",
+      "no_suggestions": "没有建议的关系。请自行选择列。",
+      "confirm": "确认",
+      "remove": "移除",
+      "flip": "交换两侧",
+      "join_type": "连接类型",
+      "join_inner": "仅匹配的行",
+      "join_left": "保留基准工作表的所有行",
+      "run": "运行预览",
+      "preview": "预览",
+      "preview_limited": "预览限制为 {limit} 行",
+      "preview_truncated": "结果已截断：可能还有更多行。",
+      "empty_result": "没有行符合所选的关系。",
+      "generated_sql": "生成的 SQL",
+      "save": "保存配置",
+      "saved_queries": "已保存的配置",
+      "save_name": "配置名称",
+      "delete": "删除",
+      "confidence_high": "高",
+      "confidence_medium": "中",
+      "confidence_low": "低",
+      "reason_name_match": "名称匹配",
+      "reason_common_identifier": "标识列",
+      "reason_value_overlap": "值有重叠",
+      "reason_type_match": "类型兼容",
+      "warning_many_to_many": "{left} 与 {right} 没有唯一键：行数可能成倍增加。",
+      "stale_spec": "此已保存的配置使用了不再存在的工作表或列。",
+      "error_not_enough_tables": "请至少选择两个工作表。",
+      "error_unavailable_table_or_column": "某个工作表或列已不可用。",
+      "error_incomplete_relationship": "某个关系不完整。",
+      "error_duplicate_relationship": "该关系已存在。",
+      "error_disconnected_graph": "每个工作表都必须与其他表相连。",
+      "error_cycle_detected": "这些关系形成了环。",
+      "error_invalid_left_join_direction": "请交换两侧：LEFT 连接必须保留已连接的工作表。",
+      "error_no_output_columns": "请至少选择一列进行显示。",
+      "error_generic": "无法运行预览。"
+    }
+  },
+  "settings": {
+    "language": "语言",
+    "full_immersion": "全屏模式",
+    "language_english": "English",
+    "language_italian": "Italiano",
+    "language_spanish": "Español",
+    "language_french": "Français",
+    "language_german": "Deutsch",
+    "language_chinese": "中文",
+    "language_russian": "Русский",
+    "language_japanese": "日本語",
+    "language_portuguese": "Português",
+    "app_version_label": "应用版本",
+    "app_version_value": "版本 {version}",
+    "update_check": "检查更新",
+    "update_checking": "正在检查更新...",
+    "update_available_title": "有可用更新",
+    "update_available_message": "Exlser {version} 已可用。",
+    "update_download": "下载更新",
+    "update_open_release": "打开 release",
+    "update_up_to_date": "你正在使用最新的桌面版本。",
+    "update_unsupported": "此平台不支持桌面更新。",
+    "update_error": "无法检查更新。",
+    "update_open_failed": "无法打开更新链接。"
+  },
+  "import": {
+    "title": "创建新 dataset",
+    "dataset_name": "Dataset 名称",
+    "save_locally": "本地保存文件",
+    "next": "下一步",
+    "finish": "完成",
+    "column_types": {
+      "title": "检查列类型",
+      "empty": "没有可用的已准备列",
+      "rows": "行",
+      "original_name": "Excel 名称",
+      "database_name": "应用内名称",
+      "inferred_type": "数据类型",
+      "info": {
+        "tooltip": "数据类型是什么意思？",
+        "title": "数据类型",
+        "intro": "数据类型告诉应用如何解释和存储此列中的值。创建 dataset 前，你可以保留检测到的类型，也可以更改它。",
+        "text": "文本：单词、代码、ID、备注或混合值。",
+        "integer": "整数：没有小数的整数。",
+        "real": "实数：带小数的数字或金额。",
+        "boolean": "布尔值：真/假、是/否或类似的二元值。",
+        "date": "日期：应作为日历值处理的日期。"
+      },
+      "selected_type": "所选类型",
+      "type": {
+        "text": "文本",
+        "integer": "整数",
+        "real": "实数",
+        "boolean": "布尔值",
+        "date": "日期"
+      }
+    },
+    "confirmation": {
+      "title": "确认导入",
+      "dataset_name": "Dataset",
+      "source_file": "源文件",
+      "file_storage": "文件存储",
+      "sheets": "工作表",
+      "columns": "列",
+      "rows": "行",
+      "column_types": "已确认的列类型",
+      "storage": {
+        "original_path": "引用原始文件路径",
+        "app_copy": "将文件复制到应用存储",
+        "web_temporary": "临时浏览器文件引用"
+      }
+    },
+    "error": {
+      "empty_file_name": "所选文件没有名称。请重新选择文件。",
+      "empty_file_path": "应用无法访问所选文件路径。请重新选择文件。",
+      "empty_file_bytes": "所选文件为空或不可用。请重新选择文件。",
+      "no_extension": "所选文件没有扩展名。请使用 CSV 或 XLSX 文件。",
+      "unsupported_format": "不支持此文件格式。请使用 CSV 或 XLSX 文件。暂不支持旧版 XLS 文件。",
+      "parser_not_found": "应用暂时无法读取此文件类型。请使用 CSV 或 XLSX 文件。",
+      "parsing_failed": "无法读取文件。请检查文件是否损坏或受密码保护。",
+      "no_sheets": "文件中未找到可读取的工作表。",
+      "no_valid_sheets": "文件已读取，但没有工作表包含可用的表格数据。",
+      "schema_failed": "应用无法检测到文件中的可用表格结构。",
+      "unexpected_error": "导入过程中出现问题。请重试或选择其他文件。",
+      "creation_failed": "无法创建 dataset。请检查导入设置并重试。",
+      "file_access_error": "无法访问该文件。请确保文件存在且未被移动。"
+    }
+  }
 }
