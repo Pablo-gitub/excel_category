@@ -1,6 +1,7 @@
 //lib/domain/usecases/multisheet/multi_sheet_sql_builder.dart
 
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
+import 'package:exlser/domain/usecases/multisheet/multi_sheet_join_risk_analyzer.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
 
 /// Raised when a validated spec cannot be turned into a SQL query.
@@ -36,7 +37,9 @@ class GeneratedMultiSheetQuery {
   final String sql;
   final List<MultiSheetOutputColumn> outputColumns;
   final Map<String, String> displayLabelsByAlias;
-  final List<String> warnings;
+
+  /// Risks detected on the confirmed joins (e.g. many-to-many row multiplication).
+  final List<JoinRiskWarning> warnings;
 
   const GeneratedMultiSheetQuery({
     required this.sql,
@@ -44,6 +47,8 @@ class GeneratedMultiSheetQuery {
     required this.displayLabelsByAlias,
     this.warnings = const [],
   });
+
+  bool get hasWarnings => warnings.isNotEmpty;
 }
 
 /// Turns a validated [ResolvedJoinPlan] into a deterministic, read-only SELECT.
@@ -57,7 +62,11 @@ class MultiSheetSqlBuilder {
   static const String noOutputColumnsCode = 'no_output_columns';
   static const String missingTableNameCode = 'missing_table_name';
 
-  const MultiSheetSqlBuilder();
+  final MultiSheetJoinRiskAnalyzer riskAnalyzer;
+
+  const MultiSheetSqlBuilder({
+    this.riskAnalyzer = const MultiSheetJoinRiskAnalyzer(),
+  });
 
   GeneratedMultiSheetQuery build({
     required ResolvedJoinPlan plan,
@@ -132,6 +141,11 @@ class MultiSheetSqlBuilder {
       displayLabelsByAlias: {
         for (final column in outputColumns) column.alias: column.label,
       },
+      warnings: riskAnalyzer.analyze(
+        plan: plan,
+        sheetLabelByTableId: sheetLabelByTableId,
+        originalColumnNamesByTableId: originalColumnNamesByTableId,
+      ),
     );
   }
 
