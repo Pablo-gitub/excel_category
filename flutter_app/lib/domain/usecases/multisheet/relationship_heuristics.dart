@@ -25,7 +25,9 @@ class RelationshipHeuristics {
   static String normalizeName(String name) {
     final lower = name.trim().toLowerCase();
     final collapsed = lower.replaceAll(RegExp(r'[\s\-]+'), '_');
-    return collapsed.replaceAll(RegExp(r'_+'), '_').replaceAll(RegExp(r'^_|_$'), '');
+    return collapsed
+        .replaceAll(RegExp(r'_+'), '_')
+        .replaceAll(RegExp(r'^_|_$'), '');
   }
 
   /// Normalised name without a trailing `_id`/`id` suffix, so `product_id` and

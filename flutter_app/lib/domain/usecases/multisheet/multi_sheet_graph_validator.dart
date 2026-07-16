@@ -153,8 +153,9 @@ class MultiSheetGraphValidator {
         final edge = _firstEdgeConnecting(relationships, candidate, included);
         if (edge == null) continue;
 
-        final existingTableId =
-            included.contains(edge.leftTableId) ? edge.leftTableId : edge.rightTableId;
+        final existingTableId = included.contains(edge.leftTableId)
+            ? edge.leftTableId
+            : edge.rightTableId;
         final existingColumn = existingTableId == edge.leftTableId
             ? edge.leftColumnDbName
             : edge.rightColumnDbName;

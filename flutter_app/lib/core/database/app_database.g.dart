@@ -1643,6 +1643,457 @@ class DatasetFilesCompanion extends UpdateCompanion<DatasetFile> {
   }
 }
 
+class $SavedMultiSheetQueriesTable extends SavedMultiSheetQueries
+    with TableInfo<$SavedMultiSheetQueriesTable, SavedMultiSheetQuery> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedMultiSheetQueriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _datasetIdMeta =
+      const VerificationMeta('datasetId');
+  @override
+  late final GeneratedColumn<int> datasetId = GeneratedColumn<int>(
+      'dataset_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES datasets (id)'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _baseTableIdMeta =
+      const VerificationMeta('baseTableId');
+  @override
+  late final GeneratedColumn<int> baseTableId = GeneratedColumn<int>(
+      'base_table_id', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _specificationJsonMeta =
+      const VerificationMeta('specificationJson');
+  @override
+  late final GeneratedColumn<String> specificationJson =
+      GeneratedColumn<String>('specification_json', aliasedName, false,
+          type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _schemaVersionMeta =
+      const VerificationMeta('schemaVersion');
+  @override
+  late final GeneratedColumn<int> schemaVersion = GeneratedColumn<int>(
+      'schema_version', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(1));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        datasetId,
+        name,
+        baseTableId,
+        specificationJson,
+        schemaVersion,
+        createdAt,
+        updatedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_multi_sheet_queries';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<SavedMultiSheetQuery> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('dataset_id')) {
+      context.handle(_datasetIdMeta,
+          datasetId.isAcceptableOrUnknown(data['dataset_id']!, _datasetIdMeta));
+    } else if (isInserting) {
+      context.missing(_datasetIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('base_table_id')) {
+      context.handle(
+          _baseTableIdMeta,
+          baseTableId.isAcceptableOrUnknown(
+              data['base_table_id']!, _baseTableIdMeta));
+    }
+    if (data.containsKey('specification_json')) {
+      context.handle(
+          _specificationJsonMeta,
+          specificationJson.isAcceptableOrUnknown(
+              data['specification_json']!, _specificationJsonMeta));
+    } else if (isInserting) {
+      context.missing(_specificationJsonMeta);
+    }
+    if (data.containsKey('schema_version')) {
+      context.handle(
+          _schemaVersionMeta,
+          schemaVersion.isAcceptableOrUnknown(
+              data['schema_version']!, _schemaVersionMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SavedMultiSheetQuery map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedMultiSheetQuery(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      datasetId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}dataset_id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      baseTableId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}base_table_id']),
+      specificationJson: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}specification_json'])!,
+      schemaVersion: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}schema_version'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $SavedMultiSheetQueriesTable createAlias(String alias) {
+    return $SavedMultiSheetQueriesTable(attachedDatabase, alias);
+  }
+}
+
+class SavedMultiSheetQuery extends DataClass
+    implements Insertable<SavedMultiSheetQuery> {
+  /// Primary key.
+  final int id;
+
+  /// Foreign key to the owning dataset. Rows are removed together with the
+  /// dataset at the application layer (see DeleteDatasetUseCase).
+  final int datasetId;
+
+  /// User-facing name of the saved configuration.
+  final String name;
+
+  /// Base table (FROM root) of the join tree, when set.
+  final int? baseTableId;
+
+  /// Serialized `MultiSheetQuerySpec`.
+  final String specificationJson;
+
+  /// Version of the specification JSON shape.
+  final int schemaVersion;
+
+  /// Unix timestamp (milliseconds) when created.
+  final int createdAt;
+
+  /// Unix timestamp (milliseconds) when last updated.
+  final int updatedAt;
+  const SavedMultiSheetQuery(
+      {required this.id,
+      required this.datasetId,
+      required this.name,
+      this.baseTableId,
+      required this.specificationJson,
+      required this.schemaVersion,
+      required this.createdAt,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['dataset_id'] = Variable<int>(datasetId);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || baseTableId != null) {
+      map['base_table_id'] = Variable<int>(baseTableId);
+    }
+    map['specification_json'] = Variable<String>(specificationJson);
+    map['schema_version'] = Variable<int>(schemaVersion);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  SavedMultiSheetQueriesCompanion toCompanion(bool nullToAbsent) {
+    return SavedMultiSheetQueriesCompanion(
+      id: Value(id),
+      datasetId: Value(datasetId),
+      name: Value(name),
+      baseTableId: baseTableId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(baseTableId),
+      specificationJson: Value(specificationJson),
+      schemaVersion: Value(schemaVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SavedMultiSheetQuery.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedMultiSheetQuery(
+      id: serializer.fromJson<int>(json['id']),
+      datasetId: serializer.fromJson<int>(json['datasetId']),
+      name: serializer.fromJson<String>(json['name']),
+      baseTableId: serializer.fromJson<int?>(json['baseTableId']),
+      specificationJson: serializer.fromJson<String>(json['specificationJson']),
+      schemaVersion: serializer.fromJson<int>(json['schemaVersion']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'datasetId': serializer.toJson<int>(datasetId),
+      'name': serializer.toJson<String>(name),
+      'baseTableId': serializer.toJson<int?>(baseTableId),
+      'specificationJson': serializer.toJson<String>(specificationJson),
+      'schemaVersion': serializer.toJson<int>(schemaVersion),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  SavedMultiSheetQuery copyWith(
+          {int? id,
+          int? datasetId,
+          String? name,
+          Value<int?> baseTableId = const Value.absent(),
+          String? specificationJson,
+          int? schemaVersion,
+          int? createdAt,
+          int? updatedAt}) =>
+      SavedMultiSheetQuery(
+        id: id ?? this.id,
+        datasetId: datasetId ?? this.datasetId,
+        name: name ?? this.name,
+        baseTableId: baseTableId.present ? baseTableId.value : this.baseTableId,
+        specificationJson: specificationJson ?? this.specificationJson,
+        schemaVersion: schemaVersion ?? this.schemaVersion,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  SavedMultiSheetQuery copyWithCompanion(SavedMultiSheetQueriesCompanion data) {
+    return SavedMultiSheetQuery(
+      id: data.id.present ? data.id.value : this.id,
+      datasetId: data.datasetId.present ? data.datasetId.value : this.datasetId,
+      name: data.name.present ? data.name.value : this.name,
+      baseTableId:
+          data.baseTableId.present ? data.baseTableId.value : this.baseTableId,
+      specificationJson: data.specificationJson.present
+          ? data.specificationJson.value
+          : this.specificationJson,
+      schemaVersion: data.schemaVersion.present
+          ? data.schemaVersion.value
+          : this.schemaVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedMultiSheetQuery(')
+          ..write('id: $id, ')
+          ..write('datasetId: $datasetId, ')
+          ..write('name: $name, ')
+          ..write('baseTableId: $baseTableId, ')
+          ..write('specificationJson: $specificationJson, ')
+          ..write('schemaVersion: $schemaVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, datasetId, name, baseTableId,
+      specificationJson, schemaVersion, createdAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedMultiSheetQuery &&
+          other.id == this.id &&
+          other.datasetId == this.datasetId &&
+          other.name == this.name &&
+          other.baseTableId == this.baseTableId &&
+          other.specificationJson == this.specificationJson &&
+          other.schemaVersion == this.schemaVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SavedMultiSheetQueriesCompanion
+    extends UpdateCompanion<SavedMultiSheetQuery> {
+  final Value<int> id;
+  final Value<int> datasetId;
+  final Value<String> name;
+  final Value<int?> baseTableId;
+  final Value<String> specificationJson;
+  final Value<int> schemaVersion;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  const SavedMultiSheetQueriesCompanion({
+    this.id = const Value.absent(),
+    this.datasetId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.baseTableId = const Value.absent(),
+    this.specificationJson = const Value.absent(),
+    this.schemaVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  SavedMultiSheetQueriesCompanion.insert({
+    this.id = const Value.absent(),
+    required int datasetId,
+    required String name,
+    this.baseTableId = const Value.absent(),
+    required String specificationJson,
+    this.schemaVersion = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+  })  : datasetId = Value(datasetId),
+        name = Value(name),
+        specificationJson = Value(specificationJson),
+        createdAt = Value(createdAt),
+        updatedAt = Value(updatedAt);
+  static Insertable<SavedMultiSheetQuery> custom({
+    Expression<int>? id,
+    Expression<int>? datasetId,
+    Expression<String>? name,
+    Expression<int>? baseTableId,
+    Expression<String>? specificationJson,
+    Expression<int>? schemaVersion,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (datasetId != null) 'dataset_id': datasetId,
+      if (name != null) 'name': name,
+      if (baseTableId != null) 'base_table_id': baseTableId,
+      if (specificationJson != null) 'specification_json': specificationJson,
+      if (schemaVersion != null) 'schema_version': schemaVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  SavedMultiSheetQueriesCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? datasetId,
+      Value<String>? name,
+      Value<int?>? baseTableId,
+      Value<String>? specificationJson,
+      Value<int>? schemaVersion,
+      Value<int>? createdAt,
+      Value<int>? updatedAt}) {
+    return SavedMultiSheetQueriesCompanion(
+      id: id ?? this.id,
+      datasetId: datasetId ?? this.datasetId,
+      name: name ?? this.name,
+      baseTableId: baseTableId ?? this.baseTableId,
+      specificationJson: specificationJson ?? this.specificationJson,
+      schemaVersion: schemaVersion ?? this.schemaVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (datasetId.present) {
+      map['dataset_id'] = Variable<int>(datasetId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (baseTableId.present) {
+      map['base_table_id'] = Variable<int>(baseTableId.value);
+    }
+    if (specificationJson.present) {
+      map['specification_json'] = Variable<String>(specificationJson.value);
+    }
+    if (schemaVersion.present) {
+      map['schema_version'] = Variable<int>(schemaVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedMultiSheetQueriesCompanion(')
+          ..write('id: $id, ')
+          ..write('datasetId: $datasetId, ')
+          ..write('name: $name, ')
+          ..write('baseTableId: $baseTableId, ')
+          ..write('specificationJson: $specificationJson, ')
+          ..write('schemaVersion: $schemaVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1650,17 +2101,26 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DatasetTablesTable datasetTables = $DatasetTablesTable(this);
   late final $DatasetColumnsTable datasetColumns = $DatasetColumnsTable(this);
   late final $DatasetFilesTable datasetFiles = $DatasetFilesTable(this);
+  late final $SavedMultiSheetQueriesTable savedMultiSheetQueries =
+      $SavedMultiSheetQueriesTable(this);
   late final DatasetsDao datasetsDao = DatasetsDao(this as AppDatabase);
   late final DatasetTablesDao datasetTablesDao =
       DatasetTablesDao(this as AppDatabase);
   late final DatasetColumnsDao datasetColumnsDao =
       DatasetColumnsDao(this as AppDatabase);
+  late final SavedMultiSheetQueriesDao savedMultiSheetQueriesDao =
+      SavedMultiSheetQueriesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [datasets, datasetTables, datasetColumns, datasetFiles];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        datasets,
+        datasetTables,
+        datasetColumns,
+        datasetFiles,
+        savedMultiSheetQueries
+      ];
 }
 
 typedef $$DatasetsTableCreateCompanionBuilder = DatasetsCompanion Function({
@@ -1712,6 +2172,25 @@ final class $$DatasetsTableReferences
         .filter((f) => f.datasetId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_datasetFilesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$SavedMultiSheetQueriesTable,
+      List<SavedMultiSheetQuery>> _savedMultiSheetQueriesRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.savedMultiSheetQueries,
+          aliasName: $_aliasNameGenerator(
+              db.datasets.id, db.savedMultiSheetQueries.datasetId));
+
+  $$SavedMultiSheetQueriesTableProcessedTableManager
+      get savedMultiSheetQueriesRefs {
+    final manager = $$SavedMultiSheetQueriesTableTableManager(
+            $_db, $_db.savedMultiSheetQueries)
+        .filter((f) => f.datasetId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_savedMultiSheetQueriesRefsTable($_db));
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: cache));
   }
@@ -1788,6 +2267,29 @@ class $$DatasetsTableFilterComposer
               $removeJoinBuilderFromRootComposer:
                   $removeJoinBuilderFromRootComposer,
             ));
+    return f(composer);
+  }
+
+  Expression<bool> savedMultiSheetQueriesRefs(
+      Expression<bool> Function($$SavedMultiSheetQueriesTableFilterComposer f)
+          f) {
+    final $$SavedMultiSheetQueriesTableFilterComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.savedMultiSheetQueries,
+            getReferencedColumn: (t) => t.datasetId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$SavedMultiSheetQueriesTableFilterComposer(
+                  $db: $db,
+                  $table: $db.savedMultiSheetQueries,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
     return f(composer);
   }
 }
@@ -1897,6 +2399,29 @@ class $$DatasetsTableAnnotationComposer
             ));
     return f(composer);
   }
+
+  Expression<T> savedMultiSheetQueriesRefs<T extends Object>(
+      Expression<T> Function($$SavedMultiSheetQueriesTableAnnotationComposer a)
+          f) {
+    final $$SavedMultiSheetQueriesTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.savedMultiSheetQueries,
+            getReferencedColumn: (t) => t.datasetId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$SavedMultiSheetQueriesTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.savedMultiSheetQueries,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
 }
 
 class $$DatasetsTableTableManager extends RootTableManager<
@@ -1910,7 +2435,10 @@ class $$DatasetsTableTableManager extends RootTableManager<
     $$DatasetsTableUpdateCompanionBuilder,
     (Dataset, $$DatasetsTableReferences),
     Dataset,
-    PrefetchHooks Function({bool datasetTablesRefs, bool datasetFilesRefs})> {
+    PrefetchHooks Function(
+        {bool datasetTablesRefs,
+        bool datasetFilesRefs,
+        bool savedMultiSheetQueriesRefs})> {
   $$DatasetsTableTableManager(_$AppDatabase db, $DatasetsTable table)
       : super(TableManagerState(
           db: db,
@@ -1962,12 +2490,15 @@ class $$DatasetsTableTableManager extends RootTableManager<
                   (e.readTable(table), $$DatasetsTableReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: (
-              {datasetTablesRefs = false, datasetFilesRefs = false}) {
+              {datasetTablesRefs = false,
+              datasetFilesRefs = false,
+              savedMultiSheetQueriesRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
                 if (datasetTablesRefs) db.datasetTables,
-                if (datasetFilesRefs) db.datasetFiles
+                if (datasetFilesRefs) db.datasetFiles,
+                if (savedMultiSheetQueriesRefs) db.savedMultiSheetQueries
               ],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
@@ -1997,6 +2528,19 @@ class $$DatasetsTableTableManager extends RootTableManager<
                         referencedItemsForCurrentItem:
                             (item, referencedItems) => referencedItems
                                 .where((e) => e.datasetId == item.id),
+                        typedResults: items),
+                  if (savedMultiSheetQueriesRefs)
+                    await $_getPrefetchedData<Dataset, $DatasetsTable,
+                            SavedMultiSheetQuery>(
+                        currentTable: table,
+                        referencedTable: $$DatasetsTableReferences
+                            ._savedMultiSheetQueriesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$DatasetsTableReferences(db, table, p0)
+                                .savedMultiSheetQueriesRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.datasetId == item.id),
                         typedResults: items)
                 ];
               },
@@ -2016,7 +2560,10 @@ typedef $$DatasetsTableProcessedTableManager = ProcessedTableManager<
     $$DatasetsTableUpdateCompanionBuilder,
     (Dataset, $$DatasetsTableReferences),
     Dataset,
-    PrefetchHooks Function({bool datasetTablesRefs, bool datasetFilesRefs})>;
+    PrefetchHooks Function(
+        {bool datasetTablesRefs,
+        bool datasetFilesRefs,
+        bool savedMultiSheetQueriesRefs})>;
 typedef $$DatasetTablesTableCreateCompanionBuilder = DatasetTablesCompanion
     Function({
   Value<int> id,
@@ -2999,6 +3546,330 @@ typedef $$DatasetFilesTableProcessedTableManager = ProcessedTableManager<
     (DatasetFile, $$DatasetFilesTableReferences),
     DatasetFile,
     PrefetchHooks Function({bool datasetId})>;
+typedef $$SavedMultiSheetQueriesTableCreateCompanionBuilder
+    = SavedMultiSheetQueriesCompanion Function({
+  Value<int> id,
+  required int datasetId,
+  required String name,
+  Value<int?> baseTableId,
+  required String specificationJson,
+  Value<int> schemaVersion,
+  required int createdAt,
+  required int updatedAt,
+});
+typedef $$SavedMultiSheetQueriesTableUpdateCompanionBuilder
+    = SavedMultiSheetQueriesCompanion Function({
+  Value<int> id,
+  Value<int> datasetId,
+  Value<String> name,
+  Value<int?> baseTableId,
+  Value<String> specificationJson,
+  Value<int> schemaVersion,
+  Value<int> createdAt,
+  Value<int> updatedAt,
+});
+
+final class $$SavedMultiSheetQueriesTableReferences extends BaseReferences<
+    _$AppDatabase, $SavedMultiSheetQueriesTable, SavedMultiSheetQuery> {
+  $$SavedMultiSheetQueriesTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $DatasetsTable _datasetIdTable(_$AppDatabase db) =>
+      db.datasets.createAlias($_aliasNameGenerator(
+          db.savedMultiSheetQueries.datasetId, db.datasets.id));
+
+  $$DatasetsTableProcessedTableManager get datasetId {
+    final $_column = $_itemColumn<int>('dataset_id')!;
+
+    final manager = $$DatasetsTableTableManager($_db, $_db.datasets)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_datasetIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$SavedMultiSheetQueriesTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedMultiSheetQueriesTable> {
+  $$SavedMultiSheetQueriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get baseTableId => $composableBuilder(
+      column: $table.baseTableId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get specificationJson => $composableBuilder(
+      column: $table.specificationJson,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get schemaVersion => $composableBuilder(
+      column: $table.schemaVersion, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$DatasetsTableFilterComposer get datasetId {
+    final $$DatasetsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.datasetId,
+        referencedTable: $db.datasets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$DatasetsTableFilterComposer(
+              $db: $db,
+              $table: $db.datasets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$SavedMultiSheetQueriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedMultiSheetQueriesTable> {
+  $$SavedMultiSheetQueriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get baseTableId => $composableBuilder(
+      column: $table.baseTableId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get specificationJson => $composableBuilder(
+      column: $table.specificationJson,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get schemaVersion => $composableBuilder(
+      column: $table.schemaVersion,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$DatasetsTableOrderingComposer get datasetId {
+    final $$DatasetsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.datasetId,
+        referencedTable: $db.datasets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$DatasetsTableOrderingComposer(
+              $db: $db,
+              $table: $db.datasets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$SavedMultiSheetQueriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedMultiSheetQueriesTable> {
+  $$SavedMultiSheetQueriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get baseTableId => $composableBuilder(
+      column: $table.baseTableId, builder: (column) => column);
+
+  GeneratedColumn<String> get specificationJson => $composableBuilder(
+      column: $table.specificationJson, builder: (column) => column);
+
+  GeneratedColumn<int> get schemaVersion => $composableBuilder(
+      column: $table.schemaVersion, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$DatasetsTableAnnotationComposer get datasetId {
+    final $$DatasetsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.datasetId,
+        referencedTable: $db.datasets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$DatasetsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.datasets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$SavedMultiSheetQueriesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $SavedMultiSheetQueriesTable,
+    SavedMultiSheetQuery,
+    $$SavedMultiSheetQueriesTableFilterComposer,
+    $$SavedMultiSheetQueriesTableOrderingComposer,
+    $$SavedMultiSheetQueriesTableAnnotationComposer,
+    $$SavedMultiSheetQueriesTableCreateCompanionBuilder,
+    $$SavedMultiSheetQueriesTableUpdateCompanionBuilder,
+    (SavedMultiSheetQuery, $$SavedMultiSheetQueriesTableReferences),
+    SavedMultiSheetQuery,
+    PrefetchHooks Function({bool datasetId})> {
+  $$SavedMultiSheetQueriesTableTableManager(
+      _$AppDatabase db, $SavedMultiSheetQueriesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedMultiSheetQueriesTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedMultiSheetQueriesTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavedMultiSheetQueriesTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> datasetId = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int?> baseTableId = const Value.absent(),
+            Value<String> specificationJson = const Value.absent(),
+            Value<int> schemaVersion = const Value.absent(),
+            Value<int> createdAt = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+          }) =>
+              SavedMultiSheetQueriesCompanion(
+            id: id,
+            datasetId: datasetId,
+            name: name,
+            baseTableId: baseTableId,
+            specificationJson: specificationJson,
+            schemaVersion: schemaVersion,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int datasetId,
+            required String name,
+            Value<int?> baseTableId = const Value.absent(),
+            required String specificationJson,
+            Value<int> schemaVersion = const Value.absent(),
+            required int createdAt,
+            required int updatedAt,
+          }) =>
+              SavedMultiSheetQueriesCompanion.insert(
+            id: id,
+            datasetId: datasetId,
+            name: name,
+            baseTableId: baseTableId,
+            specificationJson: specificationJson,
+            schemaVersion: schemaVersion,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$SavedMultiSheetQueriesTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({datasetId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (datasetId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.datasetId,
+                    referencedTable: $$SavedMultiSheetQueriesTableReferences
+                        ._datasetIdTable(db),
+                    referencedColumn: $$SavedMultiSheetQueriesTableReferences
+                        ._datasetIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$SavedMultiSheetQueriesTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $SavedMultiSheetQueriesTable,
+        SavedMultiSheetQuery,
+        $$SavedMultiSheetQueriesTableFilterComposer,
+        $$SavedMultiSheetQueriesTableOrderingComposer,
+        $$SavedMultiSheetQueriesTableAnnotationComposer,
+        $$SavedMultiSheetQueriesTableCreateCompanionBuilder,
+        $$SavedMultiSheetQueriesTableUpdateCompanionBuilder,
+        (SavedMultiSheetQuery, $$SavedMultiSheetQueriesTableReferences),
+        SavedMultiSheetQuery,
+        PrefetchHooks Function({bool datasetId})>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3011,4 +3882,7 @@ class $AppDatabaseManager {
       $$DatasetColumnsTableTableManager(_db, _db.datasetColumns);
   $$DatasetFilesTableTableManager get datasetFiles =>
       $$DatasetFilesTableTableManager(_db, _db.datasetFiles);
+  $$SavedMultiSheetQueriesTableTableManager get savedMultiSheetQueries =>
+      $$SavedMultiSheetQueriesTableTableManager(
+          _db, _db.savedMultiSheetQueries);
 }

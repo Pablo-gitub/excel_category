@@ -1,5 +1,6 @@
 import 'package:exlser/domain/repositories/dataset_file_repository.dart';
 import 'package:exlser/domain/repositories/datasets_repository.dart';
+import 'package:exlser/domain/repositories/saved_multi_sheet_query_repository.dart';
 import 'package:exlser/domain/repositories/schema_repository.dart';
 import 'package:exlser/domain/usecases/dataset/delete_dataset_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,21 +12,27 @@ class MockSchemaRepository extends Mock implements SchemaRepository {}
 
 class MockDatasetFileRepository extends Mock implements DatasetFileRepository {}
 
+class MockSavedMultiSheetQueryRepository extends Mock
+    implements SavedMultiSheetQueryRepository {}
+
 void main() {
   group('DeleteDatasetUseCase', () {
     late MockDatasetsRepository datasetsRepository;
     late MockSchemaRepository schemaRepository;
     late MockDatasetFileRepository datasetFileRepository;
+    late MockSavedMultiSheetQueryRepository savedMultiSheetQueryRepository;
     late DeleteDatasetUseCase useCase;
 
     setUp(() {
       datasetsRepository = MockDatasetsRepository();
       schemaRepository = MockSchemaRepository();
       datasetFileRepository = MockDatasetFileRepository();
+      savedMultiSheetQueryRepository = MockSavedMultiSheetQueryRepository();
       useCase = DeleteDatasetUseCase(
         datasetsRepository: datasetsRepository,
         schemaRepository: schemaRepository,
         datasetFileRepository: datasetFileRepository,
+        savedMultiSheetQueryRepository: savedMultiSheetQueryRepository,
       );
     });
 
@@ -34,6 +41,8 @@ void main() {
       const datasetId = 123;
 
       when(() => datasetFileRepository.deleteByDatasetId(any()))
+          .thenAnswer((_) async {});
+      when(() => savedMultiSheetQueryRepository.deleteForDataset(any()))
           .thenAnswer((_) async {});
       when(() => schemaRepository.deleteSchemaForDataset(any()))
           .thenAnswer((_) async {});

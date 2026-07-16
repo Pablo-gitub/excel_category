@@ -81,7 +81,8 @@ class SuggestSheetRelationshipsUseCase {
     return result;
   }
 
-  List<_CandidatePair> _candidatePairs(SuggestSheetInput a, SuggestSheetInput b) {
+  List<_CandidatePair> _candidatePairs(
+      SuggestSheetInput a, SuggestSheetInput b) {
     final colsA = a.columns.take(maxColumnsPerTable);
     final colsB = b.columns.take(maxColumnsPerTable);
 

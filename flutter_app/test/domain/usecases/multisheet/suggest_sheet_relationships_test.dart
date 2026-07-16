@@ -27,7 +27,8 @@ void main() {
     test('normalizes assorted name styles to the same token', () {
       expect(RelationshipHeuristics.normalizeName('Product ID'), 'product_id');
       expect(RelationshipHeuristics.normalizeName('product-id'), 'product_id');
-      expect(RelationshipHeuristics.normalizeName('  Product__ID '), 'product_id');
+      expect(
+          RelationshipHeuristics.normalizeName('  Product__ID '), 'product_id');
     });
 
     test('strips id suffix', () {
@@ -59,7 +60,8 @@ void main() {
       );
     });
 
-    test('baseScore rewards matching names and is zero for unrelated pairs', () {
+    test('baseScore rewards matching names and is zero for unrelated pairs',
+        () {
       final strong = RelationshipHeuristics.baseScore(
         col('product_id', 'Product ID', ColumnType.text),
         col('product', 'Product', ColumnType.text),
@@ -116,7 +118,8 @@ void main() {
       ],
     );
 
-    test('suggests the product_id <-> product join with value overlap', () async {
+    test('suggests the product_id <-> product join with value overlap',
+        () async {
       final useCase =
           SuggestSheetRelationshipsUseCase(sampleDistinctValues: sampler());
       final suggestions = await useCase.call(sheets: [sales, products]);
@@ -130,7 +133,8 @@ void main() {
       expect(top.valueOverlap, greaterThan(0));
     });
 
-    test('does not suggest incompatible-type pairs (qty text vs ...)', () async {
+    test('does not suggest incompatible-type pairs (qty text vs ...)',
+        () async {
       final useCase =
           SuggestSheetRelationshipsUseCase(sampleDistinctValues: sampler());
       final suggestions = await useCase.call(sheets: [sales, products]);

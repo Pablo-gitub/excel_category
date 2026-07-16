@@ -94,7 +94,8 @@ class SheetJoinRelationship {
     final leftTableId = _intOrNull(json['leftTableId']);
     final rightTableId = _intOrNull(json['rightTableId']);
     final leftColumnDbName = json['leftColumnDbName']?.toString().trim() ?? '';
-    final rightColumnDbName = json['rightColumnDbName']?.toString().trim() ?? '';
+    final rightColumnDbName =
+        json['rightColumnDbName']?.toString().trim() ?? '';
 
     if (leftTableId == null ||
         rightTableId == null ||

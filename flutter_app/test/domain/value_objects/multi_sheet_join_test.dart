@@ -38,7 +38,8 @@ void main() {
       expect(restored.joinType, SheetJoinType.left);
     });
 
-    test('effectiveId is independent of endpoint order (duplicate detection)', () {
+    test('effectiveId is independent of endpoint order (duplicate detection)',
+        () {
       final flipped = relationship.flipped();
       expect(flipped.effectiveId, relationship.effectiveId);
     });

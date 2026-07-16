@@ -135,6 +135,5 @@ class MultiSheetSqlBuilder {
     );
   }
 
-  String _quote(String identifier) =>
-      '"${identifier.replaceAll('"', '""')}"';
+  String _quote(String identifier) => '"${identifier.replaceAll('"', '""')}"';
 }

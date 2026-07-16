@@ -51,8 +51,8 @@ void main() {
   void expectCode(MultiSheetQuerySpec s, String code) {
     expect(
       () => run(s),
-      throwsA(isA<MultiSheetGraphException>()
-          .having((e) => e.code, 'code', code)),
+      throwsA(
+          isA<MultiSheetGraphException>().having((e) => e.code, 'code', code)),
     );
   }
 
@@ -152,7 +152,9 @@ void main() {
       spec(
         base: 1,
         tables: [1, 2],
-        relationships: [edge(2, 'product', 1, 'product_id', SheetJoinType.left)],
+        relationships: [
+          edge(2, 'product', 1, 'product_id', SheetJoinType.left)
+        ],
       ),
       MultiSheetGraphValidator.invalidLeftJoinDirectionCode,
     );

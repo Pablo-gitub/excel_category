@@ -120,7 +120,8 @@ class MultiSheetQuerySpec {
       selectedColumnsByTableId: selectedColumnsByTableId,
       relationships: relationships,
       resultLimit: _positiveIntOr(json['resultLimit'], defaultResultLimit),
-      schemaVersion: _positiveIntOr(json['schemaVersion'], currentSchemaVersion),
+      schemaVersion:
+          _positiveIntOr(json['schemaVersion'], currentSchemaVersion),
     );
   }
 }
