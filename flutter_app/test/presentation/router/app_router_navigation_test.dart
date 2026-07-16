@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:exlser/application/services/analysis_service.dart';
 import 'package:exlser/application/services/export_data_service.dart';
+import 'package:exlser/application/services/multi_sheet_analysis_service.dart';
 import 'package:exlser/domain/entities/dataset.dart';
 import 'package:exlser/domain/entities/dataset_column.dart';
 import 'package:exlser/domain/entities/dataset_table.dart';
@@ -21,6 +22,7 @@ import 'package:exlser/presentation/router/app_router.dart';
 import 'package:exlser/presentation/router/router_notifier.dart';
 import 'package:exlser/presentation/router/routes.dart';
 import 'package:exlser/presentation/views/dataset/dataset_view.dart';
+import 'package:exlser/presentation/views/sheet_joins/sheet_joins_view.dart';
 import 'package:exlser/presentation/views/dataset_list/datasets_list_view.dart';
 import 'package:exlser/presentation/views/home/home_view.dart';
 import 'package:exlser/presentation/views/settings/settings_view.dart';
@@ -52,6 +54,9 @@ class MockUpdateDatasetUiStateUseCase extends Mock
 class MockAnalysisService extends Mock implements AnalysisService {}
 
 class MockExportDataService extends Mock implements ExportDataService {}
+
+class MockMultiSheetAnalysisService extends Mock
+    implements MultiSheetAnalysisService {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -106,6 +111,74 @@ void main() {
         schemaRepository: schemaRepository,
         fetchRows: fetchRows,
       );
+    });
+
+    testWidgets('hides Combine sheets when the dataset has a single sheet',
+        (tester) async {
+      await _pumpRouterApp(
+        tester,
+        router: router,
+        overrides: _overrides(
+          openDataset: openDataset,
+          getDatasets: getDatasets,
+          deleteDataset: deleteDataset,
+          schemaRepository: schemaRepository,
+          fetchRows: fetchRows,
+          applyFilters: applyFilters,
+          executeReadOnlyQuery: executeReadOnlyQuery,
+          updateDatasetUiState: updateDatasetUiState,
+          analysisService: analysisService,
+          exportDataService: exportDataService,
+        ),
+      );
+      await _openDatasetRoute(tester, router);
+
+      expect(find.byKey(const ValueKey('combine_sheets_button')), findsNothing);
+    });
+
+    testWidgets(
+        'shows Combine sheets with two sheets and opens the joins route',
+        (tester) async {
+      when(() => schemaRepository.getTablesForDataset(1)).thenAnswer(
+        (_) async => [_table(), _secondTable()],
+      );
+      when(() => schemaRepository.getColumnsForTable(11)).thenAnswer(
+        (_) async => [_column()],
+      );
+
+      final joinsService = MockMultiSheetAnalysisService();
+      when(() => joinsService.loadSheets(any())).thenAnswer((_) async => []);
+      when(() => joinsService.listSavedQueries(any()))
+          .thenAnswer((_) async => []);
+
+      await _pumpRouterApp(
+        tester,
+        router: router,
+        overrides: _overrides(
+          openDataset: openDataset,
+          getDatasets: getDatasets,
+          deleteDataset: deleteDataset,
+          schemaRepository: schemaRepository,
+          fetchRows: fetchRows,
+          applyFilters: applyFilters,
+          executeReadOnlyQuery: executeReadOnlyQuery,
+          updateDatasetUiState: updateDatasetUiState,
+          analysisService: analysisService,
+          exportDataService: exportDataService,
+          multiSheetAnalysisService: joinsService,
+        ),
+      );
+      await _openDatasetRoute(tester, router);
+
+      final button = find.byKey(const ValueKey('combine_sheets_button'));
+      expect(button, findsOneWidget);
+
+      await tester.ensureVisible(button);
+      await tester.pumpAndSettle();
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SheetJoinsView), findsOneWidget);
     });
 
     testWidgets('navigates from Dataset through mobile drawer destinations',
@@ -169,27 +242,32 @@ Future<void> _pumpRouterApp(
   await tester.pumpWidget(const SizedBox.shrink());
   await tester.pump();
 
-  await tester.pumpWidget(
-    EasyLocalization(
-      supportedLocales: const [Locale('en')],
-      path: 'assets/i18n',
-      fallbackLocale: const Locale('en'),
-      startLocale: const Locale('en'),
-      child: ProviderScope(
-        overrides: overrides,
-        child: Builder(
-          builder: (context) {
-            return MaterialApp.router(
-              locale: context.locale,
-              supportedLocales: context.supportedLocales,
-              localizationsDelegates: context.localizationDelegates,
-              routerConfig: router,
-            );
-          },
+  // EasyLocalization reloads its assets asynchronously on every mount; without
+  // runAsync the second test in this file never builds its router.
+  await tester.runAsync(() async {
+    await tester.pumpWidget(
+      EasyLocalization(
+        supportedLocales: const [Locale('en')],
+        path: 'assets/i18n',
+        fallbackLocale: const Locale('en'),
+        startLocale: const Locale('en'),
+        child: ProviderScope(
+          overrides: overrides,
+          child: Builder(
+            builder: (context) {
+              return MaterialApp.router(
+                locale: context.locale,
+                supportedLocales: context.supportedLocales,
+                localizationsDelegates: context.localizationDelegates,
+                routerConfig: router,
+              );
+            },
+          ),
         ),
       ),
-    ),
-  );
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+  });
   await tester.pumpAndSettle();
 }
 
@@ -254,6 +332,7 @@ List<Override> _overrides({
   required MockUpdateDatasetUiStateUseCase updateDatasetUiState,
   required MockAnalysisService analysisService,
   required MockExportDataService exportDataService,
+  MultiSheetAnalysisService? multiSheetAnalysisService,
 }) {
   return [
     openDatasetUseCaseProvider.overrideWithValue(openDataset),
@@ -266,6 +345,9 @@ List<Override> _overrides({
     updateDatasetUiStateUseCaseProvider.overrideWithValue(updateDatasetUiState),
     analysisServiceProvider.overrideWithValue(analysisService),
     exportDataServiceProvider.overrideWithValue(exportDataService),
+    if (multiSheetAnalysisService != null)
+      multiSheetAnalysisServiceProvider
+          .overrideWithValue(multiSheetAnalysisService),
   ];
 }
 
@@ -298,6 +380,17 @@ Dataset _dataset() {
     name: 'Sales',
     sourceFileName: 'sales.csv',
     createdAt: 1,
+  );
+}
+
+DatasetTable _secondTable() {
+  return const DatasetTable(
+    id: 11,
+    datasetId: 1,
+    sheetNameOriginal: 'Sheet 2',
+    sqlTableName: 'tbl_2',
+    rowCount: 1,
+    colCount: 1,
   );
 }
 

@@ -576,25 +576,27 @@ class _PreviewSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Headers exist even with zero rows, so the table is always meaningful.
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              key: const ValueKey('join_preview_table'),
-              columns: [
-                for (final column in preview.outputColumns)
-                  DataColumn(label: Text(column.label)),
-              ],
-              rows: [
-                for (final row in preview.rows)
-                  DataRow(
-                    cells: [
-                      for (final column in preview.outputColumns)
-                        DataCell(Text('${row[column.alias] ?? ''}')),
-                    ],
-                  ),
-              ],
+          // DataTable asserts on an empty column list, so guard it.
+          if (preview.outputColumns.isNotEmpty)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                key: const ValueKey('join_preview_table'),
+                columns: [
+                  for (final column in preview.outputColumns)
+                    DataColumn(label: Text(column.label)),
+                ],
+                rows: [
+                  for (final row in preview.rows)
+                    DataRow(
+                      cells: [
+                        for (final column in preview.outputColumns)
+                          DataCell(Text('${row[column.alias] ?? ''}')),
+                      ],
+                    ),
+                ],
+              ),
             ),
-          ),
           if (preview.isEmpty) ...[
             const SizedBox(height: 12),
             Text(AppStrings.datasetJoinsEmptyResult.tr()),
