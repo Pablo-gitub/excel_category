@@ -1,391 +1,391 @@
 {
-  "app": {
-    "name": "Exlser"
-  },
-  "home": {
-    "select_file": "CSV または XLSX ファイルを選択",
-    "drop_file": "CSV または XLSX ファイルをここにドラッグ＆ドロップ",
-    "process_file": "ファイルを処理",
-    "browse_file": "ファイルを参照"
-  },
-  "onboarding": {
-    "title": "Exlser へようこそ",
-    "button": "はじめる",
-    "welcome": {
-      "title": "Exlser へようこそ"
+    "app": {
+        "name": "Exlser"
     },
-    "data": {
-      "title": "データを最大限に活用しましょう！"
+    "home": {
+        "select_file": "CSV または XLSX ファイルを選択",
+        "drop_file": "CSV または XLSX ファイルをここにドラッグ＆ドロップ",
+        "process_file": "ファイルを処理",
+        "browse_file": "ファイルを参照"
     },
-    "cross_platform": {
-      "title": "Exlser のすべての力を、あらゆるデバイスで"
+    "onboarding": {
+        "title": "Exlser へようこそ",
+        "button": "はじめる",
+        "welcome": {
+            "title": "Exlser へようこそ"
+        },
+        "data": {
+            "title": "データを最大限に活用しましょう！"
+        },
+        "cross_platform": {
+            "title": "Exlser のすべての力を、あらゆるデバイスで"
+        },
+        "play_preview": "プレビューを見る",
+        "replay_preview": "動画をもう一度再生"
     },
-    "play_preview": "プレビューを見る",
-    "replay_preview": "動画をもう一度再生"
-  },
-  "common": {
-    "skip": "スキップ",
-    "previous": "前へ",
-    "next": "次へ",
-    "start": "開始",
-    "retry": "再試行",
-    "cancel": "キャンセル",
-    "delete": "削除",
-    "refresh": "更新",
-    "open": "開く",
-    "add": "追加",
-    "clear": "クリア",
-    "apply": "適用",
-    "run": "実行",
-    "close": "閉じる",
-    "expand": "展開"
-  },
-  "menu": {
-    "home": "ホーム",
-    "works": "ワーク",
-    "settings": "設定",
-    "developer": "開発者",
-    "developer_website": "paolopietrelli.com",
-    "open_website": "Webサイトを開く",
-    "open_github": "GitHubを開く",
-    "open_linkedin": "LinkedInを開く",
-    "open_instagram": "Instagramを開く"
-  },
-  "works": {
-    "empty": "ここにワーク一覧が表示されます",
-    "go_home": "ホームへ移動",
-    "source_file": "ソースファイル",
-    "created_at": "作成日",
-    "last_opened_at": "最終表示",
-    "never_opened": "未表示",
-    "delete_title": "dataset を削除",
-    "delete_message": "dataset、スキーマ、行、ファイル参照が削除されます。",
-    "search_hint": "名前またはファイルで検索",
-    "no_results": "検索に一致する dataset はありません。",
-    "error": {
-      "load_failed": "datasets を読み込めませんでした。",
-      "open_failed": "選択した dataset を開けませんでした。",
-      "delete_failed": "選択した dataset を削除できませんでした。"
-    }
-  },
-  "dataset": {
-    "workspace": {
-      "title": "Dataset ワークスペース",
-      "source_file": "ソースファイル",
-      "sheets": "シート",
-      "columns": "列",
-      "visible_columns": "表示列",
-      "visible_columns_hint": "表とエクスポートで不要な列を非表示にします。",
-      "rows": "行",
-      "loaded_rows": "読み込み済み行",
-      "initial_row_limit": "最初の {count} 行を表示しています。",
-      "rows_per_page": "1ページあたりの行数",
-      "pagination": {
-        "range": "{total} 行中 {from}-{to} 行",
-        "page": "{pages} ページ中 {page} ページ",
-        "invalid_limit": "正の数を入力してください。"
-      },
-      "select_sheet": "シート",
-      "table_view": "表",
-      "card_view": "カード",
-      "qr": {
-        "tooltip": "行 JSON QR コード",
-        "unavailable": "この行は大きすぎて QR コードにできません。"
-      },
-      "no_tables": "この dataset には表示できるシートがありません。",
-      "no_rows": "このシートには利用可能な行がありません。",
-      "filters": {
-        "title": "フィルター",
-        "column": "列",
-        "operator": "演算子",
-        "value": "値",
-        "second_value": "2番目の値",
-        "add": "フィルターを追加",
-        "active": "有効なフィルター",
-        "clear": "フィルターをクリア",
-        "invalid_value": "選択した列タイプに有効な値を入力してください。",
-        "advanced": "詳細",
-        "text_value": "検索テキスト",
-        "from": "開始",
-        "to": "終了",
-        "range": "範囲",
-        "no_range": "読み込み済み行に数値がありません。",
-        "true_value": "真",
-        "false_value": "偽",
-        "operator_labels": {
-          "contains": "含む",
-          "equals": "等しい",
-          "not_equals": "等しくない",
-          "starts_with": "次で始まる",
-          "ends_with": "次で終わる",
-          "greater_than": "より大きい",
-          "greater_or_equal": "以上",
-          "less_than": "より小さい",
-          "less_or_equal": "以下",
-          "between": "範囲内",
-          "on": "日付が一致",
-          "before": "より前",
-          "after": "より後",
-          "is_empty": "空",
-          "is_not_empty": "空ではない",
-          "is_true": "真である",
-          "is_false": "偽である"
+    "common": {
+        "skip": "スキップ",
+        "previous": "前へ",
+        "next": "次へ",
+        "start": "開始",
+        "retry": "再試行",
+        "cancel": "キャンセル",
+        "delete": "削除",
+        "refresh": "更新",
+        "open": "開く",
+        "add": "追加",
+        "clear": "クリア",
+        "apply": "適用",
+        "run": "実行",
+        "close": "閉じる",
+        "expand": "展開"
+    },
+    "menu": {
+        "home": "ホーム",
+        "works": "ワーク",
+        "settings": "設定",
+        "developer": "開発者",
+        "developer_website": "paolopietrelli.com",
+        "open_website": "Webサイトを開く",
+        "open_github": "GitHubを開く",
+        "open_linkedin": "LinkedInを開く",
+        "open_instagram": "Instagramを開く"
+    },
+    "works": {
+        "empty": "ここにワーク一覧が表示されます",
+        "go_home": "ホームへ移動",
+        "source_file": "ソースファイル",
+        "created_at": "作成日",
+        "last_opened_at": "最終表示",
+        "never_opened": "未表示",
+        "delete_title": "dataset を削除",
+        "delete_message": "dataset、スキーマ、行、ファイル参照が削除されます。",
+        "search_hint": "名前またはファイルで検索",
+        "no_results": "検索に一致する dataset はありません。",
+        "error": {
+            "load_failed": "datasets を読み込めませんでした。",
+            "open_failed": "選択した dataset を開けませんでした。",
+            "delete_failed": "選択した dataset を削除できませんでした。"
         }
-      },
-      "query": {
-        "tabs": {
-          "filters": "フィルター",
-          "sql": "クエリ"
+    },
+    "dataset": {
+        "workspace": {
+            "title": "Dataset ワークスペース",
+            "source_file": "ソースファイル",
+            "sheets": "シート",
+            "columns": "列",
+            "visible_columns": "表示列",
+            "visible_columns_hint": "表とエクスポートで不要な列を非表示にします。",
+            "rows": "行",
+            "loaded_rows": "読み込み済み行",
+            "initial_row_limit": "最初の {count} 行を表示しています。",
+            "rows_per_page": "1ページあたりの行数",
+            "pagination": {
+                "range": "{total} 行中 {from}-{to} 行",
+                "page": "{pages} ページ中 {page} ページ",
+                "invalid_limit": "正の数を入力してください。"
+            },
+            "select_sheet": "シート",
+            "table_view": "表",
+            "card_view": "カード",
+            "qr": {
+                "tooltip": "行 JSON QR コード",
+                "unavailable": "この行は大きすぎて QR コードにできません。"
+            },
+            "no_tables": "この dataset には表示できるシートがありません。",
+            "no_rows": "このシートには利用可能な行がありません。",
+            "filters": {
+                "title": "フィルター",
+                "column": "列",
+                "operator": "演算子",
+                "value": "値",
+                "second_value": "2番目の値",
+                "add": "フィルターを追加",
+                "active": "有効なフィルター",
+                "clear": "フィルターをクリア",
+                "invalid_value": "選択した列タイプに有効な値を入力してください。",
+                "advanced": "詳細",
+                "text_value": "検索テキスト",
+                "from": "開始",
+                "to": "終了",
+                "range": "範囲",
+                "no_range": "読み込み済み行に数値がありません。",
+                "true_value": "真",
+                "false_value": "偽",
+                "operator_labels": {
+                    "contains": "含む",
+                    "equals": "等しい",
+                    "not_equals": "等しくない",
+                    "starts_with": "次で始まる",
+                    "ends_with": "次で終わる",
+                    "greater_than": "より大きい",
+                    "greater_or_equal": "以上",
+                    "less_than": "より小さい",
+                    "less_or_equal": "以下",
+                    "between": "範囲内",
+                    "on": "日付が一致",
+                    "before": "より前",
+                    "after": "より後",
+                    "is_empty": "空",
+                    "is_not_empty": "空ではない",
+                    "is_true": "真である",
+                    "is_false": "偽である"
+                }
+            },
+            "query": {
+                "tabs": {
+                    "filters": "フィルター",
+                    "sql": "クエリ"
+                },
+                "title": "読み取り専用クエリ",
+                "intro": "高度な分析のために SELECT クエリを書きます。読み取り専用クエリのみ許可され、結果は制限されます。",
+                "editor": "SQL クエリ",
+                "limit": "最大行数",
+                "reset": "現在のシートにリセット",
+                "result_count": "{count} 行が返されました",
+                "result_summary": "{total} 件中 {shown} 件を表示",
+                "schema": "スキーマヘルパー",
+                "active_context": "sheet を現在のシートのエイリアスとして使用: {table}",
+                "insert_table": "テーブル名を挿入",
+                "insert_column": "列名を挿入",
+                "empty_result": "クエリを実行するとここに結果が表示されます。",
+                "errors": {
+                    "empty": "実行する前に SELECT クエリを入力してください。",
+                    "not_select": "SELECT クエリのみ許可されています。",
+                    "unsafe_statement": "このクエリにはブロックされた SQL コマンドが含まれています。",
+                    "multiple_statements": "コメントやセミコロンなしで、1回に1つの SELECT クエリだけ実行してください。",
+                    "unknown_table": "この dataset に属するテーブルのみ使用してください。",
+                    "invalid_limit": "正の行数制限を入力してください。",
+                    "execution_failed": "このクエリを実行できませんでした。"
+                }
+            },
+            "error": {
+                "load_failed": "dataset ワークスペースを読み込めませんでした。",
+                "sheet_failed": "選択したシートを読み込めませんでした。",
+                "refresh_failed": "行を更新できませんでした。",
+                "filter_failed": "フィルターを適用できませんでした。",
+                "sort_failed": "行を並べ替えできませんでした。",
+                "pagination_failed": "要求されたページを読み込めませんでした。"
+            },
+            "export": {
+                "tooltip": "dataset をエクスポート",
+                "excel": "Excel をエクスポート",
+                "csv": "CSV をエクスポート",
+                "pdf": "PDF をエクスポート",
+                "sql": "SQL をエクスポート",
+                "json": "JSON をエクスポート",
+                "dialog_title": "エクスポート",
+                "sheets": "シート",
+                "current_sheet": "現在のシート",
+                "all_sheets": "すべてのシート",
+                "format": "形式",
+                "pdf_layout": "PDF レイアウト",
+                "pdf_table": "表",
+                "pdf_cards": "QR 付きカード",
+                "no_sheet_selected": "少なくとも1つのシートを選択してください。",
+                "started": "dataset をエクスポート中...",
+                "success": "エクスポート準備完了: {count} ファイル。",
+                "failed": "この dataset をエクスポートできませんでした。"
+            },
+            "analytics": {
+                "title": "分析",
+                "no_chart": "現在のデータ型では利用できるグラフがありません。",
+                "no_data": "現在の設定に対応するデータがありません。",
+                "error": "分析を読み込めませんでした。",
+                "error_messages": {
+                    "invalid_aggregation": "この集計を使うには数値列を選択してください。",
+                    "no_rows_after_filter": "現在のフィルターに一致する行はありません。",
+                    "unsupported": "このグラフは選択した列では利用できません。",
+                    "internal": "このグラフを読み込めませんでした。列またはフィルターを変更してください。",
+                    "no_numeric_column": "このグラフを描画するには数値列を選択してください。"
+                },
+                "aggregation": "集計",
+                "filtered_result": "フィルター結果: 有効なフィルター {count} 件",
+                "updating": "グラフを更新中...",
+                "labels": {
+                    "group_by": "グループ化",
+                    "value": "値",
+                    "date": "日付",
+                    "value_over_time": "時間ごとの値"
+                },
+                "title_sentence": {
+                    "count_by": "{group} 別の件数",
+                    "count_over": "{date} ごとの件数",
+                    "aggregation_by": "{group} 別の {value} の {aggregation}",
+                    "aggregation_over": "{date} ごとの {value} の {aggregation}"
+                },
+                "x_column": "X 軸",
+                "y_column": "Y 軸",
+                "add_chart": "グラフを追加",
+                "add_chart_options": {
+                    "line": {
+                        "title": "時間の推移",
+                        "description": "日付列と数値を使って、値が時間とともにどう変化するかを表示します。"
+                    },
+                    "bar": {
+                        "title": "カテゴリ比較",
+                        "description": "件数または数値を使ってグループを比較します。"
+                    },
+                    "pie": {
+                        "title": "カテゴリ別の割合",
+                        "description": "合計が少数のグループにどう分かれているかを表示します。"
+                    }
+                },
+                "agg": {
+                    "count": "件数",
+                    "sum": "合計",
+                    "avg": "平均",
+                    "min": "最小",
+                    "max": "最大"
+                },
+                "aggregation_info": {
+                    "tooltip": "集計とは？",
+                    "title": "集計",
+                    "intro": "集計は、グラフを描画する前に複数の行をどのようにまとめるかを制御します。各グループに1行しかない場合、合計、平均、最小、最大は同じ見た目になることがあります。",
+                    "count": "各グループの行数。",
+                    "sum": "選択した数値の合計。",
+                    "avg": "各グループの平均値。",
+                    "min": "各グループで見つかった最小値。",
+                    "max": "各グループで見つかった最大値。"
+                }
+            }
         },
-        "title": "読み取り専用クエリ",
-        "intro": "高度な分析のために SELECT クエリを書きます。読み取り専用クエリのみ許可され、結果は制限されます。",
-        "editor": "SQL クエリ",
-        "limit": "最大行数",
-        "reset": "現在のシートにリセット",
-        "result_count": "{count} 行が返されました",
-        "result_summary": "{total} 件中 {shown} 件を表示",
-        "schema": "スキーマヘルパー",
-        "active_context": "sheet を現在のシートのエイリアスとして使用: {table}",
-        "insert_table": "テーブル名を挿入",
-        "insert_column": "列名を挿入",
-        "empty_result": "クエリを実行するとここに結果が表示されます。",
-        "errors": {
-          "empty": "実行する前に SELECT クエリを入力してください。",
-          "not_select": "SELECT クエリのみ許可されています。",
-          "unsafe_statement": "このクエリにはブロックされた SQL コマンドが含まれています。",
-          "multiple_statements": "コメントやセミコロンなしで、1回に1つの SELECT クエリだけ実行してください。",
-          "unknown_table": "この dataset に属するテーブルのみ使用してください。",
-          "invalid_limit": "正の行数制限を入力してください。",
-          "execution_failed": "このクエリを実行できませんでした。"
+        "joins": {
+            "action": "シートを結合",
+            "title": "シートを結合",
+            "subtitle": "2つ以上のシートを関連付け、結合結果をプレビューします。",
+            "select_sheets": "結合するシート",
+            "base_sheet": "基準シート",
+            "base_sheet_hint": "起点となるシートです。LEFT 結合ではその全行が保持されます。",
+            "output_columns": "表示する列",
+            "output_columns_hint": "結果には選択した列だけが表示されます。",
+            "relationships": "リレーション",
+            "no_relationships": "リレーションがありません。追加してシートを結合してください。",
+            "suggest": "リレーションを探す",
+            "suggestions": "提案されたリレーション",
+            "no_suggestions": "提案はありません。列を手動で選んでください。",
+            "confirm": "確定",
+            "remove": "削除",
+            "flip": "左右を入れ替える",
+            "join_type": "結合の種類",
+            "join_inner": "一致する行のみ",
+            "join_left": "基準シートの全行を保持",
+            "run": "プレビューを実行",
+            "preview": "プレビュー",
+            "preview_limited": "プレビューは {limit} 行までです",
+            "preview_truncated": "結果は切り詰められています。さらに行がある可能性があります。",
+            "empty_result": "選択したリレーションに一致する行はありません。",
+            "generated_sql": "生成された SQL",
+            "save": "設定を保存",
+            "saved_queries": "保存した設定",
+            "save_name": "設定名",
+            "delete": "削除",
+            "confidence_high": "高",
+            "confidence_medium": "中",
+            "confidence_low": "低",
+            "reason_name_match": "名前が一致",
+            "reason_common_identifier": "識別子の列",
+            "reason_value_overlap": "値が重複",
+            "reason_type_match": "型が互換",
+            "warning_many_to_many": "{left} と {right} には一意キーがありません。行が増える可能性があります。",
+            "stale_spec": "この保存済み設定は、存在しないシートまたは列を参照しています。",
+            "error_not_enough_tables": "シートを2つ以上選択してください。",
+            "error_unavailable_table_or_column": "シートまたは列が利用できなくなりました。",
+            "error_incomplete_relationship": "リレーションが不完全です。",
+            "error_duplicate_relationship": "そのリレーションはすでに存在します。",
+            "error_disconnected_graph": "すべてのシートが互いに接続されている必要があります。",
+            "error_cycle_detected": "リレーションが循環しています。",
+            "error_invalid_left_join_direction": "左右を入れ替えてください。LEFT 結合は既に接続済みのシートを保持する必要があります。",
+            "error_no_output_columns": "表示する列を1つ以上選択してください。",
+            "error_generic": "プレビューを実行できませんでした。"
         }
-      },
-      "error": {
-        "load_failed": "dataset ワークスペースを読み込めませんでした。",
-        "sheet_failed": "選択したシートを読み込めませんでした。",
-        "refresh_failed": "行を更新できませんでした。",
-        "filter_failed": "フィルターを適用できませんでした。",
-        "sort_failed": "行を並べ替えできませんでした。",
-        "pagination_failed": "要求されたページを読み込めませんでした。"
-      },
-      "export": {
-        "tooltip": "dataset をエクスポート",
-        "excel": "Excel をエクスポート",
-        "csv": "CSV をエクスポート",
-        "pdf": "PDF をエクスポート",
-        "sql": "SQL をエクスポート",
-        "json": "JSON をエクスポート",
-        "dialog_title": "エクスポート",
-        "sheets": "シート",
-        "current_sheet": "現在のシート",
-        "all_sheets": "すべてのシート",
-        "format": "形式",
-        "pdf_layout": "PDF レイアウト",
-        "pdf_table": "表",
-        "pdf_cards": "QR 付きカード",
-        "no_sheet_selected": "少なくとも1つのシートを選択してください。",
-        "started": "dataset をエクスポート中...",
-        "success": "エクスポート準備完了: {count} ファイル。",
-        "failed": "この dataset をエクスポートできませんでした。"
-      },
-      "analytics": {
-        "title": "分析",
-        "no_chart": "現在のデータ型では利用できるグラフがありません。",
-        "no_data": "現在の設定に対応するデータがありません。",
-        "error": "分析を読み込めませんでした。",
-        "error_messages": {
-          "invalid_aggregation": "この集計を使うには数値列を選択してください。",
-          "no_rows_after_filter": "現在のフィルターに一致する行はありません。",
-          "unsupported": "このグラフは選択した列では利用できません。",
-          "internal": "このグラフを読み込めませんでした。列またはフィルターを変更してください。",
-          "no_numeric_column": "このグラフを描画するには数値列を選択してください。"
+    },
+    "settings": {
+        "language": "言語",
+        "full_immersion": "全画面モード",
+        "language_english": "English",
+        "language_italian": "Italiano",
+        "language_spanish": "Español",
+        "language_french": "Français",
+        "language_german": "Deutsch",
+        "language_chinese": "中文",
+        "language_russian": "Русский",
+        "language_japanese": "日本語",
+        "language_portuguese": "Português",
+        "app_version_label": "アプリのバージョン",
+        "app_version_value": "バージョン {version}",
+        "update_check": "更新を確認",
+        "update_checking": "更新を確認中...",
+        "update_available_title": "更新があります",
+        "update_available_message": "Exlser {version} を利用できます。",
+        "update_download": "更新をダウンロード",
+        "update_open_release": "リリースを開く",
+        "update_up_to_date": "最新のデスクトップ版を使用しています。",
+        "update_unsupported": "このプラットフォームではデスクトップ更新を利用できません。",
+        "update_error": "更新を確認できませんでした。",
+        "update_open_failed": "更新リンクを開けませんでした。"
+    },
+    "import": {
+        "title": "新しい dataset を作成",
+        "dataset_name": "Dataset 名",
+        "save_locally": "ファイルをローカルに保存",
+        "next": "次へ",
+        "finish": "完了",
+        "column_types": {
+            "title": "列タイプを確認",
+            "empty": "準備済みの列はありません",
+            "rows": "行",
+            "original_name": "Excel 名",
+            "database_name": "アプリ内名",
+            "inferred_type": "データ型",
+            "info": {
+                "tooltip": "データ型とは？",
+                "title": "データ型",
+                "intro": "データ型は、この列の値をアプリがどのように解釈し保存するかを示します。dataset を作成する前に、検出された型をそのまま使うか変更できます。",
+                "text": "テキスト: 単語、コード、ID、メモ、または混在した値。",
+                "integer": "整数: 小数のない整数。",
+                "real": "実数: 小数を含む数値または金額。",
+                "boolean": "ブール値: true/false、yes/no、または類似の二値。",
+                "date": "日付: カレンダー値として扱う日付。"
+            },
+            "selected_type": "選択した型",
+            "type": {
+                "text": "テキスト",
+                "integer": "整数",
+                "real": "実数",
+                "boolean": "ブール値",
+                "date": "日付"
+            }
         },
-        "aggregation": "集計",
-        "filtered_result": "フィルター結果: 有効なフィルター {count} 件",
-        "updating": "グラフを更新中...",
-        "labels": {
-          "group_by": "グループ化",
-          "value": "値",
-          "date": "日付",
-          "value_over_time": "時間ごとの値"
+        "confirmation": {
+            "title": "インポートを確認",
+            "dataset_name": "Dataset",
+            "source_file": "ソースファイル",
+            "file_storage": "ファイル保存",
+            "sheets": "シート",
+            "columns": "列",
+            "rows": "行",
+            "column_types": "確認済みの列タイプ",
+            "storage": {
+                "original_path": "元ファイルパスを参照",
+                "app_copy": "ファイルをアプリストレージにコピー",
+                "web_temporary": "ブラウザーの一時ファイル参照"
+            }
         },
-        "title_sentence": {
-          "count_by": "{group} 別の件数",
-          "count_over": "{date} ごとの件数",
-          "aggregation_by": "{group} 別の {value} の {aggregation}",
-          "aggregation_over": "{date} ごとの {value} の {aggregation}"
-        },
-        "x_column": "X 軸",
-        "y_column": "Y 軸",
-        "add_chart": "グラフを追加",
-        "add_chart_options": {
-          "line": {
-            "title": "時間の推移",
-            "description": "日付列と数値を使って、値が時間とともにどう変化するかを表示します。"
-          },
-          "bar": {
-            "title": "カテゴリ比較",
-            "description": "件数または数値を使ってグループを比較します。"
-          },
-          "pie": {
-            "title": "カテゴリ別の割合",
-            "description": "合計が少数のグループにどう分かれているかを表示します。"
-          }
-        },
-        "agg": {
-          "count": "件数",
-          "sum": "合計",
-          "avg": "平均",
-          "min": "最小",
-          "max": "最大"
-        },
-        "aggregation_info": {
-          "tooltip": "集計とは？",
-          "title": "集計",
-          "intro": "集計は、グラフを描画する前に複数の行をどのようにまとめるかを制御します。各グループに1行しかない場合、合計、平均、最小、最大は同じ見た目になることがあります。",
-          "count": "各グループの行数。",
-          "sum": "選択した数値の合計。",
-          "avg": "各グループの平均値。",
-          "min": "各グループで見つかった最小値。",
-          "max": "各グループで見つかった最大値。"
+        "error": {
+            "empty_file_name": "選択したファイルに名前がありません。もう一度選択してください。",
+            "empty_file_path": "アプリが選択したファイルパスにアクセスできません。もう一度選択してください。",
+            "empty_file_bytes": "選択したファイルは空か利用できません。もう一度選択してください。",
+            "no_extension": "選択したファイルに拡張子がありません。CSV または XLSX ファイルを使用してください。",
+            "unsupported_format": "このファイル形式はサポートされていません。CSV または XLSX ファイルを使用してください。古い XLS ファイルはまだサポートされていません。",
+            "parser_not_found": "アプリはこのファイルタイプをまだ読み取れません。CSV または XLSX ファイルを使用してください。",
+            "parsing_failed": "ファイルを読み取れませんでした。破損していないか、パスワード保護されていないか確認してください。",
+            "no_sheets": "ファイルに読み取り可能なシートが見つかりませんでした。",
+            "no_valid_sheets": "ファイルは読み取られましたが、利用可能な表形式データを含むシートがありません。",
+            "schema_failed": "アプリはファイル内の利用可能な表構造を検出できませんでした。",
+            "unexpected_error": "インポート中に問題が発生しました。もう一度試すか、別のファイルを選択してください。",
+            "creation_failed": "dataset を作成できませんでした。インポート設定を確認して再試行してください。",
+            "file_access_error": "ファイルにアクセスできませんでした。ファイルが存在し、移動されていないことを確認してください。"
         }
-      }
-    },
-    "joins": {
-      "action": "シートを結合",
-      "title": "シートを結合",
-      "subtitle": "2つ以上のシートを関連付け、結合結果をプレビューします。",
-      "select_sheets": "結合するシート",
-      "base_sheet": "基準シート",
-      "base_sheet_hint": "起点となるシートです。LEFT 結合ではその全行が保持されます。",
-      "output_columns": "表示する列",
-      "output_columns_hint": "結果には選択した列だけが表示されます。",
-      "relationships": "リレーション",
-      "no_relationships": "リレーションがありません。追加してシートを結合してください。",
-      "suggest": "リレーションを探す",
-      "suggestions": "提案されたリレーション",
-      "no_suggestions": "提案はありません。列を手動で選んでください。",
-      "confirm": "確定",
-      "remove": "削除",
-      "flip": "左右を入れ替える",
-      "join_type": "結合の種類",
-      "join_inner": "一致する行のみ",
-      "join_left": "基準シートの全行を保持",
-      "run": "プレビューを実行",
-      "preview": "プレビュー",
-      "preview_limited": "プレビューは {limit} 行までです",
-      "preview_truncated": "結果は切り詰められています。さらに行がある可能性があります。",
-      "empty_result": "選択したリレーションに一致する行はありません。",
-      "generated_sql": "生成された SQL",
-      "save": "設定を保存",
-      "saved_queries": "保存した設定",
-      "save_name": "設定名",
-      "delete": "削除",
-      "confidence_high": "高",
-      "confidence_medium": "中",
-      "confidence_low": "低",
-      "reason_name_match": "名前が一致",
-      "reason_common_identifier": "識別子の列",
-      "reason_value_overlap": "値が重複",
-      "reason_type_match": "型が互換",
-      "warning_many_to_many": "{left} と {right} には一意キーがありません。行が増える可能性があります。",
-      "stale_spec": "この保存済み設定は、存在しないシートまたは列を参照しています。",
-      "error_not_enough_tables": "シートを2つ以上選択してください。",
-      "error_unavailable_table_or_column": "シートまたは列が利用できなくなりました。",
-      "error_incomplete_relationship": "リレーションが不完全です。",
-      "error_duplicate_relationship": "そのリレーションはすでに存在します。",
-      "error_disconnected_graph": "すべてのシートが互いに接続されている必要があります。",
-      "error_cycle_detected": "リレーションが循環しています。",
-      "error_invalid_left_join_direction": "左右を入れ替えてください。LEFT 結合は既に接続済みのシートを保持する必要があります。",
-      "error_no_output_columns": "表示する列を1つ以上選択してください。",
-      "error_generic": "プレビューを実行できませんでした。"
     }
-  },
-  "settings": {
-    "language": "言語",
-    "full_immersion": "全画面モード",
-    "language_english": "English",
-    "language_italian": "Italiano",
-    "language_spanish": "Español",
-    "language_french": "Français",
-    "language_german": "Deutsch",
-    "language_chinese": "中文",
-    "language_russian": "Русский",
-    "language_japanese": "日本語",
-    "language_portuguese": "Português",
-    "app_version_label": "アプリのバージョン",
-    "app_version_value": "バージョン {version}",
-    "update_check": "更新を確認",
-    "update_checking": "更新を確認中...",
-    "update_available_title": "更新があります",
-    "update_available_message": "Exlser {version} を利用できます。",
-    "update_download": "更新をダウンロード",
-    "update_open_release": "リリースを開く",
-    "update_up_to_date": "最新のデスクトップ版を使用しています。",
-    "update_unsupported": "このプラットフォームではデスクトップ更新を利用できません。",
-    "update_error": "更新を確認できませんでした。",
-    "update_open_failed": "更新リンクを開けませんでした。"
-  },
-  "import": {
-    "title": "新しい dataset を作成",
-    "dataset_name": "Dataset 名",
-    "save_locally": "ファイルをローカルに保存",
-    "next": "次へ",
-    "finish": "完了",
-    "column_types": {
-      "title": "列タイプを確認",
-      "empty": "準備済みの列はありません",
-      "rows": "行",
-      "original_name": "Excel 名",
-      "database_name": "アプリ内名",
-      "inferred_type": "データ型",
-      "info": {
-        "tooltip": "データ型とは？",
-        "title": "データ型",
-        "intro": "データ型は、この列の値をアプリがどのように解釈し保存するかを示します。dataset を作成する前に、検出された型をそのまま使うか変更できます。",
-        "text": "テキスト: 単語、コード、ID、メモ、または混在した値。",
-        "integer": "整数: 小数のない整数。",
-        "real": "実数: 小数を含む数値または金額。",
-        "boolean": "ブール値: true/false、yes/no、または類似の二値。",
-        "date": "日付: カレンダー値として扱う日付。"
-      },
-      "selected_type": "選択した型",
-      "type": {
-        "text": "テキスト",
-        "integer": "整数",
-        "real": "実数",
-        "boolean": "ブール値",
-        "date": "日付"
-      }
-    },
-    "confirmation": {
-      "title": "インポートを確認",
-      "dataset_name": "Dataset",
-      "source_file": "ソースファイル",
-      "file_storage": "ファイル保存",
-      "sheets": "シート",
-      "columns": "列",
-      "rows": "行",
-      "column_types": "確認済みの列タイプ",
-      "storage": {
-        "original_path": "元ファイルパスを参照",
-        "app_copy": "ファイルをアプリストレージにコピー",
-        "web_temporary": "ブラウザーの一時ファイル参照"
-      }
-    },
-    "error": {
-      "empty_file_name": "選択したファイルに名前がありません。もう一度選択してください。",
-      "empty_file_path": "アプリが選択したファイルパスにアクセスできません。もう一度選択してください。",
-      "empty_file_bytes": "選択したファイルは空か利用できません。もう一度選択してください。",
-      "no_extension": "選択したファイルに拡張子がありません。CSV または XLSX ファイルを使用してください。",
-      "unsupported_format": "このファイル形式はサポートされていません。CSV または XLSX ファイルを使用してください。古い XLS ファイルはまだサポートされていません。",
-      "parser_not_found": "アプリはこのファイルタイプをまだ読み取れません。CSV または XLSX ファイルを使用してください。",
-      "parsing_failed": "ファイルを読み取れませんでした。破損していないか、パスワード保護されていないか確認してください。",
-      "no_sheets": "ファイルに読み取り可能なシートが見つかりませんでした。",
-      "no_valid_sheets": "ファイルは読み取られましたが、利用可能な表形式データを含むシートがありません。",
-      "schema_failed": "アプリはファイル内の利用可能な表構造を検出できませんでした。",
-      "unexpected_error": "インポート中に問題が発生しました。もう一度試すか、別のファイルを選択してください。",
-      "creation_failed": "dataset を作成できませんでした。インポート設定を確認して再試行してください。",
-      "file_access_error": "ファイルにアクセスできませんでした。ファイルが存在し、移動されていないことを確認してください。"
-    }
-  }
 }

@@ -1,391 +1,391 @@
 {
-  "app": {
-    "name": "Exlser"
-  },
-  "home": {
-    "select_file": "Seleziona un file CSV o XLSX",
-    "drop_file": "Trascina qui un file CSV o XLSX",
-    "process_file": "Elabora file",
-    "browse_file": "Sfoglia file"
-  },
-  "onboarding": {
-    "title": "Benvenuto su Exlser",
-    "button": "Inizia",
-    "welcome": {
-      "title": "Benvenuto su Exlser"
+    "app": {
+        "name": "Exlser"
     },
-    "data": {
-      "title": "Ottieni il massimo dai tuoi dati!"
+    "home": {
+        "select_file": "Seleziona un file CSV o XLSX",
+        "drop_file": "Trascina qui un file CSV o XLSX",
+        "process_file": "Elabora file",
+        "browse_file": "Sfoglia file"
     },
-    "cross_platform": {
-      "title": "Tutta la potenza di Exlser, su ogni dispositivo"
+    "onboarding": {
+        "title": "Benvenuto su Exlser",
+        "button": "Inizia",
+        "welcome": {
+            "title": "Benvenuto su Exlser"
+        },
+        "data": {
+            "title": "Ottieni il massimo dai tuoi dati!"
+        },
+        "cross_platform": {
+            "title": "Tutta la potenza di Exlser, su ogni dispositivo"
+        },
+        "play_preview": "Guarda anteprima",
+        "replay_preview": "Rivedi video"
     },
-    "play_preview": "Guarda anteprima",
-    "replay_preview": "Rivedi video"
-  },
-  "common": {
-    "skip": "Salta",
-    "previous": "Indietro",
-    "next": "Avanti",
-    "start": "Inizia",
-    "retry": "Riprova",
-    "cancel": "Annulla",
-    "delete": "Elimina",
-    "refresh": "Aggiorna",
-    "open": "Apri",
-    "add": "Aggiungi",
-    "clear": "Svuota",
-    "apply": "Applica",
-    "run": "Esegui",
-    "close": "Chiudi",
-    "expand": "Espandi"
-  },
-  "menu": {
-    "home": "Home",
-    "works": "Lavori",
-    "settings": "Impostazioni",
-    "developer": "Sviluppatore",
-    "developer_website": "paolopietrelli.com",
-    "open_website": "Apri sito web",
-    "open_github": "Apri GitHub",
-    "open_linkedin": "Apri LinkedIn",
-    "open_instagram": "Apri Instagram"
-  },
-  "works": {
-    "empty": "Qui verrà mostrata la tua lista lavori",
-    "go_home": "Vai alla Home",
-    "source_file": "File sorgente",
-    "created_at": "Creato",
-    "last_opened_at": "Ultima apertura",
-    "never_opened": "Mai aperto",
-    "delete_title": "Elimina dataset",
-    "delete_message": "Questa operazione rimuoverà dataset, schema, righe e riferimento al file.",
-    "search_hint": "Cerca per nome o file",
-    "no_results": "Nessun dataset corrisponde alla ricerca.",
-    "error": {
-      "load_failed": "Impossibile caricare i dataset.",
-      "open_failed": "Impossibile aprire il dataset selezionato.",
-      "delete_failed": "Impossibile eliminare il dataset selezionato."
-    }
-  },
-  "dataset": {
-    "workspace": {
-      "title": "Workspace dataset",
-      "source_file": "File sorgente",
-      "sheets": "Fogli",
-      "columns": "Colonne",
-      "visible_columns": "Colonne visibili",
-      "visible_columns_hint": "Nascondi le colonne che non ti servono nella tabella e negli export.",
-      "rows": "Righe",
-      "loaded_rows": "Righe caricate",
-      "initial_row_limit": "Sono mostrate le prime {count} righe.",
-      "rows_per_page": "Righe per pagina",
-      "pagination": {
-        "range": "Righe {from}-{to} di {total}",
-        "page": "Pagina {page} di {pages}",
-        "invalid_limit": "Inserisci un numero positivo."
-      },
-      "select_sheet": "Foglio",
-      "table_view": "Tabella",
-      "card_view": "Schede",
-      "qr": {
-        "tooltip": "QR code JSON della riga",
-        "unavailable": "Questa riga è troppo grande per un QR code."
-      },
-      "no_tables": "Questo dataset non ha fogli da mostrare.",
-      "no_rows": "Nessuna riga disponibile per questo foglio.",
-      "filters": {
-        "title": "Filtri",
-        "column": "Colonna",
-        "operator": "Operatore",
-        "value": "Valore",
-        "second_value": "Secondo valore",
-        "add": "Aggiungi filtro",
-        "active": "Filtri attivi",
-        "clear": "Svuota filtri",
-        "invalid_value": "Inserisci un valore valido per il tipo della colonna selezionata.",
-        "advanced": "Avanzati",
-        "text_value": "Cerca testo",
-        "from": "Da",
-        "to": "A",
-        "range": "Intervallo",
-        "no_range": "Nessun valore numerico disponibile nelle righe caricate.",
-        "true_value": "Vero",
-        "false_value": "Falso",
-        "operator_labels": {
-          "contains": "contiene",
-          "equals": "uguale a",
-          "not_equals": "diverso da",
-          "starts_with": "inizia con",
-          "ends_with": "finisce con",
-          "greater_than": "maggiore di",
-          "greater_or_equal": "maggiore o uguale a",
-          "less_than": "minore di",
-          "less_or_equal": "minore o uguale a",
-          "between": "tra",
-          "on": "il giorno",
-          "before": "prima di",
-          "after": "dopo",
-          "is_empty": "è vuoto",
-          "is_not_empty": "non è vuoto",
-          "is_true": "è vero",
-          "is_false": "è falso"
+    "common": {
+        "skip": "Salta",
+        "previous": "Indietro",
+        "next": "Avanti",
+        "start": "Inizia",
+        "retry": "Riprova",
+        "cancel": "Annulla",
+        "delete": "Elimina",
+        "refresh": "Aggiorna",
+        "open": "Apri",
+        "add": "Aggiungi",
+        "clear": "Svuota",
+        "apply": "Applica",
+        "run": "Esegui",
+        "close": "Chiudi",
+        "expand": "Espandi"
+    },
+    "menu": {
+        "home": "Home",
+        "works": "Lavori",
+        "settings": "Impostazioni",
+        "developer": "Sviluppatore",
+        "developer_website": "paolopietrelli.com",
+        "open_website": "Apri sito web",
+        "open_github": "Apri GitHub",
+        "open_linkedin": "Apri LinkedIn",
+        "open_instagram": "Apri Instagram"
+    },
+    "works": {
+        "empty": "Qui verrà mostrata la tua lista lavori",
+        "go_home": "Vai alla Home",
+        "source_file": "File sorgente",
+        "created_at": "Creato",
+        "last_opened_at": "Ultima apertura",
+        "never_opened": "Mai aperto",
+        "delete_title": "Elimina dataset",
+        "delete_message": "Questa operazione rimuoverà dataset, schema, righe e riferimento al file.",
+        "search_hint": "Cerca per nome o file",
+        "no_results": "Nessun dataset corrisponde alla ricerca.",
+        "error": {
+            "load_failed": "Impossibile caricare i dataset.",
+            "open_failed": "Impossibile aprire il dataset selezionato.",
+            "delete_failed": "Impossibile eliminare il dataset selezionato."
         }
-      },
-      "query": {
-        "tabs": {
-          "filters": "Filtri",
-          "sql": "Query"
+    },
+    "dataset": {
+        "workspace": {
+            "title": "Workspace dataset",
+            "source_file": "File sorgente",
+            "sheets": "Fogli",
+            "columns": "Colonne",
+            "visible_columns": "Colonne visibili",
+            "visible_columns_hint": "Nascondi le colonne che non ti servono nella tabella e negli export.",
+            "rows": "Righe",
+            "loaded_rows": "Righe caricate",
+            "initial_row_limit": "Sono mostrate le prime {count} righe.",
+            "rows_per_page": "Righe per pagina",
+            "pagination": {
+                "range": "Righe {from}-{to} di {total}",
+                "page": "Pagina {page} di {pages}",
+                "invalid_limit": "Inserisci un numero positivo."
+            },
+            "select_sheet": "Foglio",
+            "table_view": "Tabella",
+            "card_view": "Schede",
+            "qr": {
+                "tooltip": "QR code JSON della riga",
+                "unavailable": "Questa riga è troppo grande per un QR code."
+            },
+            "no_tables": "Questo dataset non ha fogli da mostrare.",
+            "no_rows": "Nessuna riga disponibile per questo foglio.",
+            "filters": {
+                "title": "Filtri",
+                "column": "Colonna",
+                "operator": "Operatore",
+                "value": "Valore",
+                "second_value": "Secondo valore",
+                "add": "Aggiungi filtro",
+                "active": "Filtri attivi",
+                "clear": "Svuota filtri",
+                "invalid_value": "Inserisci un valore valido per il tipo della colonna selezionata.",
+                "advanced": "Avanzati",
+                "text_value": "Cerca testo",
+                "from": "Da",
+                "to": "A",
+                "range": "Intervallo",
+                "no_range": "Nessun valore numerico disponibile nelle righe caricate.",
+                "true_value": "Vero",
+                "false_value": "Falso",
+                "operator_labels": {
+                    "contains": "contiene",
+                    "equals": "uguale a",
+                    "not_equals": "diverso da",
+                    "starts_with": "inizia con",
+                    "ends_with": "finisce con",
+                    "greater_than": "maggiore di",
+                    "greater_or_equal": "maggiore o uguale a",
+                    "less_than": "minore di",
+                    "less_or_equal": "minore o uguale a",
+                    "between": "tra",
+                    "on": "il giorno",
+                    "before": "prima di",
+                    "after": "dopo",
+                    "is_empty": "è vuoto",
+                    "is_not_empty": "non è vuoto",
+                    "is_true": "è vero",
+                    "is_false": "è falso"
+                }
+            },
+            "query": {
+                "tabs": {
+                    "filters": "Filtri",
+                    "sql": "Query"
+                },
+                "title": "Query in sola lettura",
+                "intro": "Scrivi una query SELECT per analisi avanzate. Sono permesse solo query in lettura e i risultati sono limitati.",
+                "editor": "Query SQL",
+                "limit": "Righe massime",
+                "reset": "Riparti dal foglio corrente",
+                "result_count": "{count} righe restituite",
+                "result_summary": "Mostrate {shown} di {total} righe corrispondenti",
+                "schema": "Aiuto schema",
+                "active_context": "Usa sheet come alias del foglio corrente: {table}",
+                "insert_table": "Inserisci nome tabella",
+                "insert_column": "Inserisci nome colonna",
+                "empty_result": "Esegui una query per mostrare qui i risultati.",
+                "errors": {
+                    "empty": "Scrivi una query SELECT prima di eseguirla.",
+                    "not_select": "Sono permesse solo query SELECT.",
+                    "unsafe_statement": "Questa query contiene un comando SQL bloccato.",
+                    "multiple_statements": "Esegui una sola query SELECT alla volta, senza commenti o punto e virgola.",
+                    "unknown_table": "Usa solo tabelle che appartengono a questo dataset.",
+                    "invalid_limit": "Inserisci un limite righe positivo.",
+                    "execution_failed": "Impossibile eseguire questa query."
+                }
+            },
+            "error": {
+                "load_failed": "Impossibile caricare il workspace del dataset.",
+                "sheet_failed": "Impossibile caricare il foglio selezionato.",
+                "refresh_failed": "Impossibile aggiornare le righe.",
+                "filter_failed": "Impossibile applicare i filtri.",
+                "sort_failed": "Impossibile ordinare le righe.",
+                "pagination_failed": "Impossibile caricare la pagina richiesta."
+            },
+            "export": {
+                "tooltip": "Esporta dataset",
+                "excel": "Esporta Excel",
+                "csv": "Esporta CSV",
+                "pdf": "Esporta PDF",
+                "sql": "Esporta SQL",
+                "json": "Esporta JSON",
+                "dialog_title": "Esporta",
+                "sheets": "Fogli",
+                "current_sheet": "Foglio corrente",
+                "all_sheets": "Tutti i fogli",
+                "format": "Formato",
+                "pdf_layout": "Layout PDF",
+                "pdf_table": "Tabella",
+                "pdf_cards": "Card con QR",
+                "no_sheet_selected": "Seleziona almeno un foglio.",
+                "started": "Esportazione dataset...",
+                "success": "Export pronto: {count} file.",
+                "failed": "Impossibile esportare questo dataset."
+            },
+            "analytics": {
+                "title": "Analisi",
+                "no_chart": "Nessun grafico disponibile per i tipi di dati presenti.",
+                "no_data": "Nessun dato disponibile per la configurazione attuale.",
+                "error": "Impossibile caricare l'analisi.",
+                "error_messages": {
+                    "invalid_aggregation": "Seleziona una colonna numerica per usare questa aggregazione.",
+                    "no_rows_after_filter": "Nessuna riga corrisponde ai filtri attuali.",
+                    "unsupported": "Questo grafico non è disponibile per le colonne selezionate.",
+                    "internal": "Impossibile caricare questo grafico. Prova a cambiare colonne o filtri.",
+                    "no_numeric_column": "Seleziona una colonna numerica per disegnare questo grafico."
+                },
+                "aggregation": "Aggregazione",
+                "filtered_result": "Risultato filtrato: {count} filtri attivi",
+                "updating": "Aggiornamento grafico...",
+                "labels": {
+                    "group_by": "Raggruppa per",
+                    "value": "Valore",
+                    "date": "Data",
+                    "value_over_time": "Valore nel tempo"
+                },
+                "title_sentence": {
+                    "count_by": "Conteggio per {group}",
+                    "count_over": "Conteggio nel tempo per {date}",
+                    "aggregation_by": "{aggregation} di {value} per {group}",
+                    "aggregation_over": "{aggregation} di {value} nel tempo per {date}"
+                },
+                "x_column": "Asse X",
+                "y_column": "Asse Y",
+                "add_chart": "Aggiungi grafico",
+                "add_chart_options": {
+                    "line": {
+                        "title": "Andamento nel tempo",
+                        "description": "Usa una colonna data e un valore numerico per mostrare come cambiano i valori nel tempo."
+                    },
+                    "bar": {
+                        "title": "Confronto per categoria",
+                        "description": "Confronta gruppi usando un conteggio o un valore numerico."
+                    },
+                    "pie": {
+                        "title": "Distribuzione per categoria",
+                        "description": "Mostra come un totale si divide tra un numero ridotto di gruppi."
+                    }
+                },
+                "agg": {
+                    "count": "Conteggio",
+                    "sum": "Somma",
+                    "avg": "Media",
+                    "min": "Minimo",
+                    "max": "Massimo"
+                },
+                "aggregation_info": {
+                    "tooltip": "Cosa indicano le aggregazioni?",
+                    "title": "Aggregazioni",
+                    "intro": "L'aggregazione decide come combinare più righe prima di disegnare il grafico. Se ogni gruppo contiene una sola riga, somma, media, minimo e massimo possono risultare identici.",
+                    "count": "Numero di righe in ogni gruppo.",
+                    "sum": "Totale dei valori numerici selezionati.",
+                    "avg": "Valore medio per ogni gruppo.",
+                    "min": "Valore più basso trovato in ogni gruppo.",
+                    "max": "Valore più alto trovato in ogni gruppo."
+                }
+            }
         },
-        "title": "Query in sola lettura",
-        "intro": "Scrivi una query SELECT per analisi avanzate. Sono permesse solo query in lettura e i risultati sono limitati.",
-        "editor": "Query SQL",
-        "limit": "Righe massime",
-        "reset": "Riparti dal foglio corrente",
-        "result_count": "{count} righe restituite",
-        "result_summary": "Mostrate {shown} di {total} righe corrispondenti",
-        "schema": "Aiuto schema",
-        "active_context": "Usa sheet come alias del foglio corrente: {table}",
-        "insert_table": "Inserisci nome tabella",
-        "insert_column": "Inserisci nome colonna",
-        "empty_result": "Esegui una query per mostrare qui i risultati.",
-        "errors": {
-          "empty": "Scrivi una query SELECT prima di eseguirla.",
-          "not_select": "Sono permesse solo query SELECT.",
-          "unsafe_statement": "Questa query contiene un comando SQL bloccato.",
-          "multiple_statements": "Esegui una sola query SELECT alla volta, senza commenti o punto e virgola.",
-          "unknown_table": "Usa solo tabelle che appartengono a questo dataset.",
-          "invalid_limit": "Inserisci un limite righe positivo.",
-          "execution_failed": "Impossibile eseguire questa query."
+        "joins": {
+            "action": "Combina fogli",
+            "title": "Combina fogli",
+            "subtitle": "Collega due o più fogli e vedi un'anteprima del risultato.",
+            "select_sheets": "Fogli da combinare",
+            "base_sheet": "Foglio base",
+            "base_sheet_hint": "Il foglio di partenza. Le LEFT join ne conservano tutte le righe.",
+            "output_columns": "Colonne da mostrare",
+            "output_columns_hint": "Nel risultato compaiono solo le colonne selezionate.",
+            "relationships": "Relazioni",
+            "no_relationships": "Nessuna relazione. Aggiungine una per combinare i fogli.",
+            "suggest": "Trova relazioni",
+            "suggestions": "Relazioni suggerite",
+            "no_suggestions": "Nessuna relazione suggerita. Scegli tu le colonne.",
+            "confirm": "Conferma",
+            "remove": "Rimuovi",
+            "flip": "Inverti i lati",
+            "join_type": "Tipo di join",
+            "join_inner": "Solo righe con corrispondenza",
+            "join_left": "Tieni tutte le righe del foglio base",
+            "run": "Esegui anteprima",
+            "preview": "Anteprima",
+            "preview_limited": "Anteprima limitata a {limit} righe",
+            "preview_truncated": "Risultato troncato: potrebbero esserci altre righe.",
+            "empty_result": "Nessuna riga corrisponde alle relazioni scelte.",
+            "generated_sql": "SQL generato",
+            "save": "Salva configurazione",
+            "saved_queries": "Configurazioni salvate",
+            "save_name": "Nome configurazione",
+            "delete": "Elimina",
+            "confidence_high": "Alta",
+            "confidence_medium": "Media",
+            "confidence_low": "Bassa",
+            "reason_name_match": "nomi coincidenti",
+            "reason_common_identifier": "colonna identificatore",
+            "reason_value_overlap": "valori in comune",
+            "reason_type_match": "tipi compatibili",
+            "warning_many_to_many": "{left} e {right} non hanno una chiave univoca: le righe potrebbero moltiplicarsi.",
+            "stale_spec": "Questa configurazione salvata usa fogli o colonne non più presenti.",
+            "error_not_enough_tables": "Seleziona almeno due fogli.",
+            "error_unavailable_table_or_column": "Un foglio o una colonna non è più disponibile.",
+            "error_incomplete_relationship": "Una relazione è incompleta.",
+            "error_duplicate_relationship": "Questa relazione esiste già.",
+            "error_disconnected_graph": "Ogni foglio deve essere collegato agli altri.",
+            "error_cycle_detected": "Le relazioni formano un ciclo.",
+            "error_invalid_left_join_direction": "Inverti i lati: una LEFT join deve conservare il foglio già collegato.",
+            "error_no_output_columns": "Seleziona almeno una colonna da mostrare.",
+            "error_generic": "Non è stato possibile eseguire l'anteprima."
         }
-      },
-      "error": {
-        "load_failed": "Impossibile caricare il workspace del dataset.",
-        "sheet_failed": "Impossibile caricare il foglio selezionato.",
-        "refresh_failed": "Impossibile aggiornare le righe.",
-        "filter_failed": "Impossibile applicare i filtri.",
-        "sort_failed": "Impossibile ordinare le righe.",
-        "pagination_failed": "Impossibile caricare la pagina richiesta."
-      },
-      "export": {
-        "tooltip": "Esporta dataset",
-        "excel": "Esporta Excel",
-        "csv": "Esporta CSV",
-        "pdf": "Esporta PDF",
-        "sql": "Esporta SQL",
-        "json": "Esporta JSON",
-        "dialog_title": "Esporta",
-        "sheets": "Fogli",
-        "current_sheet": "Foglio corrente",
-        "all_sheets": "Tutti i fogli",
-        "format": "Formato",
-        "pdf_layout": "Layout PDF",
-        "pdf_table": "Tabella",
-        "pdf_cards": "Card con QR",
-        "no_sheet_selected": "Seleziona almeno un foglio.",
-        "started": "Esportazione dataset...",
-        "success": "Export pronto: {count} file.",
-        "failed": "Impossibile esportare questo dataset."
-      },
-      "analytics": {
-        "title": "Analisi",
-        "no_chart": "Nessun grafico disponibile per i tipi di dati presenti.",
-        "no_data": "Nessun dato disponibile per la configurazione attuale.",
-        "error": "Impossibile caricare l'analisi.",
-        "error_messages": {
-          "invalid_aggregation": "Seleziona una colonna numerica per usare questa aggregazione.",
-          "no_rows_after_filter": "Nessuna riga corrisponde ai filtri attuali.",
-          "unsupported": "Questo grafico non è disponibile per le colonne selezionate.",
-          "internal": "Impossibile caricare questo grafico. Prova a cambiare colonne o filtri.",
-          "no_numeric_column": "Seleziona una colonna numerica per disegnare questo grafico."
+    },
+    "settings": {
+        "language": "Lingua",
+        "full_immersion": "Schermo intero",
+        "language_english": "English",
+        "language_italian": "Italiano",
+        "language_spanish": "Español",
+        "language_french": "Français",
+        "language_german": "Deutsch",
+        "language_chinese": "中文",
+        "language_russian": "Русский",
+        "language_japanese": "日本語",
+        "language_portuguese": "Português",
+        "app_version_label": "Versione app",
+        "app_version_value": "Versione {version}",
+        "update_check": "Controlla aggiornamenti",
+        "update_checking": "Controllo aggiornamenti...",
+        "update_available_title": "Aggiornamento disponibile",
+        "update_available_message": "È disponibile Exlser {version}.",
+        "update_download": "Scarica aggiornamento",
+        "update_open_release": "Apri release",
+        "update_up_to_date": "Stai usando l'ultima versione desktop.",
+        "update_unsupported": "Gli aggiornamenti desktop non sono disponibili su questa piattaforma.",
+        "update_error": "Impossibile controllare gli aggiornamenti.",
+        "update_open_failed": "Impossibile aprire il link dell'aggiornamento."
+    },
+    "import": {
+        "title": "Crea nuovo dataset",
+        "dataset_name": "Nome dataset",
+        "save_locally": "Salva file localmente",
+        "next": "Avanti",
+        "finish": "Completa",
+        "column_types": {
+            "title": "Controlla i tipi colonna",
+            "empty": "Nessuna colonna preparata disponibile",
+            "rows": "righe",
+            "original_name": "Nome Excel",
+            "database_name": "Nome in App",
+            "inferred_type": "Tipo di dato",
+            "info": {
+                "tooltip": "Cosa indicano i tipi di dato?",
+                "title": "Tipi di dato",
+                "intro": "Il tipo di dato indica all'app come interpretare e salvare i valori di questa colonna. Puoi mantenere il tipo rilevato oppure modificarlo prima di creare il dataset.",
+                "text": "Testo: parole, codici, ID, note o valori misti.",
+                "integer": "Intero: numeri senza decimali.",
+                "real": "Reale: numeri con decimali o valori monetari.",
+                "boolean": "Booleano: vero/falso, si/no o valori binari simili.",
+                "date": "Data: date da gestire come valori di calendario."
+            },
+            "selected_type": "Tipo selezionato",
+            "type": {
+                "text": "Testo",
+                "integer": "Intero",
+                "real": "Reale",
+                "boolean": "Booleano",
+                "date": "Data"
+            }
         },
-        "aggregation": "Aggregazione",
-        "filtered_result": "Risultato filtrato: {count} filtri attivi",
-        "updating": "Aggiornamento grafico...",
-        "labels": {
-          "group_by": "Raggruppa per",
-          "value": "Valore",
-          "date": "Data",
-          "value_over_time": "Valore nel tempo"
+        "confirmation": {
+            "title": "Conferma importazione",
+            "dataset_name": "Dataset",
+            "source_file": "File sorgente",
+            "file_storage": "Salvataggio file",
+            "sheets": "Fogli",
+            "columns": "Colonne",
+            "rows": "Righe",
+            "column_types": "Tipi colonna confermati",
+            "storage": {
+                "original_path": "Riferimento al percorso originale",
+                "app_copy": "Copia del file nello spazio dell'app",
+                "web_temporary": "Riferimento temporaneo del browser"
+            }
         },
-        "title_sentence": {
-          "count_by": "Conteggio per {group}",
-          "count_over": "Conteggio nel tempo per {date}",
-          "aggregation_by": "{aggregation} di {value} per {group}",
-          "aggregation_over": "{aggregation} di {value} nel tempo per {date}"
-        },
-        "x_column": "Asse X",
-        "y_column": "Asse Y",
-        "add_chart": "Aggiungi grafico",
-        "add_chart_options": {
-          "line": {
-            "title": "Andamento nel tempo",
-            "description": "Usa una colonna data e un valore numerico per mostrare come cambiano i valori nel tempo."
-          },
-          "bar": {
-            "title": "Confronto per categoria",
-            "description": "Confronta gruppi usando un conteggio o un valore numerico."
-          },
-          "pie": {
-            "title": "Distribuzione per categoria",
-            "description": "Mostra come un totale si divide tra un numero ridotto di gruppi."
-          }
-        },
-        "agg": {
-          "count": "Conteggio",
-          "sum": "Somma",
-          "avg": "Media",
-          "min": "Minimo",
-          "max": "Massimo"
-        },
-        "aggregation_info": {
-          "tooltip": "Cosa indicano le aggregazioni?",
-          "title": "Aggregazioni",
-          "intro": "L'aggregazione decide come combinare più righe prima di disegnare il grafico. Se ogni gruppo contiene una sola riga, somma, media, minimo e massimo possono risultare identici.",
-          "count": "Numero di righe in ogni gruppo.",
-          "sum": "Totale dei valori numerici selezionati.",
-          "avg": "Valore medio per ogni gruppo.",
-          "min": "Valore più basso trovato in ogni gruppo.",
-          "max": "Valore più alto trovato in ogni gruppo."
+        "error": {
+            "empty_file_name": "Il file selezionato non ha un nome. Seleziona di nuovo il file.",
+            "empty_file_path": "L'app non riesce ad accedere al percorso del file selezionato. Seleziona di nuovo il file.",
+            "empty_file_bytes": "Il file selezionato è vuoto o non disponibile. Seleziona di nuovo il file.",
+            "no_extension": "Il file selezionato non ha estensione. Usa un file CSV o XLSX.",
+            "unsupported_format": "Questo formato file non è supportato. Usa un file CSV o XLSX. I file XLS legacy non sono ancora supportati.",
+            "parser_not_found": "L'app non può ancora leggere questo tipo di file. Usa un file CSV o XLSX.",
+            "parsing_failed": "Il file non può essere letto. Verifica che non sia danneggiato o protetto da password.",
+            "no_sheets": "Nel file non sono stati trovati fogli leggibili.",
+            "no_valid_sheets": "Il file è stato letto, ma nessun foglio contiene dati tabellari utilizzabili.",
+            "schema_failed": "L'app non è riuscita a rilevare una struttura tabellare utilizzabile nel file.",
+            "unexpected_error": "Qualcosa è andato storto durante l'importazione. Riprova o seleziona un altro file.",
+            "creation_failed": "Non è stato possibile creare il dataset. Controlla le impostazioni di importazione e riprova.",
+            "file_access_error": "Impossibile accedere al file. Assicurati che esista e non sia stato spostato."
         }
-      }
-    },
-    "joins": {
-      "action": "Combina fogli",
-      "title": "Combina fogli",
-      "subtitle": "Collega due o più fogli e vedi un'anteprima del risultato.",
-      "select_sheets": "Fogli da combinare",
-      "base_sheet": "Foglio base",
-      "base_sheet_hint": "Il foglio di partenza. Le LEFT join ne conservano tutte le righe.",
-      "output_columns": "Colonne da mostrare",
-      "output_columns_hint": "Nel risultato compaiono solo le colonne selezionate.",
-      "relationships": "Relazioni",
-      "no_relationships": "Nessuna relazione. Aggiungine una per combinare i fogli.",
-      "suggest": "Trova relazioni",
-      "suggestions": "Relazioni suggerite",
-      "no_suggestions": "Nessuna relazione suggerita. Scegli tu le colonne.",
-      "confirm": "Conferma",
-      "remove": "Rimuovi",
-      "flip": "Inverti i lati",
-      "join_type": "Tipo di join",
-      "join_inner": "Solo righe con corrispondenza",
-      "join_left": "Tieni tutte le righe del foglio base",
-      "run": "Esegui anteprima",
-      "preview": "Anteprima",
-      "preview_limited": "Anteprima limitata a {limit} righe",
-      "preview_truncated": "Risultato troncato: potrebbero esserci altre righe.",
-      "empty_result": "Nessuna riga corrisponde alle relazioni scelte.",
-      "generated_sql": "SQL generato",
-      "save": "Salva configurazione",
-      "saved_queries": "Configurazioni salvate",
-      "save_name": "Nome configurazione",
-      "delete": "Elimina",
-      "confidence_high": "Alta",
-      "confidence_medium": "Media",
-      "confidence_low": "Bassa",
-      "reason_name_match": "nomi coincidenti",
-      "reason_common_identifier": "colonna identificatore",
-      "reason_value_overlap": "valori in comune",
-      "reason_type_match": "tipi compatibili",
-      "warning_many_to_many": "{left} e {right} non hanno una chiave univoca: le righe potrebbero moltiplicarsi.",
-      "stale_spec": "Questa configurazione salvata usa fogli o colonne non più presenti.",
-      "error_not_enough_tables": "Seleziona almeno due fogli.",
-      "error_unavailable_table_or_column": "Un foglio o una colonna non è più disponibile.",
-      "error_incomplete_relationship": "Una relazione è incompleta.",
-      "error_duplicate_relationship": "Questa relazione esiste già.",
-      "error_disconnected_graph": "Ogni foglio deve essere collegato agli altri.",
-      "error_cycle_detected": "Le relazioni formano un ciclo.",
-      "error_invalid_left_join_direction": "Inverti i lati: una LEFT join deve conservare il foglio già collegato.",
-      "error_no_output_columns": "Seleziona almeno una colonna da mostrare.",
-      "error_generic": "Non è stato possibile eseguire l'anteprima."
     }
-  },
-  "settings": {
-    "language": "Lingua",
-    "full_immersion": "Schermo intero",
-    "language_english": "English",
-    "language_italian": "Italiano",
-    "language_spanish": "Español",
-    "language_french": "Français",
-    "language_german": "Deutsch",
-    "language_chinese": "中文",
-    "language_russian": "Русский",
-    "language_japanese": "日本語",
-    "language_portuguese": "Português",
-    "app_version_label": "Versione app",
-    "app_version_value": "Versione {version}",
-    "update_check": "Controlla aggiornamenti",
-    "update_checking": "Controllo aggiornamenti...",
-    "update_available_title": "Aggiornamento disponibile",
-    "update_available_message": "È disponibile Exlser {version}.",
-    "update_download": "Scarica aggiornamento",
-    "update_open_release": "Apri release",
-    "update_up_to_date": "Stai usando l'ultima versione desktop.",
-    "update_unsupported": "Gli aggiornamenti desktop non sono disponibili su questa piattaforma.",
-    "update_error": "Impossibile controllare gli aggiornamenti.",
-    "update_open_failed": "Impossibile aprire il link dell'aggiornamento."
-  },
-  "import": {
-    "title": "Crea nuovo dataset",
-    "dataset_name": "Nome dataset",
-    "save_locally": "Salva file localmente",
-    "next": "Avanti",
-    "finish": "Completa",
-    "column_types": {
-      "title": "Controlla i tipi colonna",
-      "empty": "Nessuna colonna preparata disponibile",
-      "rows": "righe",
-      "original_name": "Nome Excel",
-      "database_name": "Nome in App",
-      "inferred_type": "Tipo di dato",
-      "info": {
-        "tooltip": "Cosa indicano i tipi di dato?",
-        "title": "Tipi di dato",
-        "intro": "Il tipo di dato indica all'app come interpretare e salvare i valori di questa colonna. Puoi mantenere il tipo rilevato oppure modificarlo prima di creare il dataset.",
-        "text": "Testo: parole, codici, ID, note o valori misti.",
-        "integer": "Intero: numeri senza decimali.",
-        "real": "Reale: numeri con decimali o valori monetari.",
-        "boolean": "Booleano: vero/falso, si/no o valori binari simili.",
-        "date": "Data: date da gestire come valori di calendario."
-      },
-      "selected_type": "Tipo selezionato",
-      "type": {
-        "text": "Testo",
-        "integer": "Intero",
-        "real": "Reale",
-        "boolean": "Booleano",
-        "date": "Data"
-      }
-    },
-    "confirmation": {
-      "title": "Conferma importazione",
-      "dataset_name": "Dataset",
-      "source_file": "File sorgente",
-      "file_storage": "Salvataggio file",
-      "sheets": "Fogli",
-      "columns": "Colonne",
-      "rows": "Righe",
-      "column_types": "Tipi colonna confermati",
-      "storage": {
-        "original_path": "Riferimento al percorso originale",
-        "app_copy": "Copia del file nello spazio dell'app",
-        "web_temporary": "Riferimento temporaneo del browser"
-      }
-    },
-    "error": {
-      "empty_file_name": "Il file selezionato non ha un nome. Seleziona di nuovo il file.",
-      "empty_file_path": "L'app non riesce ad accedere al percorso del file selezionato. Seleziona di nuovo il file.",
-      "empty_file_bytes": "Il file selezionato è vuoto o non disponibile. Seleziona di nuovo il file.",
-      "no_extension": "Il file selezionato non ha estensione. Usa un file CSV o XLSX.",
-      "unsupported_format": "Questo formato file non è supportato. Usa un file CSV o XLSX. I file XLS legacy non sono ancora supportati.",
-      "parser_not_found": "L'app non può ancora leggere questo tipo di file. Usa un file CSV o XLSX.",
-      "parsing_failed": "Il file non può essere letto. Verifica che non sia danneggiato o protetto da password.",
-      "no_sheets": "Nel file non sono stati trovati fogli leggibili.",
-      "no_valid_sheets": "Il file è stato letto, ma nessun foglio contiene dati tabellari utilizzabili.",
-      "schema_failed": "L'app non è riuscita a rilevare una struttura tabellare utilizzabile nel file.",
-      "unexpected_error": "Qualcosa è andato storto durante l'importazione. Riprova o seleziona un altro file.",
-      "creation_failed": "Non è stato possibile creare il dataset. Controlla le impostazioni di importazione e riprova.",
-      "file_access_error": "Impossibile accedere al file. Assicurati che esista e non sia stato spostato."
-    }
-  }
 }

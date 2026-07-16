@@ -1,391 +1,391 @@
 {
-  "app": {
-    "name": "Exlser"
-  },
-  "home": {
-    "select_file": "Select a CSV or XLSX file",
-    "drop_file": "Drag and drop a CSV or XLSX file here",
-    "process_file": "Process File",
-    "browse_file": "Browse file"
-  },
-  "onboarding": {
-    "title": "Welcome to Exlser",
-    "button": "Get Started",
-    "welcome": {
-      "title": "Welcome to Exlser"
+    "app": {
+        "name": "Exlser"
     },
-    "data": {
-      "title": "Get the most out of your data!"
+    "home": {
+        "select_file": "Select a CSV or XLSX file",
+        "drop_file": "Drag and drop a CSV or XLSX file here",
+        "process_file": "Process File",
+        "browse_file": "Browse file"
     },
-    "cross_platform": {
-      "title": "The full power of Exlser, on every device"
+    "onboarding": {
+        "title": "Welcome to Exlser",
+        "button": "Get Started",
+        "welcome": {
+            "title": "Welcome to Exlser"
+        },
+        "data": {
+            "title": "Get the most out of your data!"
+        },
+        "cross_platform": {
+            "title": "The full power of Exlser, on every device"
+        },
+        "play_preview": "Watch preview",
+        "replay_preview": "Replay video"
     },
-    "play_preview": "Watch preview",
-    "replay_preview": "Replay video"
-  },
-  "common": {
-    "skip": "Skip",
-    "previous": "Previous",
-    "next": "Next",
-    "start": "Start",
-    "retry": "Retry",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "refresh": "Refresh",
-    "open": "Open",
-    "add": "Add",
-    "clear": "Clear",
-    "apply": "Apply",
-    "run": "Run",
-    "close": "Close",
-    "expand": "Expand"
-  },
-  "menu": {
-    "home": "Home",
-    "works": "Works",
-    "settings": "Settings",
-    "developer": "Developer",
-    "developer_website": "paolopietrelli.com",
-    "open_website": "Open website",
-    "open_github": "Open GitHub",
-    "open_linkedin": "Open LinkedIn",
-    "open_instagram": "Open Instagram"
-  },
-  "works": {
-    "empty": "Here will be shown your list of works",
-    "go_home": "Go to Home",
-    "source_file": "Source file",
-    "created_at": "Created",
-    "last_opened_at": "Last opened",
-    "never_opened": "Never opened",
-    "delete_title": "Delete dataset",
-    "delete_message": "This will remove the dataset, schema, rows, and file reference.",
-    "search_hint": "Search by name or file",
-    "no_results": "No datasets match your search.",
-    "error": {
-      "load_failed": "Could not load datasets.",
-      "open_failed": "Could not open the selected dataset.",
-      "delete_failed": "Could not delete the selected dataset."
-    }
-  },
-  "dataset": {
-    "workspace": {
-      "title": "Dataset workspace",
-      "source_file": "Source file",
-      "sheets": "Sheets",
-      "columns": "Columns",
-      "visible_columns": "Visible columns",
-      "visible_columns_hint": "Hide columns you do not need in the table and exports.",
-      "rows": "Rows",
-      "loaded_rows": "Loaded rows",
-      "initial_row_limit": "Showing the first {count} rows.",
-      "rows_per_page": "Rows per page",
-      "pagination": {
-        "range": "Rows {from}-{to} of {total}",
-        "page": "Page {page} of {pages}",
-        "invalid_limit": "Enter a positive number."
-      },
-      "select_sheet": "Sheet",
-      "table_view": "Table",
-      "card_view": "Cards",
-      "qr": {
-        "tooltip": "Row JSON QR code",
-        "unavailable": "This row is too large for a QR code."
-      },
-      "no_tables": "This dataset has no sheets to display.",
-      "no_rows": "No rows available for this sheet.",
-      "filters": {
-        "title": "Filters",
-        "column": "Column",
-        "operator": "Operator",
-        "value": "Value",
-        "second_value": "Second value",
-        "add": "Add filter",
-        "active": "Active filters",
-        "clear": "Clear filters",
-        "invalid_value": "Enter a valid value for the selected column type.",
-        "advanced": "Advanced",
-        "text_value": "Search text",
-        "from": "From",
-        "to": "To",
-        "range": "Range",
-        "no_range": "No numeric values are available in the loaded rows.",
-        "true_value": "True",
-        "false_value": "False",
-        "operator_labels": {
-          "contains": "contains",
-          "equals": "equals",
-          "not_equals": "does not equal",
-          "starts_with": "starts with",
-          "ends_with": "ends with",
-          "greater_than": "greater than",
-          "greater_or_equal": "greater than or equal",
-          "less_than": "less than",
-          "less_or_equal": "less than or equal",
-          "between": "between",
-          "on": "on",
-          "before": "before",
-          "after": "after",
-          "is_empty": "is empty",
-          "is_not_empty": "is not empty",
-          "is_true": "is true",
-          "is_false": "is false"
+    "common": {
+        "skip": "Skip",
+        "previous": "Previous",
+        "next": "Next",
+        "start": "Start",
+        "retry": "Retry",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "refresh": "Refresh",
+        "open": "Open",
+        "add": "Add",
+        "clear": "Clear",
+        "apply": "Apply",
+        "run": "Run",
+        "close": "Close",
+        "expand": "Expand"
+    },
+    "menu": {
+        "home": "Home",
+        "works": "Works",
+        "settings": "Settings",
+        "developer": "Developer",
+        "developer_website": "paolopietrelli.com",
+        "open_website": "Open website",
+        "open_github": "Open GitHub",
+        "open_linkedin": "Open LinkedIn",
+        "open_instagram": "Open Instagram"
+    },
+    "works": {
+        "empty": "Here will be shown your list of works",
+        "go_home": "Go to Home",
+        "source_file": "Source file",
+        "created_at": "Created",
+        "last_opened_at": "Last opened",
+        "never_opened": "Never opened",
+        "delete_title": "Delete dataset",
+        "delete_message": "This will remove the dataset, schema, rows, and file reference.",
+        "search_hint": "Search by name or file",
+        "no_results": "No datasets match your search.",
+        "error": {
+            "load_failed": "Could not load datasets.",
+            "open_failed": "Could not open the selected dataset.",
+            "delete_failed": "Could not delete the selected dataset."
         }
-      },
-      "query": {
-        "tabs": {
-          "filters": "Filters",
-          "sql": "Query"
+    },
+    "dataset": {
+        "workspace": {
+            "title": "Dataset workspace",
+            "source_file": "Source file",
+            "sheets": "Sheets",
+            "columns": "Columns",
+            "visible_columns": "Visible columns",
+            "visible_columns_hint": "Hide columns you do not need in the table and exports.",
+            "rows": "Rows",
+            "loaded_rows": "Loaded rows",
+            "initial_row_limit": "Showing the first {count} rows.",
+            "rows_per_page": "Rows per page",
+            "pagination": {
+                "range": "Rows {from}-{to} of {total}",
+                "page": "Page {page} of {pages}",
+                "invalid_limit": "Enter a positive number."
+            },
+            "select_sheet": "Sheet",
+            "table_view": "Table",
+            "card_view": "Cards",
+            "qr": {
+                "tooltip": "Row JSON QR code",
+                "unavailable": "This row is too large for a QR code."
+            },
+            "no_tables": "This dataset has no sheets to display.",
+            "no_rows": "No rows available for this sheet.",
+            "filters": {
+                "title": "Filters",
+                "column": "Column",
+                "operator": "Operator",
+                "value": "Value",
+                "second_value": "Second value",
+                "add": "Add filter",
+                "active": "Active filters",
+                "clear": "Clear filters",
+                "invalid_value": "Enter a valid value for the selected column type.",
+                "advanced": "Advanced",
+                "text_value": "Search text",
+                "from": "From",
+                "to": "To",
+                "range": "Range",
+                "no_range": "No numeric values are available in the loaded rows.",
+                "true_value": "True",
+                "false_value": "False",
+                "operator_labels": {
+                    "contains": "contains",
+                    "equals": "equals",
+                    "not_equals": "does not equal",
+                    "starts_with": "starts with",
+                    "ends_with": "ends with",
+                    "greater_than": "greater than",
+                    "greater_or_equal": "greater than or equal",
+                    "less_than": "less than",
+                    "less_or_equal": "less than or equal",
+                    "between": "between",
+                    "on": "on",
+                    "before": "before",
+                    "after": "after",
+                    "is_empty": "is empty",
+                    "is_not_empty": "is not empty",
+                    "is_true": "is true",
+                    "is_false": "is false"
+                }
+            },
+            "query": {
+                "tabs": {
+                    "filters": "Filters",
+                    "sql": "Query"
+                },
+                "title": "Read-only query",
+                "intro": "Write a SELECT query for advanced analysis. Only read-only queries are allowed and results are limited.",
+                "editor": "SQL query",
+                "limit": "Max rows",
+                "reset": "Reset to current sheet",
+                "result_count": "{count} row(s) returned",
+                "result_summary": "Showing {shown} of {total} matching row(s)",
+                "schema": "Schema helper",
+                "active_context": "Use sheet as an alias for the current sheet: {table}",
+                "insert_table": "Insert table name",
+                "insert_column": "Insert column name",
+                "empty_result": "Run a query to show results here.",
+                "errors": {
+                    "empty": "Write a SELECT query before running it.",
+                    "not_select": "Only SELECT queries are allowed.",
+                    "unsafe_statement": "This query contains a blocked SQL command.",
+                    "multiple_statements": "Run one SELECT query at a time without comments or semicolons.",
+                    "unknown_table": "Use only tables that belong to this dataset.",
+                    "invalid_limit": "Enter a positive row limit.",
+                    "execution_failed": "Could not run this query."
+                }
+            },
+            "error": {
+                "load_failed": "Could not load the dataset workspace.",
+                "sheet_failed": "Could not load the selected sheet.",
+                "refresh_failed": "Could not refresh rows.",
+                "filter_failed": "Could not apply filters.",
+                "sort_failed": "Could not sort rows.",
+                "pagination_failed": "Could not load the requested page."
+            },
+            "export": {
+                "tooltip": "Export dataset",
+                "excel": "Export Excel",
+                "csv": "Export CSV",
+                "pdf": "Export PDF",
+                "sql": "Export SQL",
+                "json": "Export JSON",
+                "dialog_title": "Export",
+                "sheets": "Sheets",
+                "current_sheet": "Current sheet",
+                "all_sheets": "All sheets",
+                "format": "Format",
+                "pdf_layout": "PDF layout",
+                "pdf_table": "Table",
+                "pdf_cards": "Cards with QR",
+                "no_sheet_selected": "Select at least one sheet.",
+                "started": "Exporting dataset...",
+                "success": "Export ready: {count} file(s).",
+                "failed": "Could not export this dataset."
+            },
+            "analytics": {
+                "title": "Analytics",
+                "no_chart": "No chart available for the current data types.",
+                "no_data": "No data available for the current configuration.",
+                "error": "Could not load analytics.",
+                "error_messages": {
+                    "invalid_aggregation": "Select a numeric value column to use this aggregation.",
+                    "no_rows_after_filter": "No rows match the current filters.",
+                    "unsupported": "This chart is not available for the selected columns.",
+                    "internal": "This chart could not be loaded. Try changing columns or filters.",
+                    "no_numeric_column": "Select a numeric column to draw this chart."
+                },
+                "aggregation": "Aggregation",
+                "filtered_result": "Filtered result: {count} active filter(s)",
+                "updating": "Updating chart...",
+                "labels": {
+                    "group_by": "Group by",
+                    "value": "Value",
+                    "date": "Date",
+                    "value_over_time": "Value over time"
+                },
+                "title_sentence": {
+                    "count_by": "Count by {group}",
+                    "count_over": "Count over {date}",
+                    "aggregation_by": "{aggregation} of {value} by {group}",
+                    "aggregation_over": "{aggregation} of {value} over {date}"
+                },
+                "x_column": "X axis",
+                "y_column": "Y axis",
+                "add_chart": "Add chart",
+                "add_chart_options": {
+                    "line": {
+                        "title": "Trend over time",
+                        "description": "Uses a date column and a numeric value to show how values change over time."
+                    },
+                    "bar": {
+                        "title": "Category comparison",
+                        "description": "Compares groups using a count or a numeric value."
+                    },
+                    "pie": {
+                        "title": "Share by category",
+                        "description": "Shows how a total is split across a small number of groups."
+                    }
+                },
+                "agg": {
+                    "count": "Count",
+                    "sum": "Sum",
+                    "avg": "Average",
+                    "min": "Minimum",
+                    "max": "Maximum"
+                },
+                "aggregation_info": {
+                    "tooltip": "What do aggregations mean?",
+                    "title": "Aggregations",
+                    "intro": "Aggregation controls how multiple rows are combined before the chart is drawn. If each group contains one row, sum, average, minimum, and maximum can look identical.",
+                    "count": "Number of rows in each group.",
+                    "sum": "Total of the selected numeric values.",
+                    "avg": "Mean value for each group.",
+                    "min": "Lowest value found in each group.",
+                    "max": "Highest value found in each group."
+                }
+            }
         },
-        "title": "Read-only query",
-        "intro": "Write a SELECT query for advanced analysis. Only read-only queries are allowed and results are limited.",
-        "editor": "SQL query",
-        "limit": "Max rows",
-        "reset": "Reset to current sheet",
-        "result_count": "{count} row(s) returned",
-        "result_summary": "Showing {shown} of {total} matching row(s)",
-        "schema": "Schema helper",
-        "active_context": "Use sheet as an alias for the current sheet: {table}",
-        "insert_table": "Insert table name",
-        "insert_column": "Insert column name",
-        "empty_result": "Run a query to show results here.",
-        "errors": {
-          "empty": "Write a SELECT query before running it.",
-          "not_select": "Only SELECT queries are allowed.",
-          "unsafe_statement": "This query contains a blocked SQL command.",
-          "multiple_statements": "Run one SELECT query at a time without comments or semicolons.",
-          "unknown_table": "Use only tables that belong to this dataset.",
-          "invalid_limit": "Enter a positive row limit.",
-          "execution_failed": "Could not run this query."
+        "joins": {
+            "action": "Combine sheets",
+            "title": "Combine sheets",
+            "subtitle": "Link two or more sheets and preview the combined result.",
+            "select_sheets": "Sheets to combine",
+            "base_sheet": "Base sheet",
+            "base_sheet_hint": "The starting sheet. LEFT joins keep all of its rows.",
+            "output_columns": "Columns to show",
+            "output_columns_hint": "Only the selected columns appear in the result.",
+            "relationships": "Relationships",
+            "no_relationships": "No relationship yet. Add one to combine the sheets.",
+            "suggest": "Find relationships",
+            "suggestions": "Suggested relationships",
+            "no_suggestions": "No relationship suggested. Pick the columns yourself.",
+            "confirm": "Confirm",
+            "remove": "Remove",
+            "flip": "Swap sides",
+            "join_type": "Join type",
+            "join_inner": "Only matching rows",
+            "join_left": "Keep all rows of the base sheet",
+            "run": "Run preview",
+            "preview": "Preview",
+            "preview_limited": "Preview limited to {limit} rows",
+            "preview_truncated": "Result truncated: more rows may exist.",
+            "empty_result": "No row matches the chosen relationships.",
+            "generated_sql": "Generated SQL",
+            "save": "Save configuration",
+            "saved_queries": "Saved configurations",
+            "save_name": "Configuration name",
+            "delete": "Delete",
+            "confidence_high": "High",
+            "confidence_medium": "Medium",
+            "confidence_low": "Low",
+            "reason_name_match": "matching names",
+            "reason_common_identifier": "identifier column",
+            "reason_value_overlap": "overlapping values",
+            "reason_type_match": "compatible types",
+            "warning_many_to_many": "{left} and {right} have no unique key: rows may multiply.",
+            "stale_spec": "This saved configuration uses sheets or columns that no longer exist.",
+            "error_not_enough_tables": "Select at least two sheets.",
+            "error_unavailable_table_or_column": "A sheet or column is no longer available.",
+            "error_incomplete_relationship": "A relationship is incomplete.",
+            "error_duplicate_relationship": "That relationship already exists.",
+            "error_disconnected_graph": "Every sheet must be connected to the others.",
+            "error_cycle_detected": "The relationships form a loop.",
+            "error_invalid_left_join_direction": "Swap the sides: a LEFT join must keep the already connected sheet.",
+            "error_no_output_columns": "Select at least one column to show.",
+            "error_generic": "Could not run the preview."
         }
-      },
-      "error": {
-        "load_failed": "Could not load the dataset workspace.",
-        "sheet_failed": "Could not load the selected sheet.",
-        "refresh_failed": "Could not refresh rows.",
-        "filter_failed": "Could not apply filters.",
-        "sort_failed": "Could not sort rows.",
-        "pagination_failed": "Could not load the requested page."
-      },
-      "export": {
-        "tooltip": "Export dataset",
-        "excel": "Export Excel",
-        "csv": "Export CSV",
-        "pdf": "Export PDF",
-        "sql": "Export SQL",
-        "json": "Export JSON",
-        "dialog_title": "Export",
-        "sheets": "Sheets",
-        "current_sheet": "Current sheet",
-        "all_sheets": "All sheets",
-        "format": "Format",
-        "pdf_layout": "PDF layout",
-        "pdf_table": "Table",
-        "pdf_cards": "Cards with QR",
-        "no_sheet_selected": "Select at least one sheet.",
-        "started": "Exporting dataset...",
-        "success": "Export ready: {count} file(s).",
-        "failed": "Could not export this dataset."
-      },
-      "analytics": {
-        "title": "Analytics",
-        "no_chart": "No chart available for the current data types.",
-        "no_data": "No data available for the current configuration.",
-        "error": "Could not load analytics.",
-        "error_messages": {
-          "invalid_aggregation": "Select a numeric value column to use this aggregation.",
-          "no_rows_after_filter": "No rows match the current filters.",
-          "unsupported": "This chart is not available for the selected columns.",
-          "internal": "This chart could not be loaded. Try changing columns or filters.",
-          "no_numeric_column": "Select a numeric column to draw this chart."
+    },
+    "settings": {
+        "language": "Language",
+        "full_immersion": "Full immersion",
+        "language_english": "English",
+        "language_italian": "Italiano",
+        "language_spanish": "Español",
+        "language_french": "Français",
+        "language_german": "Deutsch",
+        "language_chinese": "中文",
+        "language_russian": "Русский",
+        "language_japanese": "日本語",
+        "language_portuguese": "Português",
+        "app_version_label": "App version",
+        "app_version_value": "Version {version}",
+        "update_check": "Check for updates",
+        "update_checking": "Checking for updates...",
+        "update_available_title": "Update available",
+        "update_available_message": "Exlser {version} is available.",
+        "update_download": "Download update",
+        "update_open_release": "Open release",
+        "update_up_to_date": "You are using the latest desktop version.",
+        "update_unsupported": "Desktop updates are not available on this platform.",
+        "update_error": "Could not check for updates.",
+        "update_open_failed": "Could not open the update link."
+    },
+    "import": {
+        "title": "Create new dataset",
+        "dataset_name": "Dataset name",
+        "save_locally": "Save file locally",
+        "next": "Next",
+        "finish": "Finish",
+        "column_types": {
+            "title": "Review column types",
+            "empty": "No prepared columns available",
+            "rows": "rows",
+            "original_name": "Excel name",
+            "database_name": "App name",
+            "inferred_type": "Data type",
+            "info": {
+                "tooltip": "What do data types mean?",
+                "title": "Data types",
+                "intro": "The data type tells the app how to interpret and store the values in this column. You can keep the detected type or change it before creating the dataset.",
+                "text": "Text: words, codes, IDs, notes, or mixed values.",
+                "integer": "Integer: whole numbers without decimals.",
+                "real": "Real: numbers with decimals or monetary values.",
+                "boolean": "Boolean: true/false, yes/no, or similar binary values.",
+                "date": "Date: dates that should be handled as calendar values."
+            },
+            "selected_type": "Selected type",
+            "type": {
+                "text": "Text",
+                "integer": "Integer",
+                "real": "Real",
+                "boolean": "Boolean",
+                "date": "Date"
+            }
         },
-        "aggregation": "Aggregation",
-        "filtered_result": "Filtered result: {count} active filter(s)",
-        "updating": "Updating chart...",
-        "labels": {
-          "group_by": "Group by",
-          "value": "Value",
-          "date": "Date",
-          "value_over_time": "Value over time"
+        "confirmation": {
+            "title": "Confirm import",
+            "dataset_name": "Dataset",
+            "source_file": "Source file",
+            "file_storage": "File storage",
+            "sheets": "Sheets",
+            "columns": "Columns",
+            "rows": "Rows",
+            "column_types": "Confirmed column types",
+            "storage": {
+                "original_path": "Reference original file path",
+                "app_copy": "Copy file into app storage",
+                "web_temporary": "Temporary browser file reference"
+            }
         },
-        "title_sentence": {
-          "count_by": "Count by {group}",
-          "count_over": "Count over {date}",
-          "aggregation_by": "{aggregation} of {value} by {group}",
-          "aggregation_over": "{aggregation} of {value} over {date}"
-        },
-        "x_column": "X axis",
-        "y_column": "Y axis",
-        "add_chart": "Add chart",
-        "add_chart_options": {
-          "line": {
-            "title": "Trend over time",
-            "description": "Uses a date column and a numeric value to show how values change over time."
-          },
-          "bar": {
-            "title": "Category comparison",
-            "description": "Compares groups using a count or a numeric value."
-          },
-          "pie": {
-            "title": "Share by category",
-            "description": "Shows how a total is split across a small number of groups."
-          }
-        },
-        "agg": {
-          "count": "Count",
-          "sum": "Sum",
-          "avg": "Average",
-          "min": "Minimum",
-          "max": "Maximum"
-        },
-        "aggregation_info": {
-          "tooltip": "What do aggregations mean?",
-          "title": "Aggregations",
-          "intro": "Aggregation controls how multiple rows are combined before the chart is drawn. If each group contains one row, sum, average, minimum, and maximum can look identical.",
-          "count": "Number of rows in each group.",
-          "sum": "Total of the selected numeric values.",
-          "avg": "Mean value for each group.",
-          "min": "Lowest value found in each group.",
-          "max": "Highest value found in each group."
+        "error": {
+            "empty_file_name": "The selected file has no name. Select the file again.",
+            "empty_file_path": "The app cannot access the selected file path. Select the file again.",
+            "empty_file_bytes": "The selected file is empty or unavailable. Select the file again.",
+            "no_extension": "The selected file has no extension. Use a CSV or XLSX file.",
+            "unsupported_format": "This file format is not supported. Use a CSV or XLSX file. Legacy XLS files are not supported yet.",
+            "parser_not_found": "The app cannot read this file type yet. Use a CSV or XLSX file.",
+            "parsing_failed": "The file could not be read. Check that it is not corrupted or password-protected.",
+            "no_sheets": "No readable sheets were found in the file.",
+            "no_valid_sheets": "The file was read, but no sheet contains usable tabular data.",
+            "schema_failed": "The app could not detect a usable table structure in the file.",
+            "unexpected_error": "Something went wrong during import. Try again or select another file.",
+            "creation_failed": "The dataset could not be created. Review the import settings and try again.",
+            "file_access_error": "The file could not be accessed. Make sure it exists and has not been moved."
         }
-      }
-    },
-    "joins": {
-      "action": "Combine sheets",
-      "title": "Combine sheets",
-      "subtitle": "Link two or more sheets and preview the combined result.",
-      "select_sheets": "Sheets to combine",
-      "base_sheet": "Base sheet",
-      "base_sheet_hint": "The starting sheet. LEFT joins keep all of its rows.",
-      "output_columns": "Columns to show",
-      "output_columns_hint": "Only the selected columns appear in the result.",
-      "relationships": "Relationships",
-      "no_relationships": "No relationship yet. Add one to combine the sheets.",
-      "suggest": "Find relationships",
-      "suggestions": "Suggested relationships",
-      "no_suggestions": "No relationship suggested. Pick the columns yourself.",
-      "confirm": "Confirm",
-      "remove": "Remove",
-      "flip": "Swap sides",
-      "join_type": "Join type",
-      "join_inner": "Only matching rows",
-      "join_left": "Keep all rows of the base sheet",
-      "run": "Run preview",
-      "preview": "Preview",
-      "preview_limited": "Preview limited to {limit} rows",
-      "preview_truncated": "Result truncated: more rows may exist.",
-      "empty_result": "No row matches the chosen relationships.",
-      "generated_sql": "Generated SQL",
-      "save": "Save configuration",
-      "saved_queries": "Saved configurations",
-      "save_name": "Configuration name",
-      "delete": "Delete",
-      "confidence_high": "High",
-      "confidence_medium": "Medium",
-      "confidence_low": "Low",
-      "reason_name_match": "matching names",
-      "reason_common_identifier": "identifier column",
-      "reason_value_overlap": "overlapping values",
-      "reason_type_match": "compatible types",
-      "warning_many_to_many": "{left} and {right} have no unique key: rows may multiply.",
-      "stale_spec": "This saved configuration uses sheets or columns that no longer exist.",
-      "error_not_enough_tables": "Select at least two sheets.",
-      "error_unavailable_table_or_column": "A sheet or column is no longer available.",
-      "error_incomplete_relationship": "A relationship is incomplete.",
-      "error_duplicate_relationship": "That relationship already exists.",
-      "error_disconnected_graph": "Every sheet must be connected to the others.",
-      "error_cycle_detected": "The relationships form a loop.",
-      "error_invalid_left_join_direction": "Swap the sides: a LEFT join must keep the already connected sheet.",
-      "error_no_output_columns": "Select at least one column to show.",
-      "error_generic": "Could not run the preview."
     }
-  },
-  "settings": {
-    "language": "Language",
-    "full_immersion": "Full immersion",
-    "language_english": "English",
-    "language_italian": "Italiano",
-    "language_spanish": "Español",
-    "language_french": "Français",
-    "language_german": "Deutsch",
-    "language_chinese": "中文",
-    "language_russian": "Русский",
-    "language_japanese": "日本語",
-    "language_portuguese": "Português",
-    "app_version_label": "App version",
-    "app_version_value": "Version {version}",
-    "update_check": "Check for updates",
-    "update_checking": "Checking for updates...",
-    "update_available_title": "Update available",
-    "update_available_message": "Exlser {version} is available.",
-    "update_download": "Download update",
-    "update_open_release": "Open release",
-    "update_up_to_date": "You are using the latest desktop version.",
-    "update_unsupported": "Desktop updates are not available on this platform.",
-    "update_error": "Could not check for updates.",
-    "update_open_failed": "Could not open the update link."
-  },
-  "import": {
-    "title": "Create new dataset",
-    "dataset_name": "Dataset name",
-    "save_locally": "Save file locally",
-    "next": "Next",
-    "finish": "Finish",
-    "column_types": {
-      "title": "Review column types",
-      "empty": "No prepared columns available",
-      "rows": "rows",
-      "original_name": "Excel name",
-      "database_name": "App name",
-      "inferred_type": "Data type",
-      "info": {
-        "tooltip": "What do data types mean?",
-        "title": "Data types",
-        "intro": "The data type tells the app how to interpret and store the values in this column. You can keep the detected type or change it before creating the dataset.",
-        "text": "Text: words, codes, IDs, notes, or mixed values.",
-        "integer": "Integer: whole numbers without decimals.",
-        "real": "Real: numbers with decimals or monetary values.",
-        "boolean": "Boolean: true/false, yes/no, or similar binary values.",
-        "date": "Date: dates that should be handled as calendar values."
-      },
-      "selected_type": "Selected type",
-      "type": {
-        "text": "Text",
-        "integer": "Integer",
-        "real": "Real",
-        "boolean": "Boolean",
-        "date": "Date"
-      }
-    },
-    "confirmation": {
-      "title": "Confirm import",
-      "dataset_name": "Dataset",
-      "source_file": "Source file",
-      "file_storage": "File storage",
-      "sheets": "Sheets",
-      "columns": "Columns",
-      "rows": "Rows",
-      "column_types": "Confirmed column types",
-      "storage": {
-        "original_path": "Reference original file path",
-        "app_copy": "Copy file into app storage",
-        "web_temporary": "Temporary browser file reference"
-      }
-    },
-    "error": {
-      "empty_file_name": "The selected file has no name. Select the file again.",
-      "empty_file_path": "The app cannot access the selected file path. Select the file again.",
-      "empty_file_bytes": "The selected file is empty or unavailable. Select the file again.",
-      "no_extension": "The selected file has no extension. Use a CSV or XLSX file.",
-      "unsupported_format": "This file format is not supported. Use a CSV or XLSX file. Legacy XLS files are not supported yet.",
-      "parser_not_found": "The app cannot read this file type yet. Use a CSV or XLSX file.",
-      "parsing_failed": "The file could not be read. Check that it is not corrupted or password-protected.",
-      "no_sheets": "No readable sheets were found in the file.",
-      "no_valid_sheets": "The file was read, but no sheet contains usable tabular data.",
-      "schema_failed": "The app could not detect a usable table structure in the file.",
-      "unexpected_error": "Something went wrong during import. Try again or select another file.",
-      "creation_failed": "The dataset could not be created. Review the import settings and try again.",
-      "file_access_error": "The file could not be accessed. Make sure it exists and has not been moved."
-    }
-  }
 }
