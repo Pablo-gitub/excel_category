@@ -10,6 +10,7 @@ import 'package:exlser/data/services/drift_transaction_runner.dart';
 import 'package:exlser/data/services/github_release_client.dart';
 import 'package:exlser/data/services/github_release_models.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
+import 'package:exlser/domain/usecases/multisheet/manage_dataset_relationships_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/manage_multi_sheet_queries_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/save_multi_sheet_query_usecase.dart';
 import 'package:exlser/presentation/providers/database_providers.dart';
@@ -72,6 +73,8 @@ final multiSheetAnalysisServiceProvider =
     Provider<MultiSheetAnalysisService>((ref) {
   final savedQueryRepository =
       ref.watch(savedMultiSheetQueryRepositoryProvider);
+  final relationshipRepository =
+      ref.watch(datasetRelationshipRepositoryProvider);
   final queryRepository = ref.watch(queryRepositoryProvider);
 
   return MultiSheetAnalysisService(
@@ -87,5 +90,14 @@ final multiSheetAnalysisServiceProvider =
         LoadMultiSheetQueryUseCase(repository: savedQueryRepository),
     deleteQueryUseCase:
         DeleteMultiSheetQueryUseCase(repository: savedQueryRepository),
+    createRelationshipUseCase: CreateDatasetRelationshipUseCase(
+      repository: relationshipRepository,
+    ),
+    listRelationshipsUseCase: ListDatasetRelationshipsUseCase(
+      repository: relationshipRepository,
+    ),
+    updateRelationshipUseCase: UpdateDatasetRelationshipUseCase(
+      repository: relationshipRepository,
+    ),
   );
 });

@@ -1,11 +1,13 @@
 //lib/application/services/multi_sheet_analysis_service.dart
 
 import 'package:exlser/domain/entities/dataset_column.dart';
+import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/entities/dataset_table.dart';
 import 'package:exlser/domain/entities/saved_multi_sheet_query.dart';
 import 'package:exlser/domain/repositories/query_repository.dart';
 import 'package:exlser/domain/repositories/schema_repository.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
+import 'package:exlser/domain/usecases/multisheet/manage_dataset_relationships_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/manage_multi_sheet_queries_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
@@ -41,6 +43,9 @@ class MultiSheetAnalysisService {
   final ListMultiSheetQueriesUseCase listQueriesUseCase;
   final LoadMultiSheetQueryUseCase loadQueryUseCase;
   final DeleteMultiSheetQueryUseCase deleteQueryUseCase;
+  final CreateDatasetRelationshipUseCase createRelationshipUseCase;
+  final ListDatasetRelationshipsUseCase listRelationshipsUseCase;
+  final UpdateDatasetRelationshipUseCase updateRelationshipUseCase;
 
   /// Distinct-sample size per column used by the suggestion engine.
   final int sampleLimit;
@@ -53,6 +58,9 @@ class MultiSheetAnalysisService {
     required this.listQueriesUseCase,
     required this.loadQueryUseCase,
     required this.deleteQueryUseCase,
+    required this.createRelationshipUseCase,
+    required this.listRelationshipsUseCase,
+    required this.updateRelationshipUseCase,
     this.graphValidator = const MultiSheetGraphValidator(),
     this.sqlBuilder = const MultiSheetSqlBuilder(),
     this.sampleLimit = 200,
@@ -96,16 +104,32 @@ class MultiSheetAnalysisService {
     return _suggest(sheets: selected);
   }
 
-  /// Validates the spec against the current schema and generates the SQL.
+  Future<List<DatasetRelationship>> loadRelationships(int datasetId) =>
+      listRelationshipsUseCase(datasetId);
+
+  Future<DatasetRelationship> createRelationship(
+    DatasetRelationship relationship,
+  ) =>
+      createRelationshipUseCase(relationship);
+
+  Future<DatasetRelationship> updateRelationship(
+    DatasetRelationship relationship,
+  ) =>
+      updateRelationshipUseCase(relationship);
+
+  /// Validates the spec against the dataset's relationships and current schema,
+  /// then generates the SQL.
   ///
   /// Throws [MultiSheetGraphException] (invalid/stale graph) or
   /// [MultiSheetSqlBuilderException] (nothing to select).
   GeneratedMultiSheetQuery buildQuery({
     required MultiSheetQuerySpec spec,
     required List<MultiSheetSheetInfo> sheets,
+    required Map<int, DatasetRelationship> relationshipsById,
   }) {
     final plan = graphValidator.validate(
       spec: spec,
+      relationshipsById: relationshipsById,
       availableTableIds: {for (final sheet in sheets) sheet.tableId},
       availableColumnsByTableId: {
         for (final sheet in sheets)
@@ -136,8 +160,13 @@ class MultiSheetAnalysisService {
   Future<MultiSheetPreviewResult> runPreview({
     required MultiSheetQuerySpec spec,
     required List<MultiSheetSheetInfo> sheets,
+    required Map<int, DatasetRelationship> relationshipsById,
   }) async {
-    final generated = buildQuery(spec: spec, sheets: sheets);
+    final generated = buildQuery(
+      spec: spec,
+      sheets: sheets,
+      relationshipsById: relationshipsById,
+    );
     final baseSheet = sheets.firstWhere(
       (sheet) =>
           sheet.tableId == (spec.baseTableId ?? spec.selectedTableIds.first),

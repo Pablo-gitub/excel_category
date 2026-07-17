@@ -1,55 +1,79 @@
 //lib/domain/value_objects/multi_sheet_query_spec.dart
 
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 
-/// Persistable description of a guided multi-sheet join.
+/// Persistable description of a guided multi-sheet query.
 ///
-/// It stores only **stable identifiers** (table ids and column `dbName`s) so it
-/// stays valid across app restarts; [DatasetTable]/[DatasetColumn] objects and
-/// display names are resolved at runtime against the current schema. A spec that
-/// references a table/column no longer present is detected as *stale* by the
-/// graph validator rather than crashing.
+/// It stores only **stable identifiers**: table ids, output column `dbName`s and
+/// — for each join — the id of a persisted `DatasetRelationship`. The relationship
+/// (its column pair and cardinality) is dataset metadata resolved at runtime; a
+/// spec that references a missing relationship, table or column is reported as
+/// *stale* by the graph validator rather than crashing.
 class MultiSheetQuerySpec {
   /// Current serialization version, bumped when the JSON shape changes.
-  static const int currentSchemaVersion = 1;
+  ///
+  /// v2 replaced the inline `relationships` array (endpoint columns duplicated in
+  /// the spec) with `joins` that reference persisted `DatasetRelationship` ids.
+  static const int currentSchemaVersion = 2;
   static const int defaultResultLimit = 100;
 
   /// Table preserved as the root of the join tree (FROM clause).
   final int? baseTableId;
 
-  /// Tables participating, in a deterministic insertion order.
+  /// Tables participating, in a deterministic insertion order (no duplicates).
   final List<int> selectedTableIds;
 
   /// Output columns per table, as SQL column names (`dbName`).
   final Map<int, List<String>> selectedColumnsByTableId;
 
-  /// Edges of the join tree (should be `selectedTableIds.length - 1`).
-  final List<SheetJoinRelationship> relationships;
+  /// Joins referencing dataset relationships (should be `selectedTableIds.length - 1`).
+  final List<MultiSheetJoin> joins;
 
   final int resultLimit;
   final int schemaVersion;
+
+  /// True when the spec was parsed from a serialization version this build does
+  /// not understand (a legacy v1 inline-relationship spec, or a future version).
+  /// Such a spec is unusable and must be surfaced as *stale*, never executed —
+  /// it is deliberately distinguishable from a merely empty spec.
+  final bool unsupportedVersion;
 
   const MultiSheetQuerySpec({
     this.baseTableId,
     this.selectedTableIds = const [],
     this.selectedColumnsByTableId = const {},
-    this.relationships = const [],
+    this.joins = const [],
     this.resultLimit = defaultResultLimit,
     this.schemaVersion = currentSchemaVersion,
+    this.unsupportedVersion = false,
   });
 
-  bool get isEmpty => selectedTableIds.isEmpty && relationships.isEmpty;
+  /// A spec parsed from an unsupported serialization version.
+  const MultiSheetQuerySpec.unsupported(int version)
+      : baseTableId = null,
+        selectedTableIds = const [],
+        selectedColumnsByTableId = const {},
+        joins = const [],
+        resultLimit = defaultResultLimit,
+        schemaVersion = version,
+        unsupportedVersion = true;
+
+  bool get isEmpty => selectedTableIds.isEmpty && joins.isEmpty;
 
   int get tableCount => selectedTableIds.length;
 
   List<String> columnsForTable(int tableId) =>
       selectedColumnsByTableId[tableId] ?? const [];
 
+  /// Relationship ids referenced by the joins.
+  Set<int> get referencedRelationshipIds =>
+      {for (final join in joins) join.relationshipId};
+
   MultiSheetQuerySpec copyWith({
     int? baseTableId,
     List<int>? selectedTableIds,
     Map<int, List<String>>? selectedColumnsByTableId,
-    List<SheetJoinRelationship>? relationships,
+    List<MultiSheetJoin>? joins,
     int? resultLimit,
     int? schemaVersion,
   }) {
@@ -58,7 +82,7 @@ class MultiSheetQuerySpec {
       selectedTableIds: selectedTableIds ?? this.selectedTableIds,
       selectedColumnsByTableId:
           selectedColumnsByTableId ?? this.selectedColumnsByTableId,
-      relationships: relationships ?? this.relationships,
+      joins: joins ?? this.joins,
       resultLimit: resultLimit ?? this.resultLimit,
       schemaVersion: schemaVersion ?? this.schemaVersion,
     );
@@ -73,22 +97,37 @@ class MultiSheetQuerySpec {
         for (final entry in selectedColumnsByTableId.entries)
           entry.key.toString(): entry.value,
       },
-      'relationships': [for (final r in relationships) r.toJson()],
+      'joins': [for (final join in joins) join.toJson()],
       'resultLimit': resultLimit,
     };
   }
 
+  /// Parses a spec, tolerating malformed entries.
+  ///
+  /// Any [schemaVersion] other than [currentSchemaVersion] — a legacy v1
+  /// inline-relationship spec or a future shape — yields an explicit
+  /// [MultiSheetQuerySpec.unsupported] marker rather than silently misreading it
+  /// as an empty-but-valid spec.
   static MultiSheetQuerySpec fromJson(Map<String, dynamic> json) {
+    final version = _positiveIntOr(json['schemaVersion'], currentSchemaVersion);
+    if (version != currentSchemaVersion) {
+      return MultiSheetQuerySpec.unsupported(version);
+    }
+
     final tableIdsJson = json['selectedTableIds'];
     final columnsJson = json['selectedColumnsByTableId'];
-    final relationshipsJson = json['relationships'];
+    final joinsJson = json['joins'];
 
-    final selectedTableIds = tableIdsJson is List
-        ? [
-            for (final value in tableIdsJson)
-              if (_intOrNull(value) != null) _intOrNull(value)!,
-          ]
-        : <int>[];
+    // Preserve order, drop duplicates from corrupt JSON.
+    final selectedTableIds = <int>[];
+    if (tableIdsJson is List) {
+      for (final value in tableIdsJson) {
+        final id = _intOrNull(value);
+        if (id != null && !selectedTableIds.contains(id)) {
+          selectedTableIds.add(id);
+        }
+      }
+    }
 
     final selectedColumnsByTableId = <int, List<String>>{};
     if (columnsJson is Map) {
@@ -104,24 +143,21 @@ class MultiSheetQuerySpec {
       }
     }
 
-    final relationships = relationshipsJson is List
+    final joins = joinsJson is List
         ? [
-            for (final relationshipJson in relationshipsJson)
-              if (relationshipJson is Map<String, dynamic>)
-                if (SheetJoinRelationship.fromJson(relationshipJson)
-                    case final relationship?)
-                  relationship,
+            for (final joinJson in joinsJson)
+              if (joinJson is Map<String, dynamic>)
+                if (MultiSheetJoin.fromJson(joinJson) case final join?) join,
           ]
-        : <SheetJoinRelationship>[];
+        : <MultiSheetJoin>[];
 
     return MultiSheetQuerySpec(
       baseTableId: _intOrNull(json['baseTableId']),
       selectedTableIds: selectedTableIds,
       selectedColumnsByTableId: selectedColumnsByTableId,
-      relationships: relationships,
+      joins: joins,
       resultLimit: _positiveIntOr(json['resultLimit'], defaultResultLimit),
-      schemaVersion:
-          _positiveIntOr(json['schemaVersion'], currentSchemaVersion),
+      schemaVersion: version,
     );
   }
 }

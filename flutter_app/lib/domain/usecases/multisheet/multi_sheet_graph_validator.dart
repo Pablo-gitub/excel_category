@@ -1,7 +1,8 @@
 //lib/domain/usecases/multisheet/multi_sheet_graph_validator.dart
 
+import 'package:exlser/domain/entities/dataset_relationship.dart';
+import 'package:exlser/domain/value_objects/join_cardinality.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 
 /// Raised when a [MultiSheetQuerySpec] does not describe a valid join tree.
@@ -25,12 +26,27 @@ class ResolvedJoinStep {
   final String newColumnDbName;
   final SheetJoinType joinType;
 
+  /// Id of the persisted relationship this step came from.
+  final int relationshipId;
+
+  /// Cardinality re-oriented to read existing → new, so a `oneToMany` here means
+  /// the newly added side multiplies the accumulated rows. Derived from the
+  /// relationship's persisted A → B cardinality; the risk analyzer must rely on
+  /// this rather than re-inferring meaning from column names.
+  final JoinCardinality cardinality;
+  final double cardinalityConfidence;
+  final int sampleSize;
+
   const ResolvedJoinStep({
     required this.existingTableId,
     required this.existingColumnDbName,
     required this.newTableId,
     required this.newColumnDbName,
     required this.joinType,
+    required this.relationshipId,
+    this.cardinality = JoinCardinality.unknown,
+    this.cardinalityConfidence = 0,
+    this.sampleSize = 0,
   });
 }
 
@@ -47,14 +63,16 @@ class ResolvedJoinPlan {
   });
 }
 
-/// Validates that a [MultiSheetQuerySpec] is a connected, acyclic join tree over
-/// tables/columns that still exist, and resolves it into an ordered plan.
+/// Validates that a [MultiSheetQuerySpec] resolves against the dataset's
+/// relationships into a connected, acyclic join tree over tables/columns that
+/// still exist, and produces an ordered plan.
 ///
 /// Pure domain logic, independent of the UI and of any database.
 class MultiSheetGraphValidator {
   static const String notEnoughTablesCode = 'not_enough_tables';
   static const String unavailableTableOrColumnCode =
       'unavailable_table_or_column';
+  static const String missingRelationshipCode = 'missing_relationship';
   static const String incompleteRelationshipCode = 'incomplete_relationship';
   static const String duplicateRelationshipCode = 'duplicate_relationship';
   static const String disconnectedGraphCode = 'disconnected_graph';
@@ -66,6 +84,7 @@ class MultiSheetGraphValidator {
 
   ResolvedJoinPlan validate({
     required MultiSheetQuerySpec spec,
+    required Map<int, DatasetRelationship> relationshipsById,
     required Set<int> availableTableIds,
     required Map<int, Set<String>> availableColumnsByTableId,
   }) {
@@ -76,7 +95,7 @@ class MultiSheetGraphValidator {
       throw const MultiSheetGraphException(notEnoughTablesCode);
     }
 
-    // Stale check: every selected table and column must still exist.
+    // Stale check: every selected table and output column must still exist.
     for (final tableId in selectedSet) {
       if (!availableTableIds.contains(tableId)) {
         throw const MultiSheetGraphException(unavailableTableOrColumnCode);
@@ -89,26 +108,12 @@ class MultiSheetGraphValidator {
       }
     }
 
-    // Relationship validity + duplicate detection.
-    final seenIds = <String>{};
-    for (final relationship in spec.relationships) {
-      if (relationship.leftTableId == relationship.rightTableId) {
-        throw const MultiSheetGraphException(incompleteRelationshipCode);
-      }
-      if (!selectedSet.contains(relationship.leftTableId) ||
-          !selectedSet.contains(relationship.rightTableId)) {
-        throw const MultiSheetGraphException(incompleteRelationshipCode);
-      }
-      if (!_columnExists(availableColumnsByTableId, relationship.leftTableId,
-              relationship.leftColumnDbName) ||
-          !_columnExists(availableColumnsByTableId, relationship.rightTableId,
-              relationship.rightColumnDbName)) {
-        throw const MultiSheetGraphException(unavailableTableOrColumnCode);
-      }
-      if (!seenIds.add(relationship.effectiveId)) {
-        throw const MultiSheetGraphException(duplicateRelationshipCode);
-      }
-    }
+    final edges = _resolveEdges(
+      spec: spec,
+      relationshipsById: relationshipsById,
+      selectedSet: selectedSet,
+      availableColumnsByTableId: availableColumnsByTableId,
+    );
 
     final baseTableId = selectedSet.contains(spec.baseTableId)
         ? spec.baseTableId!
@@ -117,27 +122,81 @@ class MultiSheetGraphValidator {
     final plan = _buildOrderedPlan(
       baseTableId: baseTableId,
       selectedIds: selectedIds,
-      relationships: spec.relationships,
+      edges: edges,
     );
 
-    // Connected tree over N nodes has exactly N-1 edges; any extra edge is a cycle.
+    // A connected tree over N nodes has exactly N-1 edges; any extra is a cycle.
     if (plan.orderedTableIds.length < selectedSet.length) {
       throw const MultiSheetGraphException(disconnectedGraphCode);
     }
-    if (spec.relationships.length != selectedSet.length - 1) {
+    if (edges.length != selectedSet.length - 1) {
       throw const MultiSheetGraphException(cycleDetectedCode);
     }
 
     return plan;
   }
 
+  /// Resolves every join into an endpoint edge, validating references, endpoints
+  /// and duplicates (equivalent by unordered endpoint pair).
+  List<_JoinEdge> _resolveEdges({
+    required MultiSheetQuerySpec spec,
+    required Map<int, DatasetRelationship> relationshipsById,
+    required Set<int> selectedSet,
+    required Map<int, Set<String>> availableColumnsByTableId,
+  }) {
+    final edges = <_JoinEdge>[];
+    final seenRelationshipIds = <int>{};
+    final seenEndpointKeys = <String>{};
+
+    for (final join in spec.joins) {
+      final relationship = relationshipsById[join.relationshipId];
+      if (relationship == null) {
+        throw const MultiSheetGraphException(missingRelationshipCode);
+      }
+
+      final a = relationship.endpointATableId;
+      final b = relationship.endpointBTableId;
+      if (a == b) {
+        throw const MultiSheetGraphException(incompleteRelationshipCode);
+      }
+      if (!selectedSet.contains(a) || !selectedSet.contains(b)) {
+        throw const MultiSheetGraphException(incompleteRelationshipCode);
+      }
+      if (!_columnExists(availableColumnsByTableId, a,
+              relationship.endpointAColumnDbName) ||
+          !_columnExists(availableColumnsByTableId, b,
+              relationship.endpointBColumnDbName)) {
+        throw const MultiSheetGraphException(unavailableTableOrColumnCode);
+      }
+      if (!seenRelationshipIds.add(join.relationshipId) ||
+          !seenEndpointKeys.add(relationship.endpointKey)) {
+        throw const MultiSheetGraphException(duplicateRelationshipCode);
+      }
+
+      edges.add(_JoinEdge(
+        relationshipId: join.relationshipId,
+        aTableId: a,
+        aColumnDbName: relationship.endpointAColumnDbName,
+        bTableId: b,
+        bColumnDbName: relationship.endpointBColumnDbName,
+        joinType: join.joinType,
+        preservedTableId: join.preservedTableId,
+        cardinality: relationship.cardinality,
+        cardinalityConfidence: relationship.cardinalityConfidence,
+        sampleSize: relationship.sampleSize,
+      ));
+    }
+
+    return edges;
+  }
+
   /// Greedily grows the tree from [baseTableId], adding the next selected table
-  /// (in selection order) that connects to an already-included table. This makes
-  /// the join order deterministic for a given spec.
+  /// (in selection order) that connects to an already-included one, so the join
+  /// order is deterministic.
   ResolvedJoinPlan _buildOrderedPlan({
     required int baseTableId,
     required List<int> selectedIds,
-    required List<SheetJoinRelationship> relationships,
+    required List<_JoinEdge> edges,
   }) {
     final included = <int>{baseTableId};
     final ordered = <int>[baseTableId];
@@ -150,23 +209,28 @@ class MultiSheetGraphValidator {
       for (final candidate in selectedIds) {
         if (included.contains(candidate)) continue;
 
-        final edge = _firstEdgeConnecting(relationships, candidate, included);
+        final edge = _firstEdgeConnecting(edges, candidate, included);
         if (edge == null) continue;
 
-        final existingTableId = included.contains(edge.leftTableId)
-            ? edge.leftTableId
-            : edge.rightTableId;
-        final existingColumn = existingTableId == edge.leftTableId
-            ? edge.leftColumnDbName
-            : edge.rightColumnDbName;
-        final newColumn = existingTableId == edge.leftTableId
-            ? edge.rightColumnDbName
-            : edge.leftColumnDbName;
+        final existingIsEndpointA = included.contains(edge.aTableId);
+        final existingTableId =
+            existingIsEndpointA ? edge.aTableId : edge.bTableId;
+        final existingColumn =
+            existingIsEndpointA ? edge.aColumnDbName : edge.bColumnDbName;
+        final newColumn =
+            existingIsEndpointA ? edge.bColumnDbName : edge.aColumnDbName;
+        // Relationship cardinality is stored A → B; re-orient it to existing → new.
+        final orientedCardinality =
+            existingIsEndpointA ? edge.cardinality : edge.cardinality.inverted;
 
-        // A LEFT join must preserve the already-accumulated side.
-        if (edge.joinType == SheetJoinType.left &&
-            edge.leftTableId != existingTableId) {
-          throw const MultiSheetGraphException(invalidLeftJoinDirectionCode);
+        // A LEFT join must explicitly preserve the already-accumulated side.
+        if (edge.joinType == SheetJoinType.left) {
+          final preserved = edge.preservedTableId;
+          if (preserved == null ||
+              (preserved != edge.aTableId && preserved != edge.bTableId) ||
+              preserved != existingTableId) {
+            throw const MultiSheetGraphException(invalidLeftJoinDirectionCode);
+          }
         }
 
         steps.add(ResolvedJoinStep(
@@ -175,6 +239,10 @@ class MultiSheetGraphValidator {
           newTableId: candidate,
           newColumnDbName: newColumn,
           joinType: edge.joinType,
+          relationshipId: edge.relationshipId,
+          cardinality: orientedCardinality,
+          cardinalityConfidence: edge.cardinalityConfidence,
+          sampleSize: edge.sampleSize,
         ));
         included.add(candidate);
         ordered.add(candidate);
@@ -190,18 +258,16 @@ class MultiSheetGraphValidator {
     );
   }
 
-  SheetJoinRelationship? _firstEdgeConnecting(
-    List<SheetJoinRelationship> relationships,
+  _JoinEdge? _firstEdgeConnecting(
+    List<_JoinEdge> edges,
     int candidate,
     Set<int> included,
   ) {
-    for (final relationship in relationships) {
-      if (!relationship.connects(candidate)) continue;
-      final other = relationship.leftTableId == candidate
-          ? relationship.rightTableId
-          : relationship.leftTableId;
+    for (final edge in edges) {
+      if (!edge.connects(candidate)) continue;
+      final other = edge.aTableId == candidate ? edge.bTableId : edge.aTableId;
       if (included.contains(other)) {
-        return relationship;
+        return edge;
       }
     }
     return null;
@@ -214,4 +280,33 @@ class MultiSheetGraphValidator {
   ) {
     return (availableColumnsByTableId[tableId] ?? const {}).contains(dbName);
   }
+}
+
+/// A join resolved to concrete endpoints, internal to the validator.
+class _JoinEdge {
+  final int relationshipId;
+  final int aTableId;
+  final String aColumnDbName;
+  final int bTableId;
+  final String bColumnDbName;
+  final SheetJoinType joinType;
+  final int? preservedTableId;
+  final JoinCardinality cardinality;
+  final double cardinalityConfidence;
+  final int sampleSize;
+
+  const _JoinEdge({
+    required this.relationshipId,
+    required this.aTableId,
+    required this.aColumnDbName,
+    required this.bTableId,
+    required this.bColumnDbName,
+    required this.joinType,
+    required this.preservedTableId,
+    required this.cardinality,
+    required this.cardinalityConfidence,
+    required this.sampleSize,
+  });
+
+  bool connects(int tableId) => aTableId == tableId || bTableId == tableId;
 }

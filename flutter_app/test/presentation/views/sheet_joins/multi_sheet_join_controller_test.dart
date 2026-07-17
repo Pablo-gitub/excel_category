@@ -2,14 +2,15 @@ import 'dart:async';
 
 import 'package:exlser/application/services/multi_sheet_analysis_service.dart';
 import 'package:exlser/domain/entities/dataset_column.dart';
+import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/entities/dataset_table.dart';
 import 'package:exlser/domain/entities/saved_multi_sheet_query.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
 import 'package:exlser/domain/value_objects/column_type.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/presentation/views/sheet_joins/multi_sheet_join_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -47,13 +48,6 @@ void main() {
   final sales = sheet(1, 'Vendite', ['product_id', 'qty']);
   final products = sheet(2, 'Prodotti', ['product', 'price']);
 
-  const relationship = SheetJoinRelationship(
-    leftTableId: 1,
-    leftColumnDbName: 'product_id',
-    rightTableId: 2,
-    rightColumnDbName: 'product',
-  );
-
   final preview = MultiSheetPreviewResult(
     rows: const [
       {'t0__product_id': 'A1'}
@@ -65,8 +59,25 @@ void main() {
     limit: 100,
   );
 
+  // Adds the sales.product_id <-> products.product relationship as a user would.
+  Future<void> addProductRelationship({bool flipped = false}) {
+    return controller.addManualRelationship(
+      leftTableId: flipped ? 2 : 1,
+      leftColumnDbName: flipped ? 'product' : 'product_id',
+      rightTableId: flipped ? 1 : 2,
+      rightColumnDbName: flipped ? 'product_id' : 'product',
+    );
+  }
+
   setUpAll(() {
     registerFallbackValue(const MultiSheetQuerySpec());
+    registerFallbackValue(const DatasetRelationship(
+      datasetId: 0,
+      endpointATableId: 0,
+      endpointAColumnDbName: '',
+      endpointBTableId: 0,
+      endpointBColumnDbName: '',
+    ));
   });
 
   setUp(() {
@@ -74,6 +85,15 @@ void main() {
     when(() => service.loadSheets(any()))
         .thenAnswer((_) async => [sales, products]);
     when(() => service.listSavedQueries(any())).thenAnswer((_) async => []);
+    when(() => service.loadRelationships(any())).thenAnswer((_) async => []);
+
+    // Persisting assigns an incrementing id, as the real repository would.
+    var nextId = 0;
+    when(() => service.createRelationship(any())).thenAnswer((inv) async {
+      final r = inv.positionalArguments.first as DatasetRelationship;
+      return r.copyWith(id: ++nextId);
+    });
+
     controller = MultiSheetJoinController(service: service, datasetId: 1);
   });
 
@@ -101,37 +121,54 @@ void main() {
     );
   });
 
-  test('deselecting a sheet drops relationships that referenced it', () async {
+  test('a confirmed manual relationship is persisted and referenced by id',
+      () async {
     await controller.load();
     controller.toggleSheet(1);
     controller.toggleSheet(2);
-    controller.addRelationship(relationship);
-    expect(controller.state.spec.relationships, hasLength(1));
+    await addProductRelationship();
+
+    expect(controller.state.spec.joins, hasLength(1));
+    final relationshipId = controller.state.spec.joins.first.relationshipId;
+    expect(relationshipId, greaterThan(0));
+    // The persisted relationship is now resolvable from state.
+    expect(controller.state.relationshipsById[relationshipId], isNotNull);
+    verify(() => service.createRelationship(any())).called(1);
+  });
+
+  test('deselecting a sheet drops joins that referenced it', () async {
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+    await addProductRelationship();
+    expect(controller.state.spec.joins, hasLength(1));
 
     controller.toggleSheet(2);
 
-    expect(controller.state.spec.relationships, isEmpty);
+    expect(controller.state.spec.joins, isEmpty);
   });
 
   test('rejects a duplicate relationship with a validation error', () async {
     await controller.load();
     controller.toggleSheet(1);
     controller.toggleSheet(2);
-    controller.addRelationship(relationship);
-    controller.addRelationship(relationship.flipped());
+    await addProductRelationship();
+    await addProductRelationship(flipped: true); // same endpoints, swapped
 
     expect(controller.state.status, MultiSheetJoinStatus.validationError);
     expect(
       controller.state.errorCode,
       MultiSheetGraphValidator.duplicateRelationshipCode,
     );
-    expect(controller.state.spec.relationships, hasLength(1));
+    expect(controller.state.spec.joins, hasLength(1));
+    verify(() => service.createRelationship(any())).called(1);
   });
 
   test('surfaces a validation error code when the graph is invalid', () async {
     when(() => service.buildQuery(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenThrow(
       const MultiSheetGraphException(
           MultiSheetGraphValidator.disconnectedGraphCode),
@@ -153,6 +190,7 @@ void main() {
     when(() => service.buildQuery(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenReturn(const GeneratedMultiSheetQuery(
       sql: 'SELECT 1',
       outputColumns: [],
@@ -161,12 +199,13 @@ void main() {
     when(() => service.runPreview(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) async => preview);
 
     await controller.load();
     controller.toggleSheet(1);
     controller.toggleSheet(2);
-    controller.addRelationship(relationship);
+    await addProductRelationship();
     await controller.runPreview();
 
     expect(controller.state.status, MultiSheetJoinStatus.success);
@@ -177,6 +216,7 @@ void main() {
     when(() => service.buildQuery(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenReturn(const GeneratedMultiSheetQuery(
       sql: 'SELECT 1',
       outputColumns: [],
@@ -188,6 +228,7 @@ void main() {
     when(() => service.runPreview(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) {
       call++;
       return call == 1 ? slow.future : Future.value(preview);
@@ -196,7 +237,7 @@ void main() {
     await controller.load();
     controller.toggleSheet(1);
     controller.toggleSheet(2);
-    controller.addRelationship(relationship);
+    await addProductRelationship();
 
     final first = controller.runPreview(); // stays pending
     await controller.runPreview(); // supersedes it
@@ -227,10 +268,10 @@ void main() {
       id: 7,
       datasetId: 1,
       name: 'old',
-      spec: const MultiSheetQuerySpec(
+      spec: MultiSheetQuerySpec(
         baseTableId: 1,
-        selectedTableIds: [1, 2],
-        relationships: [relationship],
+        selectedTableIds: const [1, 2],
+        joins: [MultiSheetJoin(relationshipId: 99)],
       ),
       createdAt: DateTime(2026),
       updatedAt: DateTime(2026),
@@ -239,6 +280,7 @@ void main() {
     when(() => service.buildQuery(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenThrow(
       const MultiSheetGraphException(
           MultiSheetGraphValidator.unavailableTableOrColumnCode),

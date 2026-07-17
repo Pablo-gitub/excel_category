@@ -6,6 +6,8 @@ import 'package:exlser/core/constants/app_strings.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_join_risk_analyzer.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
+import 'package:exlser/domain/entities/dataset_relationship.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:exlser/domain/value_objects/sheet_relationship_suggestion.dart';
@@ -267,12 +269,14 @@ class _SuggestionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final already = state.spec.relationships
-        .any((r) => r.effectiveId == suggestion.relationship.effectiveId);
+    final key = _suggestionEndpointKey(suggestion.relationship);
+    final already = state.spec.joins.any(
+      (join) => state.relationshipFor(join)?.endpointKey == key,
+    );
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text(_describe(state, suggestion.relationship)),
+      title: Text(_describeRelationship(state, suggestion.relationship)),
       subtitle: Wrap(
         spacing: 6,
         runSpacing: 4,
@@ -306,18 +310,21 @@ class _RelationshipsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final joins = state.spec.joins;
     return _SectionCard(
       title: AppStrings.datasetJoinsRelationships.tr(),
-      child: state.spec.relationships.isEmpty
+      child: joins.isEmpty
           ? Text(AppStrings.datasetJoinsNoRelationships.tr())
           : Column(
               children: [
-                for (final relationship in state.spec.relationships)
-                  _RelationshipTile(
-                    relationship: relationship,
-                    state: state,
-                    controller: controller,
-                  ),
+                for (final join in joins)
+                  if (state.relationshipFor(join) case final relationship?)
+                    _RelationshipTile(
+                      join: join,
+                      relationship: relationship,
+                      state: state,
+                      controller: controller,
+                    ),
               ],
             ),
     );
@@ -325,11 +332,13 @@ class _RelationshipsSection extends StatelessWidget {
 }
 
 class _RelationshipTile extends StatelessWidget {
-  final SheetJoinRelationship relationship;
+  final MultiSheetJoin join;
+  final DatasetRelationship relationship;
   final MultiSheetJoinState state;
   final MultiSheetJoinController controller;
 
   const _RelationshipTile({
+    required this.join,
     required this.relationship,
     required this.state,
     required this.controller,
@@ -344,18 +353,11 @@ class _RelationshipTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Text(_describe(state, relationship))),
-              IconButton(
-                tooltip: AppStrings.datasetJoinsFlip.tr(),
-                icon: const Icon(Icons.swap_horiz),
-                onPressed: () =>
-                    controller.flipRelationship(relationship.effectiveId),
-              ),
+              Expanded(child: Text(_describeEndpoints(state, relationship))),
               IconButton(
                 tooltip: AppStrings.datasetJoinsRemove.tr(),
                 icon: const Icon(Icons.delete_outline),
-                onPressed: () =>
-                    controller.removeRelationship(relationship.effectiveId),
+                onPressed: () => controller.removeJoin(join.relationshipId),
               ),
             ],
           ),
@@ -374,13 +376,38 @@ class _RelationshipTile extends StatelessWidget {
                   label: Text(AppStrings.datasetJoinsJoinLeft.tr()),
                 ),
               ],
-              selected: {relationship.joinType},
+              selected: {join.joinType},
               onSelectionChanged: (values) => controller.setJoinType(
-                relationship.effectiveId,
+                join.relationshipId,
                 values.first,
               ),
             ),
           ),
+          // For a LEFT join, let the user choose which side is preserved.
+          if (join.isLeft) ...[
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SegmentedButton<int>(
+                showSelectedIcon: false,
+                segments: [
+                  for (final tableId in [
+                    relationship.endpointATableId,
+                    relationship.endpointBTableId,
+                  ])
+                    ButtonSegment(
+                      value: tableId,
+                      label: Text(_sheetLabel(state, tableId)),
+                    ),
+                ],
+                selected: {
+                  join.preservedTableId ?? relationship.endpointATableId,
+                },
+                onSelectionChanged: (values) => controller.setPreservedSide(
+                    join.relationshipId, values.first),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -645,20 +672,44 @@ class _GeneratedSqlSection extends StatelessWidget {
   }
 }
 
-String _describe(
-    MultiSheetJoinState state, SheetJoinRelationship relationship) {
-  String side(int tableId, String dbName) {
-    final sheet = _sheetFor(state, tableId);
-    final column = sheet?.columns
-        .where((c) => c.dbName == dbName)
-        .map((c) => c.originalName)
-        .firstOrNull;
-    return '${sheet?.label ?? tableId}.${column ?? dbName}';
-  }
+String _side(MultiSheetJoinState state, int tableId, String dbName) {
+  final sheet = _sheetFor(state, tableId);
+  final column = sheet?.columns
+      .where((c) => c.dbName == dbName)
+      .map((c) => c.originalName)
+      .firstOrNull;
+  return '${sheet?.label ?? tableId}.${column ?? dbName}';
+}
 
-  return '${side(relationship.leftTableId, relationship.leftColumnDbName)}'
+String _describeRelationship(
+  MultiSheetJoinState state,
+  SheetJoinRelationship relationship,
+) {
+  return '${_side(state, relationship.leftTableId, relationship.leftColumnDbName)}'
       '  ↔  '
-      '${side(relationship.rightTableId, relationship.rightColumnDbName)}';
+      '${_side(state, relationship.rightTableId, relationship.rightColumnDbName)}';
+}
+
+String _describeEndpoints(
+  MultiSheetJoinState state,
+  DatasetRelationship relationship,
+) {
+  return '${_side(state, relationship.endpointATableId, relationship.endpointAColumnDbName)}'
+      '  ↔  '
+      '${_side(state, relationship.endpointBTableId, relationship.endpointBColumnDbName)}';
+}
+
+String _suggestionEndpointKey(SheetJoinRelationship relationship) {
+  final a =
+      '${relationship.leftTableId}.${relationship.leftColumnDbName.trim()}';
+  final b =
+      '${relationship.rightTableId}.${relationship.rightColumnDbName.trim()}';
+  final ends = [a, b]..sort();
+  return ends.join('=');
+}
+
+String _sheetLabel(MultiSheetJoinState state, int tableId) {
+  return _sheetFor(state, tableId)?.label ?? '$tableId';
 }
 
 MultiSheetSheetInfo? _sheetFor(MultiSheetJoinState state, int tableId) {

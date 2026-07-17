@@ -1,11 +1,12 @@
+import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/repositories/query_repository.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_join_risk_analyzer.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
 import 'package:exlser/domain/usecases/query/read_only_sql_validator.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -34,6 +35,18 @@ void main() {
     2: {'price': 'Price', 'product': 'Product'},
   };
 
+  // The join column pair lives on the persisted relationship (id 10), not the spec.
+  Map<int, DatasetRelationship> relsFor(String leftCol, String rightCol) => {
+        10: DatasetRelationship(
+          id: 10,
+          datasetId: 1,
+          endpointATableId: 1,
+          endpointAColumnDbName: leftCol,
+          endpointBTableId: 2,
+          endpointBColumnDbName: rightCol,
+        ),
+      };
+
   MultiSheetQuerySpec specJoining(String leftCol, String rightCol) {
     return MultiSheetQuerySpec(
       baseTableId: 1,
@@ -42,31 +55,27 @@ void main() {
         1: ['product_id'],
         2: ['product'],
       },
-      relationships: [
-        SheetJoinRelationship(
-          leftTableId: 1,
-          leftColumnDbName: leftCol,
-          rightTableId: 2,
-          rightColumnDbName: rightCol,
-        ),
-      ],
+      joins: [MultiSheetJoin(relationshipId: 10)],
       resultLimit: 2,
     );
   }
 
-  ResolvedJoinPlan planFor(MultiSheetQuerySpec spec) => graphValidator.validate(
-        spec: spec,
+  ResolvedJoinPlan planFor(String leftCol, String rightCol) =>
+      graphValidator.validate(
+        spec: specJoining(leftCol, rightCol),
+        relationshipsById: relsFor(leftCol, rightCol),
         availableTableIds: availableTables,
         availableColumnsByTableId: availableColumns,
       );
 
   GeneratedMultiSheetQuery generate(
-    MultiSheetQuerySpec spec,
+    String leftCol,
+    String rightCol,
     Map<int, Map<String, String>> names,
   ) {
     return builder.build(
-      plan: planFor(spec),
-      spec: spec,
+      plan: planFor(leftCol, rightCol),
+      spec: specJoining(leftCol, rightCol),
       sqlTableNameByTableId: sqlTableNames,
       sheetLabelByTableId: sheetLabels,
       originalColumnNamesByTableId: names,
@@ -78,7 +87,7 @@ void main() {
 
     test('flags a join where neither side looks like a key', () {
       final warnings = analyzer.analyze(
-        plan: planFor(specJoining('qty', 'price')),
+        plan: planFor('qty', 'price'),
         sheetLabelByTableId: sheetLabels,
         originalColumnNamesByTableId: measureNames,
       );
@@ -90,7 +99,7 @@ void main() {
 
     test('does not flag a join on an identifier column', () {
       final warnings = analyzer.analyze(
-        plan: planFor(specJoining('product_id', 'product')),
+        plan: planFor('product_id', 'product'),
         sheetLabelByTableId: sheetLabels,
         originalColumnNamesByTableId: keyNames,
       );
@@ -114,7 +123,7 @@ void main() {
               ]);
 
       await useCase(
-        generated: generate(specJoining('product_id', 'product'), keyNames),
+        generated: generate('product_id', 'product', keyNames),
         baseSqlTableName: 'sales_table',
         allowedTableNames: {'sales_table', 'products_table'},
         limit: 2,
@@ -128,7 +137,7 @@ void main() {
           .thenAnswer((_) async => []);
 
       final result = await useCase(
-        generated: generate(specJoining('product_id', 'product'), keyNames),
+        generated: generate('product_id', 'product', keyNames),
         baseSqlTableName: 'sales_table',
         allowedTableNames: {'sales_table', 'products_table'},
         limit: 2,
@@ -149,7 +158,7 @@ void main() {
               ]);
 
       final result = await useCase(
-        generated: generate(specJoining('product_id', 'product'), keyNames),
+        generated: generate('product_id', 'product', keyNames),
         baseSqlTableName: 'sales_table',
         allowedTableNames: {'sales_table', 'products_table'},
         limit: 2,
@@ -163,7 +172,7 @@ void main() {
           .thenAnswer((_) async => []);
 
       final result = await useCase(
-        generated: generate(specJoining('qty', 'price'), measureNames),
+        generated: generate('qty', 'price', measureNames),
         baseSqlTableName: 'sales_table',
         allowedTableNames: {'sales_table', 'products_table'},
         limit: 2,
@@ -174,8 +183,7 @@ void main() {
     });
 
     test('rejects a query referencing a table outside the dataset', () async {
-      final generated =
-          generate(specJoining('product_id', 'product'), keyNames);
+      final generated = generate('product_id', 'product', keyNames);
       expect(
         () => useCase(
           generated: generated,

@@ -1,8 +1,9 @@
+import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
 import 'package:exlser/domain/usecases/query/read_only_sql_validator.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,11 +23,21 @@ void main() {
     2: {'product': 'Product', 'price': 'Price'},
   };
 
-  GeneratedMultiSheetQuery buildFor(
-    MultiSheetQuerySpec spec,
-  ) {
+  final relationships = {
+    10: const DatasetRelationship(
+      id: 10,
+      datasetId: 1,
+      endpointATableId: 1,
+      endpointAColumnDbName: 'product_id',
+      endpointBTableId: 2,
+      endpointBColumnDbName: 'product',
+    ),
+  };
+
+  GeneratedMultiSheetQuery buildFor(MultiSheetQuerySpec spec) {
     final plan = graphValidator.validate(
       spec: spec,
+      relationshipsById: relationships,
       availableTableIds: availableTables,
       availableColumnsByTableId: availableColumns,
     );
@@ -41,6 +52,7 @@ void main() {
 
   MultiSheetQuerySpec baseSpec({
     SheetJoinType type = SheetJoinType.inner,
+    int? preserved,
     Map<int, List<String>>? columns,
   }) {
     return MultiSheetQuerySpec(
@@ -51,13 +63,11 @@ void main() {
             1: ['product_id', 'qty'],
             2: ['product', 'price'],
           },
-      relationships: [
-        SheetJoinRelationship(
-          leftTableId: 1,
-          leftColumnDbName: 'product_id',
-          rightTableId: 2,
-          rightColumnDbName: 'product',
+      joins: [
+        MultiSheetJoin(
+          relationshipId: 10,
           joinType: type,
+          preservedTableId: preserved,
         ),
       ],
       resultLimit: 100,
@@ -80,7 +90,8 @@ void main() {
   });
 
   test('uses the LEFT JOIN keyword for left joins', () {
-    final generated = buildFor(baseSpec(type: SheetJoinType.left));
+    final generated =
+        buildFor(baseSpec(type: SheetJoinType.left, preserved: 1));
     expect(generated.sql, contains(' LEFT JOIN "products_table" t1 '));
   });
 

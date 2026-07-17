@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:exlser/application/services/multi_sheet_analysis_service.dart';
 import 'package:exlser/domain/entities/dataset_column.dart';
+import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/entities/dataset_table.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
@@ -89,6 +90,13 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
     registerFallbackValue(const MultiSheetQuerySpec());
+    registerFallbackValue(const DatasetRelationship(
+      datasetId: 0,
+      endpointATableId: 0,
+      endpointAColumnDbName: '',
+      endpointBTableId: 0,
+      endpointBColumnDbName: '',
+    ));
   });
 
   late MockService service;
@@ -104,6 +112,13 @@ void main() {
   setUp(() {
     service = MockService();
     when(() => service.listSavedQueries(any())).thenAnswer((_) async => []);
+    when(() => service.loadRelationships(any())).thenAnswer((_) async => []);
+    // Persisting a confirmed/manual relationship assigns it an id.
+    var nextId = 0;
+    when(() => service.createRelationship(any())).thenAnswer((inv) async {
+      final r = inv.positionalArguments.first as DatasetRelationship;
+      return r.copyWith(id: ++nextId);
+    });
   });
 
   testWidgets('asks for more sheets when the dataset has only one',
@@ -172,6 +187,7 @@ void main() {
     when(() => service.buildQuery(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenReturn(const GeneratedMultiSheetQuery(
       sql: 'SELECT 1',
       outputColumns: [
@@ -187,6 +203,7 @@ void main() {
     when(() => service.runPreview(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) async => const MultiSheetPreviewResult(
           rows: [],
           outputColumns: [
@@ -278,6 +295,7 @@ void main() {
     when(() => service.buildQuery(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenReturn(const GeneratedMultiSheetQuery(
       sql: 'SELECT 1',
       outputColumns: [],
@@ -293,6 +311,7 @@ void main() {
     when(() => service.runPreview(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) async => const MultiSheetPreviewResult(
           rows: [],
           outputColumns: [],
@@ -329,6 +348,7 @@ void main() {
     when(() => service.buildQuery(
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
         )).thenThrow(const MultiSheetGraphException(
       MultiSheetGraphValidator.disconnectedGraphCode,
     ));

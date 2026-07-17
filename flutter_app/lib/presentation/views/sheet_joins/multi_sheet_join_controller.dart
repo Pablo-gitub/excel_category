@@ -1,12 +1,14 @@
 //lib/presentation/views/sheet_joins/multi_sheet_join_controller.dart
 
 import 'package:exlser/application/services/multi_sheet_analysis_service.dart';
+import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/entities/saved_multi_sheet_query.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
+import 'package:exlser/domain/usecases/multisheet/manage_dataset_relationships_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:exlser/domain/value_objects/sheet_relationship_suggestion.dart';
 import 'package:exlser/presentation/providers/service_providers.dart';
@@ -30,6 +32,10 @@ class MultiSheetJoinState {
   final MultiSheetJoinStatus status;
   final List<MultiSheetSheetInfo> sheets;
   final MultiSheetQuerySpec spec;
+
+  /// Persisted relationships of the dataset, by id. The spec's joins reference these.
+  final Map<int, DatasetRelationship> relationshipsById;
+
   final List<SheetRelationshipSuggestion> suggestions;
   final GeneratedMultiSheetQuery? generated;
   final MultiSheetPreviewResult? preview;
@@ -43,6 +49,7 @@ class MultiSheetJoinState {
     this.status = MultiSheetJoinStatus.initial,
     this.sheets = const [],
     this.spec = const MultiSheetQuerySpec(),
+    this.relationshipsById = const {},
     this.suggestions = const [],
     this.generated,
     this.preview,
@@ -63,10 +70,14 @@ class MultiSheetJoinState {
   /// Warnings on the last generated query (e.g. many-to-many row multiplication).
   bool get hasRiskWarnings => generated?.hasWarnings ?? false;
 
+  DatasetRelationship? relationshipFor(MultiSheetJoin join) =>
+      relationshipsById[join.relationshipId];
+
   MultiSheetJoinState copyWith({
     MultiSheetJoinStatus? status,
     List<MultiSheetSheetInfo>? sheets,
     MultiSheetQuerySpec? spec,
+    Map<int, DatasetRelationship>? relationshipsById,
     List<SheetRelationshipSuggestion>? suggestions,
     GeneratedMultiSheetQuery? generated,
     MultiSheetPreviewResult? preview,
@@ -82,6 +93,7 @@ class MultiSheetJoinState {
       status: status ?? this.status,
       sheets: sheets ?? this.sheets,
       spec: spec ?? this.spec,
+      relationshipsById: relationshipsById ?? this.relationshipsById,
       suggestions: suggestions ?? this.suggestions,
       generated: clearGenerated ? null : (generated ?? this.generated),
       preview: clearPreview ? null : (preview ?? this.preview),
@@ -101,11 +113,17 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
   /// Auto-selecting every column would be unusable on very wide sheets.
   static const int maxAutoSelectedColumns = 8;
 
+  /// Error code set when a saved query was serialized by an unsupported version.
+  static const String unsupportedSpecVersionCode = 'unsupported_spec_version';
+
   final MultiSheetAnalysisService service;
   final int datasetId;
 
-  /// Incremented on every run so results of superseded runs are ignored.
+  /// Incremented on every preview run so results of superseded runs are ignored.
   int _runToken = 0;
+
+  /// Incremented on every suggestion request so stale results are ignored.
+  int _suggestionToken = 0;
 
   MultiSheetJoinController({
     required this.service,
@@ -120,13 +138,18 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     try {
       final sheets = await service.loadSheets(datasetId);
       final saved = await service.listSavedQueries(datasetId);
+      final relationships = await service.loadRelationships(datasetId);
       if (!mounted) return;
       state = state.copyWith(
         status: MultiSheetJoinStatus.editing,
         sheets: sheets,
         savedQueries: saved,
+        relationshipsById: {
+          for (final r in relationships)
+            if (r.id != null) r.id!: r,
+        },
       );
-    } catch (error) {
+    } catch (_) {
       if (!mounted) return;
       state = state.copyWith(
         status: MultiSheetJoinStatus.executionError,
@@ -147,12 +170,11 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       columns[tableId] = _defaultColumns(tableId);
     }
 
-    // Drop relationships that reference a sheet no longer selected.
-    final relationships = state.spec.relationships
-        .where((r) =>
-            selected.contains(r.leftTableId) &&
-            selected.contains(r.rightTableId))
-        .toList();
+    // Drop joins whose relationship references a sheet no longer selected.
+    final joins = [
+      for (final join in state.spec.joins)
+        if (_joinWithinSelection(join, selected)) join,
+    ];
 
     final base = selected.contains(state.spec.baseTableId)
         ? state.spec.baseTableId
@@ -161,7 +183,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     _updateSpec(state.spec.copyWith(
       selectedTableIds: selected,
       selectedColumnsByTableId: columns,
-      relationships: relationships,
+      joins: joins,
       baseTableId: base,
     ));
   }
@@ -185,6 +207,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
   Future<void> generateSuggestions() async {
     if (!state.hasEnoughSheets) return;
 
+    final token = ++_suggestionToken;
     state = state.copyWith(
       status: MultiSheetJoinStatus.generatingSuggestions,
       clearError: true,
@@ -194,13 +217,14 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
         sheets: state.sheets,
         selectedTableIds: state.spec.selectedTableIds,
       );
-      if (!mounted) return;
+      // Ignore a stale suggestion run superseded by a newer selection.
+      if (!mounted || token != _suggestionToken) return;
       state = state.copyWith(
         status: MultiSheetJoinStatus.editing,
         suggestions: suggestions,
       );
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || token != _suggestionToken) return;
       state = state.copyWith(
         status: MultiSheetJoinStatus.editing,
         errorCode: 'suggestions_failed',
@@ -208,65 +232,140 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     }
   }
 
-  /// Applies a suggestion only when the user confirms it.
-  void confirmSuggestion(
-    SheetRelationshipSuggestion suggestion, {
-    SheetJoinType joinType = SheetJoinType.inner,
-  }) {
-    addRelationship(
-      suggestion.relationship.copyWith(joinType: joinType),
+  /// Confirms a suggestion: persists the relationship (or reuses an equivalent
+  /// one) and adds a join referencing it. Applied only on explicit confirmation.
+  Future<void> confirmSuggestion(SheetRelationshipSuggestion suggestion) async {
+    final r = suggestion.relationship;
+    final relationship = DatasetRelationship(
+      datasetId: datasetId,
+      endpointATableId: r.leftTableId,
+      endpointAColumnDbName: r.leftColumnDbName,
+      endpointBTableId: r.rightTableId,
+      endpointBColumnDbName: r.rightColumnDbName,
+      cardinality: suggestion.cardinality,
+      relationshipConfidence: suggestion.score,
+      origin: RelationshipOrigin.suggested,
+      // The user explicitly accepted this suggestion, so it is confirmed.
+      confirmedAt: DateTime.now(),
     );
+    await _persistAndAddJoin(relationship);
   }
 
-  void addRelationship(SheetJoinRelationship relationship) {
-    final existing = state.spec.relationships;
-    if (existing.any((r) => r.effectiveId == relationship.effectiveId)) {
+  /// Creates a user-defined relationship between two columns and adds a join.
+  Future<void> addManualRelationship({
+    required int leftTableId,
+    required String leftColumnDbName,
+    required int rightTableId,
+    required String rightColumnDbName,
+  }) async {
+    final relationship = DatasetRelationship(
+      datasetId: datasetId,
+      endpointATableId: leftTableId,
+      endpointAColumnDbName: leftColumnDbName,
+      endpointBTableId: rightTableId,
+      endpointBColumnDbName: rightColumnDbName,
+      origin: RelationshipOrigin.userDefined,
+      confirmedAt: DateTime.now(),
+    );
+    await _persistAndAddJoin(relationship);
+  }
+
+  Future<void> _persistAndAddJoin(DatasetRelationship relationship) async {
+    if (state.spec.referencedRelationshipIds.any((id) =>
+        state.relationshipsById[id]?.endpointKey == relationship.endpointKey)) {
       state = state.copyWith(
         status: MultiSheetJoinStatus.validationError,
         errorCode: MultiSheetGraphValidator.duplicateRelationshipCode,
       );
       return;
     }
-    _updateSpec(state.spec.copyWith(
-      relationships: [...existing, relationship],
-    ));
+
+    DatasetRelationship persisted;
+    try {
+      persisted = await service.createRelationship(relationship);
+    } on DuplicateRelationshipException catch (e) {
+      // An equivalent relationship already exists; reuse it.
+      final existing = state.relationshipsById[e.existingId] ??
+          (await service.loadRelationships(datasetId))
+              .where((r) => r.endpointKey == relationship.endpointKey)
+              .firstOrNull;
+      if (existing == null) return;
+      persisted = existing;
+    }
+    if (!mounted || persisted.id == null) return;
+
+    _updateSpec(
+      state.spec.copyWith(
+        joins: [
+          ...state.spec.joins,
+          MultiSheetJoin(relationshipId: persisted.id!),
+        ],
+      ),
+      relationshipsById: {...state.relationshipsById, persisted.id!: persisted},
+    );
   }
 
-  void removeRelationship(String effectiveId) {
+  void removeJoin(int relationshipId) {
     _updateSpec(state.spec.copyWith(
-      relationships: state.spec.relationships
-          .where((r) => r.effectiveId != effectiveId)
-          .toList(),
-    ));
-  }
-
-  void flipRelationship(String effectiveId) {
-    _updateSpec(state.spec.copyWith(
-      relationships: [
-        for (final r in state.spec.relationships)
-          if (r.effectiveId == effectiveId) r.flipped() else r,
+      joins: [
+        for (final join in state.spec.joins)
+          if (join.relationshipId != relationshipId) join,
       ],
     ));
   }
 
-  void setJoinType(String effectiveId, SheetJoinType joinType) {
+  void setJoinType(int relationshipId, SheetJoinType joinType) {
     _updateSpec(state.spec.copyWith(
-      relationships: [
-        for (final r in state.spec.relationships)
-          if (r.effectiveId == effectiveId)
-            r.copyWith(joinType: joinType)
+      joins: [
+        for (final join in state.spec.joins)
+          if (join.relationshipId == relationshipId)
+            join.copyWith(
+              joinType: joinType,
+              // Default the preserved side to the base-most endpoint; the user
+              // can change it. INNER clears it.
+              preservedTableId: joinType == SheetJoinType.left
+                  ? _defaultPreservedSide(relationshipId)
+                  : null,
+              clearPreservedTableId: joinType == SheetJoinType.inner,
+            )
           else
-            r,
+            join,
       ],
     ));
+  }
+
+  /// Chooses which side a LEFT join preserves (must be one of the endpoints).
+  void setPreservedSide(int relationshipId, int tableId) {
+    final relationship = state.relationshipsById[relationshipId];
+    if (relationship == null || !relationship.involvesTable(tableId)) return;
+    _updateSpec(state.spec.copyWith(
+      joins: [
+        for (final join in state.spec.joins)
+          if (join.relationshipId == relationshipId)
+            join.copyWith(preservedTableId: tableId)
+          else
+            join,
+      ],
+    ));
+  }
+
+  int? _defaultPreservedSide(int relationshipId) {
+    final relationship = state.relationshipsById[relationshipId];
+    if (relationship == null) return null;
+    final base = state.spec.baseTableId;
+    if (base != null && relationship.involvesTable(base)) return base;
+    return relationship.endpointATableId;
   }
 
   /// Validates and generates the SQL without running it, so the UI can show the
   /// query and its warnings before the user commits to a risky join.
   bool prepare() {
     try {
-      final generated =
-          service.buildQuery(spec: state.spec, sheets: state.sheets);
+      final generated = service.buildQuery(
+        spec: state.spec,
+        sheets: state.sheets,
+        relationshipsById: state.relationshipsById,
+      );
       state = state.copyWith(
         status: MultiSheetJoinStatus.ready,
         generated: generated,
@@ -297,6 +396,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       final preview = await service.runPreview(
         spec: state.spec,
         sheets: state.sheets,
+        relationshipsById: state.relationshipsById,
       );
       // Ignore results of a superseded run.
       if (!mounted || token != _runToken) return;
@@ -338,6 +438,21 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     final saved = await service.loadSavedQuery(id);
     if (!mounted || saved == null) return;
 
+    // A spec serialized by a version this build does not understand is stale by
+    // definition — never silently present it as an empty editable query.
+    if (saved.spec.unsupportedVersion) {
+      state = state.copyWith(
+        spec: saved.spec,
+        activeSavedQueryId: saved.id,
+        clearPreview: true,
+        clearGenerated: true,
+        clearError: true,
+        status: MultiSheetJoinStatus.staleSpec,
+        errorCode: unsupportedSpecVersionCode,
+      );
+      return;
+    }
+
     state = state.copyWith(
       spec: saved.spec,
       activeSavedQueryId: saved.id,
@@ -347,11 +462,16 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       status: MultiSheetJoinStatus.editing,
     );
 
-    // A saved spec may reference tables/columns that no longer exist.
+    // A saved spec may reference relationships/tables/columns that no longer exist.
     try {
-      service.buildQuery(spec: saved.spec, sheets: state.sheets);
+      service.buildQuery(
+        spec: saved.spec,
+        sheets: state.sheets,
+        relationshipsById: state.relationshipsById,
+      );
     } on MultiSheetGraphException catch (error) {
-      if (error.code == MultiSheetGraphValidator.unavailableTableOrColumnCode) {
+      if (error.code == MultiSheetGraphValidator.unavailableTableOrColumnCode ||
+          error.code == MultiSheetGraphValidator.missingRelationshipCode) {
         state = state.copyWith(
           status: MultiSheetJoinStatus.staleSpec,
           errorCode: error.code,
@@ -372,6 +492,13 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     );
   }
 
+  bool _joinWithinSelection(MultiSheetJoin join, List<int> selected) {
+    final relationship = state.relationshipsById[join.relationshipId];
+    if (relationship == null) return false;
+    return selected.contains(relationship.endpointATableId) &&
+        selected.contains(relationship.endpointBTableId);
+  }
+
   List<String> _defaultColumns(int tableId) {
     final sheet = state.sheets.where((s) => s.tableId == tableId).firstOrNull;
     if (sheet == null) return const [];
@@ -382,9 +509,13 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
   }
 
   /// Any spec edit invalidates a previously generated query/preview.
-  void _updateSpec(MultiSheetQuerySpec spec) {
+  void _updateSpec(
+    MultiSheetQuerySpec spec, {
+    Map<int, DatasetRelationship>? relationshipsById,
+  }) {
     state = state.copyWith(
       spec: spec,
+      relationshipsById: relationshipsById,
       status: MultiSheetJoinStatus.editing,
       clearError: true,
       clearPreview: true,

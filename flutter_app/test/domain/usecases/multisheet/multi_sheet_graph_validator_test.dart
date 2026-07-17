@@ -1,6 +1,7 @@
+import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,40 +11,63 @@ void main() {
   final available = {1, 2, 3};
   final columns = {
     1: {'id', 'name', 'product_id'},
-    2: {'product', 'price'},
-    3: {'product', 'stock'},
+    2: {'product', 'stock'},
+    3: {'product', 'price'},
   };
 
-  SheetJoinRelationship edge(
-    int lt,
-    String lc,
-    int rt,
-    String rc, [
+  // Relationship registry keyed by id.
+  DatasetRelationship rel(
+    int id,
+    int at,
+    String ac,
+    int bt,
+    String bc,
+  ) {
+    return DatasetRelationship(
+      id: id,
+      datasetId: 1,
+      endpointATableId: at,
+      endpointAColumnDbName: ac,
+      endpointBTableId: bt,
+      endpointBColumnDbName: bc,
+    );
+  }
+
+  final relationships = {
+    10: rel(10, 1, 'product_id', 2, 'product'),
+    20: rel(20, 2, 'product', 3, 'product'),
+    30: rel(30, 3, 'product', 1, 'product_id'),
+    // A stale relationship pointing at a missing column.
+    40: rel(40, 1, 'gone', 2, 'product'),
+  };
+
+  MultiSheetJoin join(
+    int relationshipId, {
     SheetJoinType type = SheetJoinType.inner,
-  ]) {
-    return SheetJoinRelationship(
-      leftTableId: lt,
-      leftColumnDbName: lc,
-      rightTableId: rt,
-      rightColumnDbName: rc,
+    int? preserved,
+  }) {
+    return MultiSheetJoin(
+      relationshipId: relationshipId,
       joinType: type,
+      preservedTableId: preserved,
     );
   }
 
   MultiSheetQuerySpec spec({
     int? base,
     required List<int> tables,
-    required List<SheetJoinRelationship> relationships,
+    required List<MultiSheetJoin> joins,
   }) {
     return MultiSheetQuerySpec(
       baseTableId: base,
       selectedTableIds: tables,
-      relationships: relationships,
+      joins: joins,
     );
   }
 
   ResolvedJoinPlan run(MultiSheetQuerySpec s) => validator.validate(
         spec: s,
+        relationshipsById: relationships,
         availableTableIds: available,
         availableColumnsByTableId: columns,
       );
@@ -57,116 +81,91 @@ void main() {
   }
 
   test('valid two-table tree resolves to one oriented step', () {
-    final plan = run(spec(
-      base: 1,
-      tables: [1, 2],
-      relationships: [edge(1, 'product_id', 2, 'product')],
-    ));
+    final plan = run(spec(base: 1, tables: [1, 2], joins: [join(10)]));
     expect(plan.baseTableId, 1);
     expect(plan.orderedTableIds, [1, 2]);
     expect(plan.steps, hasLength(1));
     expect(plan.steps.first.existingTableId, 1);
     expect(plan.steps.first.newTableId, 2);
+    expect(plan.steps.first.existingColumnDbName, 'product_id');
+    expect(plan.steps.first.newColumnDbName, 'product');
   });
 
   test('valid three-table chain is ordered deterministically from base', () {
-    final plan = run(spec(
-      base: 1,
-      tables: [1, 2, 3],
-      relationships: [
-        edge(1, 'product_id', 2, 'product'),
-        edge(2, 'product', 3, 'product'),
-      ],
-    ));
+    final plan =
+        run(spec(base: 1, tables: [1, 2, 3], joins: [join(10), join(20)]));
     expect(plan.orderedTableIds, [1, 2, 3]);
     expect(plan.steps.map((s) => s.newTableId), [2, 3]);
   });
 
-  test('orients LEFT join so the accumulated side is preserved', () {
+  test('a LEFT join preserving the accumulated side is accepted', () {
     final plan = run(spec(
       base: 1,
       tables: [1, 2],
-      relationships: [edge(1, 'product_id', 2, 'product', SheetJoinType.left)],
+      joins: [join(10, type: SheetJoinType.left, preserved: 1)],
     ));
-    expect(plan.steps.first.existingTableId, 1);
     expect(plan.steps.first.joinType, SheetJoinType.left);
   });
 
   test('rejects fewer than two tables', () {
     expectCode(
-      spec(tables: [1], relationships: []),
+      spec(tables: [1], joins: []),
       MultiSheetGraphValidator.notEnoughTablesCode,
     );
   });
 
-  test('rejects a stale column that no longer exists', () {
+  test('reports a missing relationship reference', () {
     expectCode(
-      spec(
-        base: 1,
-        tables: [1, 2],
-        relationships: [edge(1, 'gone', 2, 'product')],
-      ),
-      MultiSheetGraphValidator.unavailableTableOrColumnCode,
+      spec(base: 1, tables: [1, 2], joins: [join(999)]),
+      MultiSheetGraphValidator.missingRelationshipCode,
     );
   });
 
-  test('rejects a duplicate relationship (same pair, any direction)', () {
+  test('reports a stale relationship column', () {
     expectCode(
-      spec(
-        base: 1,
-        tables: [1, 2],
-        relationships: [
-          edge(1, 'product_id', 2, 'product'),
-          edge(2, 'product', 1, 'product_id'),
-        ],
-      ),
-      MultiSheetGraphValidator.duplicateRelationshipCode,
+      spec(base: 1, tables: [1, 2], joins: [join(40)]),
+      MultiSheetGraphValidator.unavailableTableOrColumnCode,
     );
   });
 
   test('rejects a disconnected graph', () {
     expectCode(
-      spec(base: 1, tables: [1, 2], relationships: []),
+      spec(base: 1, tables: [1, 2], joins: []),
       MultiSheetGraphValidator.disconnectedGraphCode,
     );
   });
 
-  test('rejects a cycle', () {
+  test('rejects a cycle (three tables, three joins)', () {
     expectCode(
-      spec(
-        base: 1,
-        tables: [1, 2, 3],
-        relationships: [
-          edge(1, 'product_id', 2, 'product'),
-          edge(2, 'product', 3, 'product'),
-          edge(3, 'product', 1, 'product_id'),
-        ],
-      ),
+      spec(base: 1, tables: [1, 2, 3], joins: [join(10), join(20), join(30)]),
       MultiSheetGraphValidator.cycleDetectedCode,
     );
   });
 
-  test('rejects a LEFT join whose preserved side is the newly added table', () {
-    // base is 1; edge preserves table 2 (the new table) -> invalid direction.
+  test('rejects a LEFT join with no explicit preserved side', () {
+    expectCode(
+      spec(
+          base: 1, tables: [1, 2], joins: [join(10, type: SheetJoinType.left)]),
+      MultiSheetGraphValidator.invalidLeftJoinDirectionCode,
+    );
+  });
+
+  test('rejects a LEFT join preserving the newly added side', () {
+    // base is 1; preserving 2 (the new table) is invalid.
     expectCode(
       spec(
         base: 1,
         tables: [1, 2],
-        relationships: [
-          edge(2, 'product', 1, 'product_id', SheetJoinType.left)
-        ],
+        joins: [join(10, type: SheetJoinType.left, preserved: 2)],
       ),
       MultiSheetGraphValidator.invalidLeftJoinDirectionCode,
     );
   });
 
-  test('rejects a relationship referencing an unselected table', () {
+  test('rejects a relationship whose endpoint is not selected', () {
+    // join 20 connects tables 2 and 3, but 3 is not selected.
     expectCode(
-      spec(
-        base: 1,
-        tables: [1, 2],
-        relationships: [edge(1, 'product_id', 3, 'product')],
-      ),
+      spec(base: 1, tables: [1, 2], joins: [join(10), join(20)]),
       MultiSheetGraphValidator.incompleteRelationshipCode,
     );
   });

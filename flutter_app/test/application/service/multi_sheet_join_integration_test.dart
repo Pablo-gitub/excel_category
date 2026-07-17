@@ -4,22 +4,26 @@
 import 'package:drift/native.dart';
 import 'package:exlser/application/services/multi_sheet_analysis_service.dart';
 import 'package:exlser/core/database/app_database.dart'
-    hide DatasetColumn, DatasetTable, SavedMultiSheetQuery;
+    hide DatasetColumn, DatasetTable, DatasetRelationship, SavedMultiSheetQuery;
+import 'package:exlser/core/database/daos/dataset_relationships_dao.dart';
 import 'package:exlser/core/database/daos/datasets_dao.dart';
 import 'package:exlser/core/database/daos/saved_multi_sheet_queries_dao.dart';
 import 'package:exlser/data/datasources/drift_datasource.dart';
+import 'package:exlser/data/repositories/dataset_relationship_repository_impl.dart';
 import 'package:exlser/data/repositories/query_repository_impl.dart';
 import 'package:exlser/data/repositories/saved_multi_sheet_query_repository_impl.dart';
 import 'package:exlser/data/repositories/schema_repository_impl.dart';
 import 'package:exlser/data/schema/dynamic_table_builder.dart';
 import 'package:exlser/domain/entities/dataset_column.dart';
+import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/entities/dataset_table.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
+import 'package:exlser/domain/usecases/multisheet/manage_dataset_relationships_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/manage_multi_sheet_queries_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/save_multi_sheet_query_usecase.dart';
 import 'package:exlser/domain/value_objects/column_type.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,9 +32,11 @@ void main() {
   late MultiSheetAnalysisService service;
   late SchemaRepositoryImpl schemaRepository;
   late QueryRepositoryImpl queryRepository;
+  late DatasetRelationshipRepositoryImpl relationshipRepository;
   late int datasetId;
   late int salesTableId;
   late int productsTableId;
+  late int defaultRelationshipId;
 
   DatasetColumn column(String name, ColumnType type, {int tableId = 0}) {
     return DatasetColumn(
@@ -79,6 +85,9 @@ void main() {
     final savedRepository = SavedMultiSheetQueryRepositoryImpl(
       SavedMultiSheetQueriesDao(database),
     );
+    relationshipRepository = DatasetRelationshipRepositoryImpl(
+      DatasetRelationshipsDao(database),
+    );
 
     service = MultiSheetAnalysisService(
       schemaRepository: schemaRepository,
@@ -91,6 +100,15 @@ void main() {
       loadQueryUseCase: LoadMultiSheetQueryUseCase(repository: savedRepository),
       deleteQueryUseCase:
           DeleteMultiSheetQueryUseCase(repository: savedRepository),
+      createRelationshipUseCase: CreateDatasetRelationshipUseCase(
+        repository: relationshipRepository,
+      ),
+      listRelationshipsUseCase: ListDatasetRelationshipsUseCase(
+        repository: relationshipRepository,
+      ),
+      updateRelationshipUseCase: UpdateDatasetRelationshipUseCase(
+        repository: relationshipRepository,
+      ),
     );
 
     datasetId = await DatasetsDao(database).createDataset(
@@ -130,15 +148,50 @@ void main() {
         {'product': 'A3', 'price': 30},
       ],
     );
+
+    // The default join (sales.product_id -> products.product) is a persisted
+    // relationship; the saved query references it by id.
+    defaultRelationshipId = (await service.createRelationship(
+      DatasetRelationship(
+        datasetId: datasetId,
+        endpointATableId: salesTableId,
+        endpointAColumnDbName: 'product_id',
+        endpointBTableId: productsTableId,
+        endpointBColumnDbName: 'product',
+      ),
+    ))
+        .id!;
   });
 
   tearDown(() async => database.close());
 
+  Future<int> makeRelationship({
+    required int leftTableId,
+    required String leftColumn,
+    required int rightTableId,
+    required String rightColumn,
+  }) async {
+    final created = await service.createRelationship(
+      DatasetRelationship(
+        datasetId: datasetId,
+        endpointATableId: leftTableId,
+        endpointAColumnDbName: leftColumn,
+        endpointBTableId: rightTableId,
+        endpointBColumnDbName: rightColumn,
+      ),
+    );
+    return created.id!;
+  }
+
+  Future<Map<int, DatasetRelationship>> relMap() async {
+    final rels = await service.loadRelationships(datasetId);
+    return {for (final r in rels) r.id!: r};
+  }
+
   MultiSheetQuerySpec spec({
     SheetJoinType joinType = SheetJoinType.inner,
     int limit = 100,
-    String leftColumn = 'product_id',
-    String rightColumn = 'product',
+    int? relationshipId,
   }) {
     return MultiSheetQuerySpec(
       baseTableId: salesTableId,
@@ -147,13 +200,13 @@ void main() {
         salesTableId: const ['product_id', 'qty'],
         productsTableId: const ['product', 'price'],
       },
-      relationships: [
-        SheetJoinRelationship(
-          leftTableId: salesTableId,
-          leftColumnDbName: leftColumn,
-          rightTableId: productsTableId,
-          rightColumnDbName: rightColumn,
+      joins: [
+        MultiSheetJoin(
+          relationshipId: relationshipId ?? defaultRelationshipId,
           joinType: joinType,
+          // A LEFT join preserves the accumulated base side (sales).
+          preservedTableId:
+              joinType == SheetJoinType.left ? salesTableId : null,
         ),
       ],
       resultLimit: limit,
@@ -162,7 +215,11 @@ void main() {
 
   Future<MultiSheetPreviewResult> run(MultiSheetQuerySpec s) async {
     final sheets = await service.loadSheets(datasetId);
-    return service.runPreview(spec: s, sheets: sheets);
+    return service.runPreview(
+      spec: s,
+      sheets: sheets,
+      relationshipsById: await relMap(),
+    );
   }
 
   test('INNER JOIN returns only matching rows, dropping unmatched and nulls',
@@ -200,7 +257,13 @@ void main() {
   test('a join with no matches returns zero rows but keeps its headers',
       () async {
     // Join on unrelated columns: qty never equals price here.
-    final result = await run(spec(leftColumn: 'qty', rightColumn: 'price'));
+    final rid = await makeRelationship(
+      leftTableId: salesTableId,
+      leftColumn: 'qty',
+      rightTableId: productsTableId,
+      rightColumn: 'price',
+    );
+    final result = await run(spec(relationshipId: rid));
 
     expect(result.rows, isEmpty);
     expect(result.isEmpty, isTrue);
@@ -223,6 +286,12 @@ void main() {
       ],
     );
 
+    final rid = await makeRelationship(
+      leftTableId: salesTableId,
+      leftColumn: 'qty',
+      rightTableId: tagsTableId,
+      rightColumn: 'qty',
+    );
     final sheets = await service.loadSheets(datasetId);
     final manyToMany = MultiSheetQuerySpec(
       baseTableId: salesTableId,
@@ -231,17 +300,14 @@ void main() {
         salesTableId: const ['qty'],
         tagsTableId: const ['qty'],
       },
-      relationships: [
-        SheetJoinRelationship(
-          leftTableId: salesTableId,
-          leftColumnDbName: 'qty',
-          rightTableId: tagsTableId,
-          rightColumnDbName: 'qty',
-        ),
-      ],
+      joins: [MultiSheetJoin(relationshipId: rid)],
     );
 
-    final result = await service.runPreview(spec: manyToMany, sheets: sheets);
+    final result = await service.runPreview(
+      spec: manyToMany,
+      sheets: sheets,
+      relationshipsById: await relMap(),
+    );
 
     // qty=1 appears once in Sales and twice in Tags -> 2 rows.
     expect(result.rows, hasLength(2));
@@ -275,8 +341,11 @@ void main() {
     expect(reloaded, isNotNull);
 
     final sheets = await service.loadSheets(datasetId);
-    final result =
-        await service.runPreview(spec: reloaded!.spec, sheets: sheets);
+    final result = await service.runPreview(
+      spec: reloaded!.spec,
+      sheets: sheets,
+      relationshipsById: await relMap(),
+    );
 
     expect(result.rows, hasLength(5));
   });

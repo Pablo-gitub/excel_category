@@ -1,3 +1,4 @@
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
 import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
@@ -74,6 +75,55 @@ void main() {
     });
   });
 
+  group('MultiSheetJoin', () {
+    test('INNER json round-trip drops any preserved side', () {
+      final join = MultiSheetJoin(
+        relationshipId: 10,
+        joinType: SheetJoinType.inner,
+        // Passing a preserved side on an INNER join must be normalized away.
+        preservedTableId: 3,
+      );
+      expect(join.preservedTableId, isNull);
+
+      final restored = MultiSheetJoin.fromJson(join.toJson());
+      expect(restored, isNotNull);
+      expect(restored!.relationshipId, 10);
+      expect(restored.joinType, SheetJoinType.inner);
+      expect(restored.preservedTableId, isNull);
+    });
+
+    test('LEFT json round-trip preserves the explicit table id', () {
+      final join = MultiSheetJoin(
+        relationshipId: 7,
+        joinType: SheetJoinType.left,
+        preservedTableId: 2,
+      );
+
+      final restored = MultiSheetJoin.fromJson(join.toJson());
+      expect(restored!.joinType, SheetJoinType.left);
+      expect(restored.preservedTableId, 2);
+    });
+
+    test('fromJson rejects a missing or non-positive relationship id', () {
+      expect(MultiSheetJoin.fromJson(const {'joinType': 'inner'}), isNull);
+      expect(MultiSheetJoin.fromJson(const {'relationshipId': 0}), isNull);
+      expect(MultiSheetJoin.fromJson(const {'relationshipId': -3}), isNull);
+    });
+
+    test('value equality ignores object identity', () {
+      expect(
+        MultiSheetJoin(
+            relationshipId: 1,
+            joinType: SheetJoinType.left,
+            preservedTableId: 2),
+        MultiSheetJoin(
+            relationshipId: 1,
+            joinType: SheetJoinType.left,
+            preservedTableId: 2),
+      );
+    });
+  });
+
   group('MultiSheetQuerySpec', () {
     final spec = MultiSheetQuerySpec(
       baseTableId: 1,
@@ -82,25 +132,26 @@ void main() {
         1: ['name', 'product_id'],
         2: ['product', 'price'],
       },
-      relationships: const [
-        SheetJoinRelationship(
-          leftTableId: 1,
-          leftColumnDbName: 'product_id',
-          rightTableId: 2,
-          rightColumnDbName: 'product',
-        ),
+      joins: [
+        MultiSheetJoin(
+            relationshipId: 42,
+            joinType: SheetJoinType.left,
+            preservedTableId: 1),
       ],
       resultLimit: 50,
     );
 
-    test('json round-trip preserves the spec', () {
+    test('json round-trip preserves the spec and its joins', () {
       final restored = MultiSheetQuerySpec.fromJson(spec.toJson());
+      expect(restored.unsupportedVersion, isFalse);
       expect(restored.baseTableId, 1);
       expect(restored.selectedTableIds, [1, 2]);
       expect(restored.selectedColumnsByTableId[1], ['name', 'product_id']);
       expect(restored.selectedColumnsByTableId[2], ['product', 'price']);
-      expect(restored.relationships, hasLength(1));
-      expect(restored.relationships.first.rightColumnDbName, 'product');
+      expect(restored.joins, hasLength(1));
+      expect(restored.joins.first.relationshipId, 42);
+      expect(restored.joins.first.preservedTableId, 1);
+      expect(restored.referencedRelationshipIds, {42});
       expect(restored.resultLimit, 50);
       expect(restored.schemaVersion, MultiSheetQuerySpec.currentSchemaVersion);
     });
@@ -109,20 +160,54 @@ void main() {
       final restored = MultiSheetQuerySpec.fromJson(const {});
       expect(restored.baseTableId, isNull);
       expect(restored.selectedTableIds, isEmpty);
-      expect(restored.relationships, isEmpty);
+      expect(restored.joins, isEmpty);
       expect(restored.resultLimit, MultiSheetQuerySpec.defaultResultLimit);
       expect(restored.isEmpty, isTrue);
+      expect(restored.unsupportedVersion, isFalse);
     });
 
-    test('fromJson filters out malformed relationships and column entries', () {
+    test('fromJson drops malformed joins, duplicate tables and empty columns',
+        () {
       final restored = MultiSheetQuerySpec.fromJson({
-        'selectedTableIds': [1, 'bad', 2],
+        'schemaVersion': MultiSheetQuerySpec.currentSchemaVersion,
+        'selectedTableIds': [1, 'bad', 2, 1], // duplicate 1 collapsed
         'selectedColumnsByTableId': {
           '1': ['a', '', 'b'],
           'nope': ['x'],
         },
+        'joins': [
+          {'joinType': 'inner'}, // no id -> dropped
+          {'relationshipId': 0}, // non-positive -> dropped
+          {'relationshipId': 5, 'joinType': 'inner'},
+        ],
+      });
+      expect(restored.selectedTableIds, [1, 2]);
+      expect(restored.selectedColumnsByTableId[1], ['a', 'b']);
+      expect(restored.selectedColumnsByTableId.containsKey(-1), isFalse);
+      expect(restored.joins, hasLength(1));
+      expect(restored.joins.first.relationshipId, 5);
+    });
+
+    test('a future schema version parses as an explicit unsupported marker',
+        () {
+      final restored = MultiSheetQuerySpec.fromJson({
+        'schemaVersion': MultiSheetQuerySpec.currentSchemaVersion + 1,
+        'selectedTableIds': [1, 2],
+        'joins': [
+          {'relationshipId': 5},
+        ],
+      });
+      expect(restored.unsupportedVersion, isTrue);
+      expect(restored.isEmpty, isTrue,
+          reason: 'an unsupported spec exposes no usable content');
+    });
+
+    test('a legacy v1 (inline relationships) spec is treated as unsupported',
+        () {
+      final restored = MultiSheetQuerySpec.fromJson({
+        'schemaVersion': 1,
+        'selectedTableIds': [1, 2],
         'relationships': [
-          {'leftTableId': 1, 'leftColumnDbName': 'a'}, // incomplete -> dropped
           {
             'leftTableId': 1,
             'leftColumnDbName': 'a',
@@ -131,10 +216,8 @@ void main() {
           },
         ],
       });
-      expect(restored.selectedTableIds, [1, 2]);
-      expect(restored.selectedColumnsByTableId[1], ['a', 'b']);
-      expect(restored.selectedColumnsByTableId.containsKey(-1), isFalse);
-      expect(restored.relationships, hasLength(1));
+      expect(restored.unsupportedVersion, isTrue);
+      expect(restored.joins, isEmpty);
     });
   });
 }

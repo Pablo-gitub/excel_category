@@ -8,8 +8,8 @@ import 'package:exlser/core/database/daos/saved_multi_sheet_queries_dao.dart';
 import 'package:exlser/data/repositories/saved_multi_sheet_query_repository_impl.dart';
 import 'package:exlser/domain/entities/saved_multi_sheet_query.dart';
 import 'package:exlser/domain/usecases/multisheet/save_multi_sheet_query_usecase.dart';
+import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
-import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,20 +18,18 @@ void main() {
   late SavedMultiSheetQueryRepositoryImpl repository;
   late DatasetsDao datasetsDao;
 
-  const spec = MultiSheetQuerySpec(
+  final spec = MultiSheetQuerySpec(
     baseTableId: 1,
-    selectedTableIds: [1, 2],
-    selectedColumnsByTableId: {
+    selectedTableIds: const [1, 2],
+    selectedColumnsByTableId: const {
       1: ['product_id', 'qty'],
       2: ['product', 'price'],
     },
-    relationships: [
-      SheetJoinRelationship(
-        leftTableId: 1,
-        leftColumnDbName: 'product_id',
-        rightTableId: 2,
-        rightColumnDbName: 'product',
+    joins: [
+      MultiSheetJoin(
+        relationshipId: 77,
         joinType: SheetJoinType.left,
+        preservedTableId: 1,
       ),
     ],
     resultLimit: 50,
@@ -79,8 +77,10 @@ void main() {
     expect(loaded.spec.baseTableId, 1);
     expect(loaded.spec.selectedTableIds, [1, 2]);
     expect(loaded.spec.selectedColumnsByTableId[2], ['product', 'price']);
-    expect(loaded.spec.relationships, hasLength(1));
-    expect(loaded.spec.relationships.first.joinType, SheetJoinType.left);
+    expect(loaded.spec.joins, hasLength(1));
+    expect(loaded.spec.joins.first.relationshipId, 77);
+    expect(loaded.spec.joins.first.joinType, SheetJoinType.left);
+    expect(loaded.spec.joins.first.preservedTableId, 1);
     expect(loaded.spec.resultLimit, 50);
     expect(
         loaded.createdAt, DateTime.fromMillisecondsSinceEpoch(1700000000000));
