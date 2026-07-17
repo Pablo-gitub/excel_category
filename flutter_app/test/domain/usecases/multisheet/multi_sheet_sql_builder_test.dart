@@ -36,6 +36,7 @@ void main() {
 
   GeneratedMultiSheetQuery buildFor(MultiSheetQuerySpec spec) {
     final plan = graphValidator.validate(
+      datasetId: 1,
       spec: spec,
       relationshipsById: relationships,
       availableTableIds: availableTables,

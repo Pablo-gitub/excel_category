@@ -458,6 +458,7 @@ class AppStrings {
   static const String datasetJoinsJoinType = 'dataset.joins.join_type';
   static const String datasetJoinsJoinInner = 'dataset.joins.join_inner';
   static const String datasetJoinsJoinLeft = 'dataset.joins.join_left';
+  static const String datasetJoinsLeftKeeps = 'dataset.joins.left_keeps';
   static const String datasetJoinsRun = 'dataset.joins.run';
   static const String datasetJoinsPreview = 'dataset.joins.preview';
   static const String datasetJoinsPreviewLimited =

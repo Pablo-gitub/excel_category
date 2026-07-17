@@ -383,29 +383,34 @@ class _RelationshipTile extends StatelessWidget {
               ),
             ),
           ),
-          // For a LEFT join, let the user choose which side is preserved.
+          // The preserved side of a LEFT join is derived (SQL accumulates from
+          // the base), so it is shown read-only. To preserve the other side the
+          // user changes the base table rather than picking an invalid side.
           if (join.isLeft) ...[
-            const SizedBox(height: 4),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: SegmentedButton<int>(
-                showSelectedIcon: false,
-                segments: [
-                  for (final tableId in [
-                    relationship.endpointATableId,
-                    relationship.endpointBTableId,
-                  ])
-                    ButtonSegment(
-                      value: tableId,
-                      label: Text(_sheetLabel(state, tableId)),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    AppStrings.datasetJoinsLeftKeeps.tr(
+                      namedArgs: {
+                        'sheet': _sheetLabel(
+                          state,
+                          join.preservedTableId ??
+                              relationship.endpointATableId,
+                        ),
+                      },
                     ),
-                ],
-                selected: {
-                  join.preservedTableId ?? relationship.endpointATableId,
-                },
-                onSelectionChanged: (values) => controller.setPreservedSide(
-                    join.relationshipId, values.first),
-              ),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
             ),
           ],
         ],

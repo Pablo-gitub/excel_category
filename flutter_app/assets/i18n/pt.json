@@ -270,6 +270,7 @@
             "join_type": "Tipo de junção",
             "join_inner": "Apenas linhas correspondentes",
             "join_left": "Manter todas as linhas da planilha base",
+            "left_keeps": "Mantém todas as linhas de {sheet}, mesmo sem correspondência",
             "run": "Executar prévia",
             "preview": "Prévia",
             "preview_limited": "Prévia limitada a {limit} linhas",

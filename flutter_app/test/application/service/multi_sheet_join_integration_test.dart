@@ -19,6 +19,7 @@ import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/entities/dataset_table.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
 import 'package:exlser/domain/usecases/multisheet/manage_dataset_relationships_usecases.dart';
+import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/manage_multi_sheet_queries_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/save_multi_sheet_query_usecase.dart';
 import 'package:exlser/domain/value_objects/column_type.dart';
@@ -216,6 +217,7 @@ void main() {
   Future<MultiSheetPreviewResult> run(MultiSheetQuerySpec s) async {
     final sheets = await service.loadSheets(datasetId);
     return service.runPreview(
+      datasetId: datasetId,
       spec: s,
       sheets: sheets,
       relationshipsById: await relMap(),
@@ -304,6 +306,7 @@ void main() {
     );
 
     final result = await service.runPreview(
+      datasetId: datasetId,
       spec: manyToMany,
       sheets: sheets,
       relationshipsById: await relMap(),
@@ -342,11 +345,45 @@ void main() {
 
     final sheets = await service.loadSheets(datasetId);
     final result = await service.runPreview(
+      datasetId: datasetId,
       spec: reloaded!.spec,
       sheets: sheets,
       relationshipsById: await relMap(),
     );
 
     expect(result.rows, hasLength(5));
+  });
+
+  test('a relationship owned by another dataset is rejected', () async {
+    final otherDatasetId = await DatasetsDao(database).createDataset(
+      name: 'other',
+      sourceFileName: 'other.xlsx',
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+    );
+    // Same endpoints, but the relationship belongs to a different dataset.
+    final foreign = await service.createRelationship(
+      DatasetRelationship(
+        datasetId: otherDatasetId,
+        endpointATableId: salesTableId,
+        endpointAColumnDbName: 'product_id',
+        endpointBTableId: productsTableId,
+        endpointBColumnDbName: 'product',
+      ),
+    );
+    final sheets = await service.loadSheets(datasetId);
+
+    expect(
+      () => service.runPreview(
+        datasetId: datasetId,
+        spec: spec(relationshipId: foreign.id!),
+        sheets: sheets,
+        relationshipsById: {foreign.id!: foreign},
+      ),
+      throwsA(isA<MultiSheetGraphException>().having(
+        (e) => e.code,
+        'code',
+        MultiSheetGraphValidator.foreignRelationshipCode,
+      )),
+    );
   });
 }

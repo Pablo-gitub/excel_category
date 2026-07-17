@@ -270,6 +270,7 @@
             "join_type": "Type de jointure",
             "join_inner": "Seulement les lignes correspondantes",
             "join_left": "Garder toutes les lignes de la feuille de base",
+            "left_keeps": "Conserve toutes les lignes de {sheet}, même sans correspondance",
             "run": "Lancer l'aperçu",
             "preview": "Aperçu",
             "preview_limited": "Aperçu limité à {limit} lignes",

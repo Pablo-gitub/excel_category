@@ -270,6 +270,7 @@
             "join_type": "Tipo di join",
             "join_inner": "Solo righe con corrispondenza",
             "join_left": "Tieni tutte le righe del foglio base",
+            "left_keeps": "Mantiene tutte le righe di {sheet}, anche senza corrispondenza",
             "run": "Esegui anteprima",
             "preview": "Anteprima",
             "preview_limited": "Anteprima limitata a {limit} righe",

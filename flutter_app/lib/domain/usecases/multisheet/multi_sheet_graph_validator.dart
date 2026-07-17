@@ -73,6 +73,7 @@ class MultiSheetGraphValidator {
   static const String unavailableTableOrColumnCode =
       'unavailable_table_or_column';
   static const String missingRelationshipCode = 'missing_relationship';
+  static const String foreignRelationshipCode = 'foreign_relationship';
   static const String incompleteRelationshipCode = 'incomplete_relationship';
   static const String duplicateRelationshipCode = 'duplicate_relationship';
   static const String disconnectedGraphCode = 'disconnected_graph';
@@ -83,6 +84,7 @@ class MultiSheetGraphValidator {
   const MultiSheetGraphValidator();
 
   ResolvedJoinPlan validate({
+    required int datasetId,
     required MultiSheetQuerySpec spec,
     required Map<int, DatasetRelationship> relationshipsById,
     required Set<int> availableTableIds,
@@ -109,6 +111,7 @@ class MultiSheetGraphValidator {
     }
 
     final edges = _resolveEdges(
+      datasetId: datasetId,
       spec: spec,
       relationshipsById: relationshipsById,
       selectedSet: selectedSet,
@@ -139,6 +142,7 @@ class MultiSheetGraphValidator {
   /// Resolves every join into an endpoint edge, validating references, endpoints
   /// and duplicates (equivalent by unordered endpoint pair).
   List<_JoinEdge> _resolveEdges({
+    required int datasetId,
     required MultiSheetQuerySpec spec,
     required Map<int, DatasetRelationship> relationshipsById,
     required Set<int> selectedSet,
@@ -152,6 +156,10 @@ class MultiSheetGraphValidator {
       final relationship = relationshipsById[join.relationshipId];
       if (relationship == null) {
         throw const MultiSheetGraphException(missingRelationshipCode);
+      }
+      // A saved query must never resolve a relationship owned by another dataset.
+      if (relationship.datasetId != datasetId) {
+        throw const MultiSheetGraphException(foreignRelationshipCode);
       }
 
       final a = relationship.endpointATableId;

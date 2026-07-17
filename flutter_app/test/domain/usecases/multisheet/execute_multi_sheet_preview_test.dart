@@ -62,6 +62,7 @@ void main() {
 
   ResolvedJoinPlan planFor(String leftCol, String rightCol) =>
       graphValidator.validate(
+        datasetId: 1,
         spec: specJoining(leftCol, rightCol),
         relationshipsById: relsFor(leftCol, rightCol),
         availableTableIds: availableTables,

@@ -66,6 +66,7 @@ void main() {
   }
 
   ResolvedJoinPlan run(MultiSheetQuerySpec s) => validator.validate(
+        datasetId: 1,
         spec: s,
         relationshipsById: relationships,
         availableTableIds: available,
@@ -118,6 +119,33 @@ void main() {
     expectCode(
       spec(base: 1, tables: [1, 2], joins: [join(999)]),
       MultiSheetGraphValidator.missingRelationshipCode,
+    );
+  });
+
+  test('rejects a relationship owned by another dataset', () {
+    final foreign = {
+      10: const DatasetRelationship(
+        id: 10,
+        datasetId: 999, // not the opened dataset
+        endpointATableId: 1,
+        endpointAColumnDbName: 'product_id',
+        endpointBTableId: 2,
+        endpointBColumnDbName: 'product',
+      ),
+    };
+    expect(
+      () => validator.validate(
+        datasetId: 1,
+        spec: spec(base: 1, tables: [1, 2], joins: [join(10)]),
+        relationshipsById: foreign,
+        availableTableIds: available,
+        availableColumnsByTableId: columns,
+      ),
+      throwsA(isA<MultiSheetGraphException>().having(
+        (e) => e.code,
+        'code',
+        MultiSheetGraphValidator.foreignRelationshipCode,
+      )),
     );
   });
 

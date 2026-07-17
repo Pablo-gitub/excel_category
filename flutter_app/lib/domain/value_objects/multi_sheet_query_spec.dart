@@ -71,6 +71,7 @@ class MultiSheetQuerySpec {
 
   MultiSheetQuerySpec copyWith({
     int? baseTableId,
+    bool clearBaseTableId = false,
     List<int>? selectedTableIds,
     Map<int, List<String>>? selectedColumnsByTableId,
     List<MultiSheetJoin>? joins,
@@ -78,13 +79,16 @@ class MultiSheetQuerySpec {
     int? schemaVersion,
   }) {
     return MultiSheetQuerySpec(
-      baseTableId: baseTableId ?? this.baseTableId,
+      baseTableId: clearBaseTableId ? null : (baseTableId ?? this.baseTableId),
       selectedTableIds: selectedTableIds ?? this.selectedTableIds,
       selectedColumnsByTableId:
           selectedColumnsByTableId ?? this.selectedColumnsByTableId,
       joins: joins ?? this.joins,
       resultLimit: resultLimit ?? this.resultLimit,
       schemaVersion: schemaVersion ?? this.schemaVersion,
+      // An unsupported spec stays unsupported under edits, so a legacy/future
+      // spec can never be silently mutated into a savable v2 one.
+      unsupportedVersion: unsupportedVersion,
     );
   }
 

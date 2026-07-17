@@ -270,6 +270,7 @@
             "join_type": "Tipo de join",
             "join_inner": "Solo filas coincidentes",
             "join_left": "Mantener todas las filas de la hoja base",
+            "left_keeps": "Conserva todas las filas de {sheet}, incluso sin coincidencia",
             "run": "Ejecutar vista previa",
             "preview": "Vista previa",
             "preview_limited": "Vista previa limitada a {limit} filas",

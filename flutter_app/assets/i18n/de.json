@@ -270,6 +270,7 @@
             "join_type": "Join-Typ",
             "join_inner": "Nur übereinstimmende Zeilen",
             "join_left": "Alle Zeilen des Basisblatts behalten",
+            "left_keeps": "Behält alle Zeilen von {sheet}, auch ohne Treffer",
             "run": "Vorschau ausführen",
             "preview": "Vorschau",
             "preview_limited": "Vorschau auf {limit} Zeilen begrenzt",

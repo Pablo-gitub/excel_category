@@ -270,6 +270,7 @@
             "join_type": "连接类型",
             "join_inner": "仅匹配的行",
             "join_left": "保留基准工作表的所有行",
+            "left_keeps": "保留 {sheet} 的所有行，即使没有匹配项",
             "run": "运行预览",
             "preview": "预览",
             "preview_limited": "预览限制为 {limit} 行",

@@ -185,6 +185,7 @@ void main() {
     ];
     when(() => service.loadSheets(any())).thenAnswer((_) async => sheets);
     when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -201,6 +202,7 @@ void main() {
       displayLabelsByAlias: {'t0__product_id': 'Sales.Product ID'},
     ));
     when(() => service.runPreview(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -293,6 +295,7 @@ void main() {
           sheet(2, 'Products', ['Price']),
         ]);
     when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -309,6 +312,7 @@ void main() {
       ],
     ));
     when(() => service.runPreview(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -346,6 +350,7 @@ void main() {
           sheet(2, 'Products', ['Product']),
         ]);
     when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),

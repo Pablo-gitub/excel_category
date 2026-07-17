@@ -166,6 +166,7 @@ void main() {
 
   test('surfaces a validation error code when the graph is invalid', () async {
     when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -188,6 +189,7 @@ void main() {
 
   test('runPreview succeeds and exposes the preview', () async {
     when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -197,6 +199,7 @@ void main() {
       displayLabelsByAlias: {},
     ));
     when(() => service.runPreview(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -214,6 +217,7 @@ void main() {
 
   test('ignores the result of a superseded run', () async {
     when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -226,6 +230,7 @@ void main() {
     final slow = Completer<MultiSheetPreviewResult>();
     var call = 0;
     when(() => service.runPreview(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -278,6 +283,7 @@ void main() {
     );
     when(() => service.loadSavedQuery(7)).thenAnswer((_) async => saved);
     when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
           relationshipsById: any(named: 'relationshipsById'),
@@ -295,5 +301,64 @@ void main() {
       MultiSheetGraphValidator.unavailableTableOrColumnCode,
     );
     expect(controller.state.activeSavedQueryId, 7);
+  });
+
+  test('deselecting the last sheet clears the stale base table id', () async {
+    await controller.load();
+    controller.toggleSheet(1);
+    expect(controller.state.spec.baseTableId, 1);
+
+    controller.toggleSheet(1); // deselect the only sheet
+
+    expect(controller.state.spec.selectedTableIds, isEmpty);
+    expect(controller.state.spec.baseTableId, isNull);
+  });
+
+  test('refuses to save an unsupported spec and stays stale', () async {
+    final saved = SavedMultiSheetQuery(
+      id: 3,
+      datasetId: 1,
+      name: 'legacy',
+      spec: const MultiSheetQuerySpec.unsupported(1),
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+    when(() => service.loadSavedQuery(3)).thenAnswer((_) async => saved);
+
+    await controller.load();
+    await controller.loadSaved(3);
+    expect(controller.state.status, MultiSheetJoinStatus.staleSpec);
+
+    await controller.save('anything');
+
+    expect(controller.state.status, MultiSheetJoinStatus.staleSpec);
+    verifyNever(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        ));
+  });
+
+  test('startNewConfiguration resets to a clean editable v2 spec', () async {
+    final saved = SavedMultiSheetQuery(
+      id: 3,
+      datasetId: 1,
+      name: 'legacy',
+      spec: const MultiSheetQuerySpec.unsupported(1),
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+    when(() => service.loadSavedQuery(3)).thenAnswer((_) async => saved);
+
+    await controller.load();
+    await controller.loadSaved(3);
+
+    controller.startNewConfiguration();
+
+    expect(controller.state.spec.unsupportedVersion, isFalse);
+    expect(controller.state.spec.isEmpty, isTrue);
+    expect(controller.state.activeSavedQueryId, isNull);
+    expect(controller.state.status, MultiSheetJoinStatus.editing);
   });
 }

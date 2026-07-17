@@ -270,6 +270,7 @@
             "join_type": "結合の種類",
             "join_inner": "一致する行のみ",
             "join_left": "基準シートの全行を保持",
+            "left_keeps": "一致しなくても {sheet} のすべての行を保持します",
             "run": "プレビューを実行",
             "preview": "プレビュー",
             "preview_limited": "プレビューは {limit} 行までです",

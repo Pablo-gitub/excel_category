@@ -185,6 +185,8 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       selectedColumnsByTableId: columns,
       joins: joins,
       baseTableId: base,
+      // Deselecting the last sheet must actually drop the stale base id.
+      clearBaseTableId: base == null,
     ));
   }
 
@@ -321,10 +323,12 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
           if (join.relationshipId == relationshipId)
             join.copyWith(
               joinType: joinType,
-              // Default the preserved side to the base-most endpoint; the user
-              // can change it. INNER clears it.
+              // The preserved side of a LEFT join is derived, not user-chosen:
+              // SQL always accumulates from the base, so only the accumulated
+              // side can be preserved. INNER clears it. To preserve the other
+              // side the user changes the base table.
               preservedTableId: joinType == SheetJoinType.left
-                  ? _defaultPreservedSide(relationshipId)
+                  ? preservedSideFor(relationshipId)
                   : null,
               clearPreservedTableId: joinType == SheetJoinType.inner,
             )
@@ -334,27 +338,24 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     ));
   }
 
-  /// Chooses which side a LEFT join preserves (must be one of the endpoints).
-  void setPreservedSide(int relationshipId, int tableId) {
-    final relationship = state.relationshipsById[relationshipId];
-    if (relationship == null || !relationship.involvesTable(tableId)) return;
-    _updateSpec(state.spec.copyWith(
-      joins: [
-        for (final join in state.spec.joins)
-          if (join.relationshipId == relationshipId)
-            join.copyWith(preservedTableId: tableId)
-          else
-            join,
-      ],
-    ));
-  }
-
-  int? _defaultPreservedSide(int relationshipId) {
+  /// The side a LEFT join on [relationshipId] preserves: the endpoint accumulated
+  /// first when growing the tree from the base (base itself if it is an endpoint,
+  /// otherwise the endpoint appearing earlier in selection order). This mirrors
+  /// the graph validator's deterministic ordering, so the UI never offers a side
+  /// that would be rejected as [MultiSheetGraphValidator.invalidLeftJoinDirectionCode].
+  int? preservedSideFor(int relationshipId) {
     final relationship = state.relationshipsById[relationshipId];
     if (relationship == null) return null;
     final base = state.spec.baseTableId;
     if (base != null && relationship.involvesTable(base)) return base;
-    return relationship.endpointATableId;
+    final selected = state.spec.selectedTableIds;
+    final ia = selected.indexOf(relationship.endpointATableId);
+    final ib = selected.indexOf(relationship.endpointBTableId);
+    if (ib < 0) return relationship.endpointATableId;
+    if (ia < 0) return relationship.endpointBTableId;
+    return ia <= ib
+        ? relationship.endpointATableId
+        : relationship.endpointBTableId;
   }
 
   /// Validates and generates the SQL without running it, so the UI can show the
@@ -362,6 +363,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
   bool prepare() {
     try {
       final generated = service.buildQuery(
+        datasetId: datasetId,
         spec: state.spec,
         sheets: state.sheets,
         relationshipsById: state.relationshipsById,
@@ -394,6 +396,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
 
     try {
       final preview = await service.runPreview(
+        datasetId: datasetId,
         spec: state.spec,
         sheets: state.sheets,
         relationshipsById: state.relationshipsById,
@@ -414,6 +417,15 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
   }
 
   Future<void> save(String name) async {
+    // A legacy/future spec must never be re-persisted; the user has to start a
+    // clean v2 configuration first (see [startNewConfiguration]).
+    if (state.spec.unsupportedVersion) {
+      state = state.copyWith(
+        status: MultiSheetJoinStatus.staleSpec,
+        errorCode: unsupportedSpecVersionCode,
+      );
+      return;
+    }
     try {
       final saved = await service.saveQuery(
         id: state.activeSavedQueryId,
@@ -432,6 +444,19 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       if (!mounted) return;
       state = state.copyWith(errorCode: 'save_failed');
     }
+  }
+
+  /// Discards the current (possibly stale/unsupported) spec and starts a clean
+  /// v2 configuration, detached from any saved query.
+  void startNewConfiguration() {
+    state = state.copyWith(
+      spec: const MultiSheetQuerySpec(),
+      clearActiveSavedQuery: true,
+      clearPreview: true,
+      clearGenerated: true,
+      clearError: true,
+      status: MultiSheetJoinStatus.editing,
+    );
   }
 
   Future<void> loadSaved(int id) async {
@@ -465,13 +490,15 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     // A saved spec may reference relationships/tables/columns that no longer exist.
     try {
       service.buildQuery(
+        datasetId: datasetId,
         spec: saved.spec,
         sheets: state.sheets,
         relationshipsById: state.relationshipsById,
       );
     } on MultiSheetGraphException catch (error) {
       if (error.code == MultiSheetGraphValidator.unavailableTableOrColumnCode ||
-          error.code == MultiSheetGraphValidator.missingRelationshipCode) {
+          error.code == MultiSheetGraphValidator.missingRelationshipCode ||
+          error.code == MultiSheetGraphValidator.foreignRelationshipCode) {
         state = state.copyWith(
           status: MultiSheetJoinStatus.staleSpec,
           errorCode: error.code,

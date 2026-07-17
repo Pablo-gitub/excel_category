@@ -123,11 +123,13 @@ class MultiSheetAnalysisService {
   /// Throws [MultiSheetGraphException] (invalid/stale graph) or
   /// [MultiSheetSqlBuilderException] (nothing to select).
   GeneratedMultiSheetQuery buildQuery({
+    required int datasetId,
     required MultiSheetQuerySpec spec,
     required List<MultiSheetSheetInfo> sheets,
     required Map<int, DatasetRelationship> relationshipsById,
   }) {
     final plan = graphValidator.validate(
+      datasetId: datasetId,
       spec: spec,
       relationshipsById: relationshipsById,
       availableTableIds: {for (final sheet in sheets) sheet.tableId},
@@ -158,11 +160,13 @@ class MultiSheetAnalysisService {
 
   /// Builds and runs the bounded preview for a spec.
   Future<MultiSheetPreviewResult> runPreview({
+    required int datasetId,
     required MultiSheetQuerySpec spec,
     required List<MultiSheetSheetInfo> sheets,
     required Map<int, DatasetRelationship> relationshipsById,
   }) async {
     final generated = buildQuery(
+      datasetId: datasetId,
       spec: spec,
       sheets: sheets,
       relationshipsById: relationshipsById,

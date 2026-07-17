@@ -270,6 +270,7 @@
             "join_type": "Join type",
             "join_inner": "Only matching rows",
             "join_left": "Keep all rows of the base sheet",
+            "left_keeps": "Keeps all rows of {sheet}, even without a match",
             "run": "Run preview",
             "preview": "Preview",
             "preview_limited": "Preview limited to {limit} rows",
