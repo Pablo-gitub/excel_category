@@ -289,6 +289,8 @@
             "reason_value_overlap": "gemeinsame Werte",
             "reason_type_match": "kompatible Typen",
             "warning_many_to_many": "{left} und {right} haben keinen eindeutigen Schlüssel: Zeilen können sich vervielfachen.",
+            "warning_unknown_cardinality": "{left} und {right}: Beziehungskardinalität unbekannt, Zeilen könnten sich vervielfachen.",
+            "warning_low_confidence": "{left} und {right}: Kardinalität aus einer begrenzten Stichprobe geschätzt, mit Vorsicht behandeln.",
             "stale_spec": "Diese gespeicherte Konfiguration nutzt Blätter oder Spalten, die es nicht mehr gibt.",
             "error_not_enough_tables": "Wähle mindestens zwei Blätter.",
             "error_unavailable_table_or_column": "Ein Blatt oder eine Spalte ist nicht mehr verfügbar.",

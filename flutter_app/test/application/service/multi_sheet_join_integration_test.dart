@@ -20,6 +20,7 @@ import 'package:exlser/domain/entities/dataset_table.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
 import 'package:exlser/domain/usecases/multisheet/manage_dataset_relationships_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
+import 'package:exlser/domain/value_objects/join_cardinality.dart';
 import 'package:exlser/domain/usecases/multisheet/manage_multi_sheet_queries_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/save_multi_sheet_query_usecase.dart';
 import 'package:exlser/domain/value_objects/column_type.dart';
@@ -352,6 +353,28 @@ void main() {
     );
 
     expect(result.rows, hasLength(5));
+  });
+
+  test('estimates cardinality from real sampled data, duplicates retained',
+      () async {
+    final sheets = await service.loadSheets(datasetId);
+    final suggestions = await service.suggestRelationships(
+      sheets: sheets,
+      selectedTableIds: [salesTableId, productsTableId],
+    );
+
+    final s = suggestions.firstWhere(
+      (s) =>
+          s.relationship.leftColumnDbName == 'product_id' &&
+          s.relationship.rightColumnDbName == 'product',
+    );
+
+    // Sales.product_id repeats A1 and has a NULL; Products.product is unique.
+    // A DISTINCT sample would make product_id look unique (one-to-one); getting
+    // many-to-one proves duplicates were retained and the NULL was excluded.
+    expect(s.cardinality, JoinCardinality.manyToOne);
+    expect(s.sampleSize, greaterThan(0));
+    expect(s.cardinalityConfidence, greaterThan(0));
   });
 
   test('a relationship owned by another dataset is rejected', () async {

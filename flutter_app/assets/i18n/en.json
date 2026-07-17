@@ -289,6 +289,8 @@
             "reason_value_overlap": "overlapping values",
             "reason_type_match": "compatible types",
             "warning_many_to_many": "{left} and {right} have no unique key: rows may multiply.",
+            "warning_unknown_cardinality": "{left} and {right}: relationship cardinality is unknown, so rows may multiply.",
+            "warning_low_confidence": "{left} and {right}: cardinality estimated from a limited sample, treat with caution.",
             "stale_spec": "This saved configuration uses sheets or columns that no longer exist.",
             "error_not_enough_tables": "Select at least two sheets.",
             "error_unavailable_table_or_column": "A sheet or column is no longer available.",

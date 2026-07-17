@@ -289,6 +289,8 @@
             "reason_value_overlap": "valori in comune",
             "reason_type_match": "tipi compatibili",
             "warning_many_to_many": "{left} e {right} non hanno una chiave univoca: le righe potrebbero moltiplicarsi.",
+            "warning_unknown_cardinality": "{left} e {right}: cardinalità della relazione sconosciuta, le righe potrebbero moltiplicarsi.",
+            "warning_low_confidence": "{left} e {right}: cardinalità stimata da un campione limitato, da valutare con cautela.",
             "stale_spec": "Questa configurazione salvata usa fogli o colonne non più presenti.",
             "error_not_enough_tables": "Seleziona almeno due fogli.",
             "error_unavailable_table_or_column": "Un foglio o una colonna non è più disponibile.",

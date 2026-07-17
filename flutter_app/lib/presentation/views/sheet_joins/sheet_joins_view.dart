@@ -537,22 +537,27 @@ class _WarningsBanner extends StatelessWidget {
                 children: [
                   const Icon(Icons.warning_amber_outlined),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppStrings.datasetJoinsWarningManyToMany.tr(
-                        namedArgs: {
-                          'left': warning.leftSheetLabel,
-                          'right': warning.rightSheetLabel,
-                        },
-                      ),
-                    ),
-                  ),
+                  Expanded(child: Text(_warningText(warning))),
                 ],
               ),
           ],
         ),
       ),
     );
+  }
+
+  String _warningText(JoinRiskWarning warning) {
+    final key = switch (warning.code) {
+      JoinRiskWarning.unknownCardinalityRiskCode =>
+        AppStrings.datasetJoinsWarningUnknownCardinality,
+      JoinRiskWarning.lowCardinalityConfidenceRiskCode =>
+        AppStrings.datasetJoinsWarningLowConfidence,
+      _ => AppStrings.datasetJoinsWarningManyToMany,
+    };
+    return key.tr(namedArgs: {
+      'left': warning.leftSheetLabel,
+      'right': warning.rightSheetLabel,
+    });
   }
 }
 

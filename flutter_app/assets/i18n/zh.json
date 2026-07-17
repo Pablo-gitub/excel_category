@@ -289,6 +289,8 @@
             "reason_value_overlap": "值有重叠",
             "reason_type_match": "类型兼容",
             "warning_many_to_many": "{left} 与 {right} 没有唯一键：行数可能成倍增加。",
+            "warning_unknown_cardinality": "{left} 与 {right}：关系基数未知，行数可能成倍增加。",
+            "warning_low_confidence": "{left} 与 {right}：基数根据有限样本估算，请谨慎对待。",
             "stale_spec": "此已保存的配置使用了不再存在的工作表或列。",
             "error_not_enough_tables": "请至少选择两个工作表。",
             "error_unavailable_table_or_column": "某个工作表或列已不可用。",

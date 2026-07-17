@@ -246,6 +246,8 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       endpointBColumnDbName: r.rightColumnDbName,
       cardinality: suggestion.cardinality,
       relationshipConfidence: suggestion.score,
+      cardinalityConfidence: suggestion.cardinalityConfidence,
+      sampleSize: suggestion.sampleSize,
       origin: RelationshipOrigin.suggested,
       // The user explicitly accepted this suggestion, so it is confirmed.
       confirmedAt: DateTime.now(),

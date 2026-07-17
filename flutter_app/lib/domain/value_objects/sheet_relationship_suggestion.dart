@@ -23,11 +23,22 @@ enum RelationshipReason {
 class SheetRelationshipSuggestion {
   final SheetJoinRelationship relationship;
 
-  /// 0..1 combined score used only for ranking.
+  /// 0..1 combined score used only for ranking. Distinct from
+  /// [cardinalityConfidence]: a relationship can rank high yet have an
+  /// uncertain cardinality (or vice versa).
   final double score;
   final SuggestionConfidence confidence;
   final List<RelationshipReason> reasons;
+
+  /// Estimated A → B cardinality, observed from sampled data (never inferred
+  /// from column names). [JoinCardinality.unknown] when evidence is insufficient.
   final JoinCardinality cardinality;
+
+  /// 0..1 confidence in [cardinality] specifically, from sample completeness.
+  final double cardinalityConfidence;
+
+  /// Usable observations behind the estimate: `min(usableCount)` of both sides.
+  final int sampleSize;
 
   /// Fraction (0..1) of overlapping distinct sampled values, when computed.
   final double? valueOverlap;
@@ -38,6 +49,8 @@ class SheetRelationshipSuggestion {
     required this.confidence,
     required this.reasons,
     this.cardinality = JoinCardinality.unknown,
+    this.cardinalityConfidence = 0,
+    this.sampleSize = 0,
     this.valueOverlap,
   });
 

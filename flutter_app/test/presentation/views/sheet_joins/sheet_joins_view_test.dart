@@ -306,6 +306,7 @@ void main() {
       warnings: [
         JoinRiskWarning(
           code: JoinRiskWarning.manyToManyRiskCode,
+          relationshipId: 1,
           leftSheetLabel: 'Sales',
           rightSheetLabel: 'Products',
         ),

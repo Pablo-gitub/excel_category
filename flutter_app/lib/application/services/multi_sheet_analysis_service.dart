@@ -11,8 +11,10 @@ import 'package:exlser/domain/usecases/multisheet/manage_dataset_relationships_u
 import 'package:exlser/domain/usecases/multisheet/manage_multi_sheet_queries_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
+import 'package:exlser/domain/usecases/multisheet/relationship_value_normalizer.dart';
 import 'package:exlser/domain/usecases/multisheet/save_multi_sheet_query_usecase.dart';
 import 'package:exlser/domain/usecases/multisheet/suggest_sheet_relationships_usecase.dart';
+import 'package:exlser/domain/value_objects/column_relationship_sample.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
 import 'package:exlser/domain/value_objects/sheet_relationship_suggestion.dart';
 
@@ -66,9 +68,12 @@ class MultiSheetAnalysisService {
     this.sampleLimit = 200,
   });
 
+  static const RelationshipValueNormalizer _normalizer =
+      RelationshipValueNormalizer();
+
   late final SuggestSheetRelationshipsUseCase _suggest =
       SuggestSheetRelationshipsUseCase(
-    sampleDistinctValues: _sampleDistinct,
+    sampleColumnValues: _sampleColumn,
     sampleLimit: sampleLimit,
   );
 
@@ -222,23 +227,41 @@ class MultiSheetAnalysisService {
 
   Future<void> deleteSavedQuery(int id) => deleteQueryUseCase(id);
 
-  /// Bounded, null-free distinct sample used to measure value overlap.
+  /// Bounded, null-free sample that **retains duplicates**, used to estimate
+  /// cardinality and value overlap from data.
   ///
-  /// Uses a raw query on purpose: `QueryRepository.getDistinctValues` has no
-  /// LIMIT and does not exclude nulls, and it is shared with the filter UI.
-  Future<List<Object?>> _sampleDistinct({
+  /// Uses a dedicated raw query on purpose: `QueryRepository.getDistinctValues`
+  /// has no LIMIT, keeps nulls, and — crucially — collapses duplicates, which
+  /// would destroy the uniqueness signal. We fetch `limit + 1` rows to detect
+  /// truncation, then normalize/filter type-aware in Dart, keeping at most
+  /// [limit] usable values. No unbounded follow-up query is issued to refill.
+  Future<ColumnRelationshipSample> _sampleColumn({
     required String sqlTableName,
-    required String dbName,
+    required DatasetColumn column,
     required int limit,
   }) async {
-    final column = _quote(dbName);
-    final sql = 'SELECT DISTINCT $column AS sample_value '
+    final quoted = _quote(column.dbName);
+    final sql = 'SELECT $quoted AS sample_value '
         'FROM ${_quote(sqlTableName)} '
-        'WHERE $column IS NOT NULL '
-        'LIMIT $limit';
+        'WHERE $quoted IS NOT NULL '
+        'LIMIT ${limit + 1}';
 
     final rows = await queryRepository.executeRawQuery(sql, null);
-    return rows.map((row) => row['sample_value']).toList();
+    final isTruncated = rows.length > limit;
+
+    final normalized = <String>[];
+    for (final row in rows) {
+      if (normalized.length >= limit) break;
+      final value =
+          _normalizer.normalize(row['sample_value'], column.inferredType);
+      if (value != null) normalized.add(value);
+    }
+
+    return ColumnRelationshipSample(
+      normalizedValues: normalized,
+      requestedLimit: limit,
+      isTruncated: isTruncated,
+    );
   }
 
   String _quote(String identifier) => '"${identifier.replaceAll('"', '""')}"';

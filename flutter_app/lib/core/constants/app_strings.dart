@@ -487,6 +487,10 @@ class AppStrings {
       'dataset.joins.reason_type_match';
   static const String datasetJoinsWarningManyToMany =
       'dataset.joins.warning_many_to_many';
+  static const String datasetJoinsWarningUnknownCardinality =
+      'dataset.joins.warning_unknown_cardinality';
+  static const String datasetJoinsWarningLowConfidence =
+      'dataset.joins.warning_low_confidence';
   static const String datasetJoinsStaleSpec = 'dataset.joins.stale_spec';
   static const String datasetJoinsErrorNotEnoughTables =
       'dataset.joins.error_not_enough_tables';

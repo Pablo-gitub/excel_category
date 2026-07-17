@@ -289,6 +289,8 @@
             "reason_value_overlap": "valores en común",
             "reason_type_match": "tipos compatibles",
             "warning_many_to_many": "{left} y {right} no tienen una clave única: las filas pueden multiplicarse.",
+            "warning_unknown_cardinality": "{left} y {right}: la cardinalidad de la relación es desconocida, las filas pueden multiplicarse.",
+            "warning_low_confidence": "{left} y {right}: cardinalidad estimada a partir de una muestra limitada, trátala con cautela.",
             "stale_spec": "Esta configuración guardada usa hojas o columnas que ya no existen.",
             "error_not_enough_tables": "Selecciona al menos dos hojas.",
             "error_unavailable_table_or_column": "Una hoja o columna ya no está disponible.",

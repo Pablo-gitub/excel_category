@@ -5,6 +5,7 @@ import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.da
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_join_risk_analyzer.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
 import 'package:exlser/domain/usecases/query/read_only_sql_validator.dart';
+import 'package:exlser/domain/value_objects/join_cardinality.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,19 +25,24 @@ void main() {
   final sqlTableNames = {1: 'sales_table', 2: 'products_table'};
   final sheetLabels = {1: 'Vendite', 2: 'Prodotti'};
 
-  // product_id / product read as identifiers -> no many-to-many warning.
+  // Display-label maps for the builder (risk no longer depends on names).
   final keyNames = {
     1: {'product_id': 'Product ID', 'qty': 'Qty'},
     2: {'product': 'Product', 'price': 'Price'},
   };
-  // qty / price are plain measures -> many-to-many risk.
   final measureNames = {
     1: {'qty': 'Qty', 'product_id': 'Product ID'},
     2: {'price': 'Price', 'product': 'Product'},
   };
 
-  // The join column pair lives on the persisted relationship (id 10), not the spec.
-  Map<int, DatasetRelationship> relsFor(String leftCol, String rightCol) => {
+  // The join column pair and cardinality live on the persisted relationship
+  // (id 10), not the spec.
+  Map<int, DatasetRelationship> relsFor(
+    String leftCol,
+    String rightCol, {
+    JoinCardinality cardinality = JoinCardinality.oneToOne,
+  }) =>
+      {
         10: DatasetRelationship(
           id: 10,
           datasetId: 1,
@@ -44,6 +50,9 @@ void main() {
           endpointAColumnDbName: leftCol,
           endpointBTableId: 2,
           endpointBColumnDbName: rightCol,
+          cardinality: cardinality,
+          cardinalityConfidence: 1.0,
+          sampleSize: 100,
         ),
       };
 
@@ -60,11 +69,15 @@ void main() {
     );
   }
 
-  ResolvedJoinPlan planFor(String leftCol, String rightCol) =>
+  ResolvedJoinPlan planFor(
+    String leftCol,
+    String rightCol, {
+    JoinCardinality cardinality = JoinCardinality.oneToOne,
+  }) =>
       graphValidator.validate(
         datasetId: 1,
         spec: specJoining(leftCol, rightCol),
-        relationshipsById: relsFor(leftCol, rightCol),
+        relationshipsById: relsFor(leftCol, rightCol, cardinality: cardinality),
         availableTableIds: availableTables,
         availableColumnsByTableId: availableColumns,
       );
@@ -72,41 +85,17 @@ void main() {
   GeneratedMultiSheetQuery generate(
     String leftCol,
     String rightCol,
-    Map<int, Map<String, String>> names,
-  ) {
+    Map<int, Map<String, String>> names, {
+    JoinCardinality cardinality = JoinCardinality.oneToOne,
+  }) {
     return builder.build(
-      plan: planFor(leftCol, rightCol),
+      plan: planFor(leftCol, rightCol, cardinality: cardinality),
       spec: specJoining(leftCol, rightCol),
       sqlTableNameByTableId: sqlTableNames,
       sheetLabelByTableId: sheetLabels,
       originalColumnNamesByTableId: names,
     );
   }
-
-  group('MultiSheetJoinRiskAnalyzer', () {
-    const analyzer = MultiSheetJoinRiskAnalyzer();
-
-    test('flags a join where neither side looks like a key', () {
-      final warnings = analyzer.analyze(
-        plan: planFor('qty', 'price'),
-        sheetLabelByTableId: sheetLabels,
-        originalColumnNamesByTableId: measureNames,
-      );
-      expect(warnings, hasLength(1));
-      expect(warnings.first.code, JoinRiskWarning.manyToManyRiskCode);
-      expect(warnings.first.leftSheetLabel, 'Vendite');
-      expect(warnings.first.rightSheetLabel, 'Prodotti');
-    });
-
-    test('does not flag a join on an identifier column', () {
-      final warnings = analyzer.analyze(
-        plan: planFor('product_id', 'product'),
-        sheetLabelByTableId: sheetLabels,
-        originalColumnNamesByTableId: keyNames,
-      );
-      expect(warnings, isEmpty);
-    });
-  });
 
   group('ExecuteMultiSheetPreviewUseCase', () {
     late MockQueryRepository repository;
@@ -173,7 +162,8 @@ void main() {
           .thenAnswer((_) async => []);
 
       final result = await useCase(
-        generated: generate('qty', 'price', measureNames),
+        generated: generate('qty', 'price', measureNames,
+            cardinality: JoinCardinality.manyToMany),
         baseSqlTableName: 'sales_table',
         allowedTableNames: {'sales_table', 'products_table'},
         limit: 2,

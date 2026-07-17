@@ -2,16 +2,19 @@
 
 import 'package:exlser/domain/entities/dataset_column.dart';
 import 'package:exlser/domain/usecases/multisheet/relationship_heuristics.dart';
+import 'package:exlser/domain/value_objects/column_relationship_sample.dart';
 import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_relationship_suggestion.dart';
 
-/// Fetches a bounded, null-free sample of distinct values for one column.
+/// Fetches a bounded sample of one column's values, duplicates retained and
+/// NULL/empty excluded, already normalized type-aware.
 ///
 /// Implemented over `QueryRepository.executeRawQuery` in the data/application
-/// layer; injected here as a function so the engine stays easy to test.
-typedef SampleDistinctValues = Future<List<Object?>> Function({
+/// layer; injected here as a function so the engine stays easy to test. The
+/// [column] is passed so normalization can be type-aware.
+typedef SampleColumnValues = Future<ColumnRelationshipSample> Function({
   required String sqlTableName,
-  required String dbName,
+  required DatasetColumn column,
   required int limit,
 });
 
@@ -28,16 +31,28 @@ class SuggestSheetInput {
   });
 }
 
-/// Proposes candidate join relationships between sheets by combining pure
-/// name/type/identifier heuristics with a bounded sample of overlapping values.
+/// Proposes candidate join relationships between sheets. Name/type/identifier
+/// heuristics only *rank* candidates; the estimated cardinality and its
+/// confidence come exclusively from a bounded sample of the actual values.
 class SuggestSheetRelationshipsUseCase {
-  final SampleDistinctValues sampleDistinctValues;
+  /// Below this the sampled cardinality is `unknown`.
+  static const int minEvidence = ColumnRelationshipSample.minEvidence;
+
+  /// Confidence assigned when both samples cover the whole column.
+  static const double completeConfidence = 1.0;
+
+  /// Confidence floor and span for a truncated (sampled) estimate.
+  static const double truncatedConfidenceBase = 0.5;
+  static const double truncatedConfidenceSpan = 0.4;
+  static const double truncatedConfidenceCap = 0.9;
+
+  final SampleColumnValues sampleColumnValues;
   final int sampleLimit;
   final int maxColumnsPerTable;
   final int maxCandidatePairsPerTablePair;
 
   const SuggestSheetRelationshipsUseCase({
-    required this.sampleDistinctValues,
+    required this.sampleColumnValues,
     this.sampleLimit = 200,
     this.maxColumnsPerTable = 40,
     this.maxCandidatePairsPerTablePair = 6,
@@ -46,7 +61,8 @@ class SuggestSheetRelationshipsUseCase {
   Future<List<SheetRelationshipSuggestion>> call({
     required List<SuggestSheetInput> sheets,
   }) async {
-    final sampleCache = <String, Set<String>>{};
+    // One sample per (table, column) for the whole run, even across pairs.
+    final sampleCache = <String, ColumnRelationshipSample>{};
     final best = <String, SheetRelationshipSuggestion>{};
 
     for (var i = 0; i < sheets.length; i++) {
@@ -56,15 +72,15 @@ class SuggestSheetRelationshipsUseCase {
 
         final candidates = _candidatePairs(a, b);
         for (final candidate in candidates) {
-          final aValues = await _sample(sampleCache, a, candidate.aColumn);
-          final bValues = await _sample(sampleCache, b, candidate.bColumn);
-          final overlap = _overlapRatio(aValues, bValues);
+          final aSample = await _sample(sampleCache, a, candidate.aColumn);
+          final bSample = await _sample(sampleCache, b, candidate.bColumn);
 
           final suggestion = _buildSuggestion(
             a: a,
             b: b,
             candidate: candidate,
-            overlap: overlap,
+            aSample: aSample,
+            bSample: bSample,
           );
 
           final id = suggestion.relationship.effectiveId;
@@ -102,8 +118,8 @@ class SuggestSheetRelationshipsUseCase {
     return pairs;
   }
 
-  Future<Set<String>> _sample(
-    Map<String, Set<String>> cache,
+  Future<ColumnRelationshipSample> _sample(
+    Map<String, ColumnRelationshipSample> cache,
     SuggestSheetInput sheet,
     DatasetColumn column,
   ) async {
@@ -111,28 +127,32 @@ class SuggestSheetRelationshipsUseCase {
     final cached = cache[key];
     if (cached != null) return cached;
 
-    final raw = await sampleDistinctValues(
+    final sample = await sampleColumnValues(
       sqlTableName: sheet.sqlTableName,
-      dbName: column.dbName,
+      column: column,
       limit: sampleLimit,
     );
-    final normalized = <String>{};
-    for (final value in raw) {
-      final norm = _normalizeValue(value);
-      if (norm != null) normalized.add(norm);
-    }
-    cache[key] = normalized;
-    return normalized;
+    cache[key] = sample;
+    return sample;
   }
 
   SheetRelationshipSuggestion _buildSuggestion({
     required SuggestSheetInput a,
     required SuggestSheetInput b,
     required _CandidatePair candidate,
-    required double overlap,
+    required ColumnRelationshipSample aSample,
+    required ColumnRelationshipSample bSample,
   }) {
     final ca = candidate.aColumn;
     final cb = candidate.bColumn;
+
+    final overlap = _overlapRatio(aSample, bSample);
+    final cardinality = _cardinalityFromSamples(aSample, bSample);
+    final sampleSize = aSample.usableCount < bSample.usableCount
+        ? aSample.usableCount
+        : bSample.usableCount;
+    final cardinalityConfidence =
+        _cardinalityConfidence(aSample, bSample, cardinality, sampleSize);
 
     final reasons = <RelationshipReason>[RelationshipReason.typeMatch];
     if (RelationshipHeuristics.nameAffinity(ca.originalName, cb.originalName) >
@@ -140,6 +160,7 @@ class SuggestSheetRelationshipsUseCase {
         RelationshipHeuristics.nameAffinity(ca.dbName, cb.dbName) > 0) {
       reasons.add(RelationshipReason.nameMatch);
     }
+    // Identifier-like names still *rank* a candidate, but never decide cardinality.
     final aKey = RelationshipHeuristics.isIdentifierName(ca.originalName);
     final bKey = RelationshipHeuristics.isIdentifierName(cb.originalName);
     if (aKey && bKey) reasons.add(RelationshipReason.commonIdentifier);
@@ -157,44 +178,58 @@ class SuggestSheetRelationshipsUseCase {
       score: score,
       confidence: SheetRelationshipSuggestion.confidenceFromScore(score),
       reasons: reasons,
-      cardinality: _cardinality(aKey: aKey, bKey: bKey),
+      cardinality: cardinality,
+      cardinalityConfidence: cardinalityConfidence,
+      sampleSize: sampleSize,
       valueOverlap: overlap,
     );
   }
 
-  JoinCardinality _cardinality({required bool aKey, required bool bKey}) {
-    if (aKey && bKey) return JoinCardinality.oneToOne;
-    if (aKey && !bKey) return JoinCardinality.oneToMany;
-    if (!aKey && bKey) return JoinCardinality.manyToOne;
-    return JoinCardinality.manyToMany;
+  /// A → B cardinality read from observed uniqueness. Insufficient evidence on
+  /// either side yields [JoinCardinality.unknown].
+  JoinCardinality _cardinalityFromSamples(
+    ColumnRelationshipSample a,
+    ColumnRelationshipSample b,
+  ) {
+    if (!a.hasEnoughEvidence || !b.hasEnoughEvidence) {
+      return JoinCardinality.unknown;
+    }
+    return JoinCardinality.fromUniqueness(
+      aUnique: a.isUniqueInSample,
+      bUnique: b.isUniqueInSample,
+    );
   }
 
-  double _overlapRatio(Set<String> a, Set<String> b) {
-    if (a.isEmpty || b.isEmpty) return 0;
-    final smaller = a.length <= b.length ? a : b;
-    final larger = a.length <= b.length ? b : a;
+  /// Confidence in the cardinality: full when both samples are complete, an
+  /// explicitly capped estimate when either side was truncated, zero when the
+  /// cardinality itself is unknown.
+  double _cardinalityConfidence(
+    ColumnRelationshipSample a,
+    ColumnRelationshipSample b,
+    JoinCardinality cardinality,
+    int sampleSize,
+  ) {
+    if (cardinality == JoinCardinality.unknown) return 0;
+    if (!a.isTruncated && !b.isTruncated) return completeConfidence;
+    final coverage =
+        sampleLimit <= 0 ? 0.0 : (sampleSize / sampleLimit).clamp(0.0, 1.0);
+    return (truncatedConfidenceBase + truncatedConfidenceSpan * coverage)
+        .clamp(0.0, truncatedConfidenceCap);
+  }
+
+  /// Overlap over **distinct** normalized values; duplicates drive cardinality,
+  /// not overlap.
+  double _overlapRatio(ColumnRelationshipSample a, ColumnRelationshipSample b) {
+    final da = a.distinctValues;
+    final db = b.distinctValues;
+    if (da.isEmpty || db.isEmpty) return 0;
+    final smaller = da.length <= db.length ? da : db;
+    final larger = da.length <= db.length ? db : da;
     var matches = 0;
     for (final value in smaller) {
       if (larger.contains(value)) matches++;
     }
     return matches / smaller.length;
-  }
-
-  String? _normalizeValue(Object? value) {
-    if (value == null) return null;
-    if (value is num) {
-      if (value == value.roundToDouble()) {
-        return value.toInt().toString();
-      }
-      return value.toString();
-    }
-    final text = value.toString().trim().toLowerCase();
-    if (text.isEmpty) return null;
-    final asNum = num.tryParse(text);
-    if (asNum != null && asNum == asNum.roundToDouble()) {
-      return asNum.toInt().toString();
-    }
-    return text;
   }
 }
 

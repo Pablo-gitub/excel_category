@@ -289,6 +289,8 @@
             "reason_value_overlap": "値が重複",
             "reason_type_match": "型が互換",
             "warning_many_to_many": "{left} と {right} には一意キーがありません。行が増える可能性があります。",
+            "warning_unknown_cardinality": "{left} と {right}：リレーションのカーディナリティが不明なため、行が増える可能性があります。",
+            "warning_low_confidence": "{left} と {right}：カーディナリティは限られたサンプルからの推定です。慎重に扱ってください。",
             "stale_spec": "この保存済み設定は、存在しないシートまたは列を参照しています。",
             "error_not_enough_tables": "シートを2つ以上選択してください。",
             "error_unavailable_table_or_column": "シートまたは列が利用できなくなりました。",

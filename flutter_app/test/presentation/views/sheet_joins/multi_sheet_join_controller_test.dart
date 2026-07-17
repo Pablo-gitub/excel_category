@@ -11,6 +11,8 @@ import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
 import 'package:exlser/domain/value_objects/column_type.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
+import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
+import 'package:exlser/domain/value_objects/sheet_relationship_suggestion.dart';
 import 'package:exlser/presentation/views/sheet_joins/multi_sheet_join_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -301,6 +303,39 @@ void main() {
       MultiSheetGraphValidator.unavailableTableOrColumnCode,
     );
     expect(controller.state.activeSavedQueryId, 7);
+  });
+
+  test('confirming a suggestion persists all cardinality evidence', () async {
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+
+    const suggestion = SheetRelationshipSuggestion(
+      relationship: SheetJoinRelationship(
+        leftTableId: 1,
+        leftColumnDbName: 'product_id',
+        rightTableId: 2,
+        rightColumnDbName: 'product',
+      ),
+      score: 0.82,
+      confidence: SuggestionConfidence.high,
+      reasons: [RelationshipReason.valueOverlap],
+      cardinality: JoinCardinality.manyToOne,
+      cardinalityConfidence: 0.9,
+      sampleSize: 42,
+    );
+
+    await controller.confirmSuggestion(suggestion);
+
+    final captured = verify(() => service.createRelationship(captureAny()))
+        .captured
+        .single as DatasetRelationship;
+    expect(captured.cardinality, JoinCardinality.manyToOne);
+    expect(captured.relationshipConfidence, 0.82);
+    expect(captured.cardinalityConfidence, 0.9);
+    expect(captured.sampleSize, 42);
+    expect(captured.origin, RelationshipOrigin.suggested);
+    expect(captured.confirmedAt, isNotNull);
   });
 
   test('deselecting the last sheet clears the stale base table id', () async {

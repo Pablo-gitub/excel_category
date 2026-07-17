@@ -144,7 +144,6 @@ class MultiSheetSqlBuilder {
       warnings: riskAnalyzer.analyze(
         plan: plan,
         sheetLabelByTableId: sheetLabelByTableId,
-        originalColumnNamesByTableId: originalColumnNamesByTableId,
       ),
     );
   }
