@@ -90,6 +90,8 @@ final deleteDatasetUseCaseProvider = Provider<DeleteDatasetUseCase>((ref) {
     datasetFileRepository: ref.watch(datasetFileRepositoryProvider),
     savedMultiSheetQueryRepository:
         ref.watch(savedMultiSheetQueryRepositoryProvider),
+    datasetRelationshipRepository:
+        ref.watch(datasetRelationshipRepositoryProvider),
   );
 });
 

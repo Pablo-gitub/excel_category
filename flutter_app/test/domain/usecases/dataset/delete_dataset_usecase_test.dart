@@ -1,5 +1,6 @@
 import 'package:exlser/domain/repositories/dataset_file_repository.dart';
 import 'package:exlser/domain/repositories/datasets_repository.dart';
+import 'package:exlser/domain/repositories/dataset_relationship_repository.dart';
 import 'package:exlser/domain/repositories/saved_multi_sheet_query_repository.dart';
 import 'package:exlser/domain/repositories/schema_repository.dart';
 import 'package:exlser/domain/usecases/dataset/delete_dataset_usecase.dart';
@@ -15,12 +16,16 @@ class MockDatasetFileRepository extends Mock implements DatasetFileRepository {}
 class MockSavedMultiSheetQueryRepository extends Mock
     implements SavedMultiSheetQueryRepository {}
 
+class MockDatasetRelationshipRepository extends Mock
+    implements DatasetRelationshipRepository {}
+
 void main() {
   group('DeleteDatasetUseCase', () {
     late MockDatasetsRepository datasetsRepository;
     late MockSchemaRepository schemaRepository;
     late MockDatasetFileRepository datasetFileRepository;
     late MockSavedMultiSheetQueryRepository savedMultiSheetQueryRepository;
+    late MockDatasetRelationshipRepository datasetRelationshipRepository;
     late DeleteDatasetUseCase useCase;
 
     setUp(() {
@@ -28,11 +33,13 @@ void main() {
       schemaRepository = MockSchemaRepository();
       datasetFileRepository = MockDatasetFileRepository();
       savedMultiSheetQueryRepository = MockSavedMultiSheetQueryRepository();
+      datasetRelationshipRepository = MockDatasetRelationshipRepository();
       useCase = DeleteDatasetUseCase(
         datasetsRepository: datasetsRepository,
         schemaRepository: schemaRepository,
         datasetFileRepository: datasetFileRepository,
         savedMultiSheetQueryRepository: savedMultiSheetQueryRepository,
+        datasetRelationshipRepository: datasetRelationshipRepository,
       );
     });
 
@@ -43,6 +50,8 @@ void main() {
       when(() => datasetFileRepository.deleteByDatasetId(any()))
           .thenAnswer((_) async {});
       when(() => savedMultiSheetQueryRepository.deleteForDataset(any()))
+          .thenAnswer((_) async {});
+      when(() => datasetRelationshipRepository.deleteForDataset(any()))
           .thenAnswer((_) async {});
       when(() => schemaRepository.deleteSchemaForDataset(any()))
           .thenAnswer((_) async {});

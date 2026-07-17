@@ -5,12 +5,14 @@ import 'package:exlser/core/database/app_database.dart'
     hide DatasetColumn, DatasetTable;
 import 'package:exlser/core/database/daos/dataset_files_dao.dart';
 import 'package:exlser/core/database/daos/datasets_dao.dart';
+import 'package:exlser/core/database/daos/dataset_relationships_dao.dart';
 import 'package:exlser/core/database/daos/saved_multi_sheet_queries_dao.dart';
 import 'package:exlser/data/datasources/drift_datasource.dart';
 import 'package:exlser/data/repositories/dataset_file_repository_impl.dart';
 import 'package:exlser/data/services/drift_transaction_runner.dart';
 import 'package:exlser/data/repositories/dataset_repository_impl.dart';
 import 'package:exlser/data/repositories/query_repository_impl.dart';
+import 'package:exlser/data/repositories/dataset_relationship_repository_impl.dart';
 import 'package:exlser/data/repositories/saved_multi_sheet_query_repository_impl.dart';
 import 'package:exlser/data/repositories/schema_repository_impl.dart';
 import 'package:exlser/data/schema/dynamic_table_builder.dart';
@@ -84,6 +86,9 @@ void main() {
         datasetFileRepository: datasetFileRepository,
         savedMultiSheetQueryRepository: SavedMultiSheetQueryRepositoryImpl(
           SavedMultiSheetQueriesDao(database),
+        ),
+        datasetRelationshipRepository: DatasetRelationshipRepositoryImpl(
+          DatasetRelationshipsDao(database),
         ),
       );
     });

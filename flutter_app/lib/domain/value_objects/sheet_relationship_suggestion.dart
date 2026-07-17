@@ -1,15 +1,9 @@
 //lib/domain/value_objects/sheet_relationship_suggestion.dart
 
+import 'package:exlser/domain/value_objects/join_cardinality.dart';
 import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 
-/// Best-effort estimate of how rows relate across a candidate join.
-enum JoinCardinality {
-  oneToOne,
-  oneToMany,
-  manyToOne,
-  manyToMany,
-  unknown,
-}
+export 'package:exlser/domain/value_objects/join_cardinality.dart';
 
 /// Coarse confidence bucket derived from the suggestion score.
 enum SuggestionConfidence { high, medium, low }

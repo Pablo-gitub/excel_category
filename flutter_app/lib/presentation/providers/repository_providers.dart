@@ -1,11 +1,13 @@
 import 'package:exlser/data/repositories/dataset_file_repository_impl.dart';
 import 'package:exlser/data/repositories/dataset_repository_impl.dart';
+import 'package:exlser/data/repositories/dataset_relationship_repository_impl.dart';
 import 'package:exlser/data/repositories/query_repository_impl.dart';
 import 'package:exlser/data/repositories/saved_multi_sheet_query_repository_impl.dart';
 import 'package:exlser/data/repositories/schema_repository_impl.dart';
 import 'package:exlser/data/schema/dynamic_table_builder.dart';
 import 'package:exlser/domain/repositories/dataset_file_repository.dart';
 import 'package:exlser/domain/repositories/datasets_repository.dart';
+import 'package:exlser/domain/repositories/dataset_relationship_repository.dart';
 import 'package:exlser/domain/repositories/query_repository.dart';
 import 'package:exlser/domain/repositories/saved_multi_sheet_query_repository.dart';
 import 'package:exlser/domain/repositories/schema_repository.dart';
@@ -38,6 +40,13 @@ final schemaRepositoryProvider = Provider<SchemaRepository>((ref) {
 final queryRepositoryProvider = Provider<QueryRepository>((ref) {
   return QueryRepositoryImpl(
     ref.watch(driftDatasourceProvider),
+  );
+});
+
+final datasetRelationshipRepositoryProvider =
+    Provider<DatasetRelationshipRepository>((ref) {
+  return DatasetRelationshipRepositoryImpl(
+    ref.watch(datasetRelationshipsDaoProvider),
   );
 });
 

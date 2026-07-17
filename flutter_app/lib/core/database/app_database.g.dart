@@ -2094,6 +2094,739 @@ class SavedMultiSheetQueriesCompanion
   }
 }
 
+class $DatasetRelationshipsTable extends DatasetRelationships
+    with TableInfo<$DatasetRelationshipsTable, DatasetRelationship> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DatasetRelationshipsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _datasetIdMeta =
+      const VerificationMeta('datasetId');
+  @override
+  late final GeneratedColumn<int> datasetId = GeneratedColumn<int>(
+      'dataset_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES datasets (id)'));
+  static const VerificationMeta _endpointATableIdMeta =
+      const VerificationMeta('endpointATableId');
+  @override
+  late final GeneratedColumn<int> endpointATableId = GeneratedColumn<int>(
+      'endpoint_a_table_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _endpointAColumnDbNameMeta =
+      const VerificationMeta('endpointAColumnDbName');
+  @override
+  late final GeneratedColumn<String> endpointAColumnDbName =
+      GeneratedColumn<String>('endpoint_a_column_db_name', aliasedName, false,
+          type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _endpointBTableIdMeta =
+      const VerificationMeta('endpointBTableId');
+  @override
+  late final GeneratedColumn<int> endpointBTableId = GeneratedColumn<int>(
+      'endpoint_b_table_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _endpointBColumnDbNameMeta =
+      const VerificationMeta('endpointBColumnDbName');
+  @override
+  late final GeneratedColumn<String> endpointBColumnDbName =
+      GeneratedColumn<String>('endpoint_b_column_db_name', aliasedName, false,
+          type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _cardinalityMeta =
+      const VerificationMeta('cardinality');
+  @override
+  late final GeneratedColumn<String> cardinality = GeneratedColumn<String>(
+      'cardinality', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('unknown'));
+  static const VerificationMeta _relationshipConfidenceMeta =
+      const VerificationMeta('relationshipConfidence');
+  @override
+  late final GeneratedColumn<double> relationshipConfidence =
+      GeneratedColumn<double>('relationship_confidence', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0));
+  static const VerificationMeta _cardinalityConfidenceMeta =
+      const VerificationMeta('cardinalityConfidence');
+  @override
+  late final GeneratedColumn<double> cardinalityConfidence =
+      GeneratedColumn<double>('cardinality_confidence', aliasedName, false,
+          type: DriftSqlType.double,
+          requiredDuringInsert: false,
+          defaultValue: const Constant(0));
+  static const VerificationMeta _sampleSizeMeta =
+      const VerificationMeta('sampleSize');
+  @override
+  late final GeneratedColumn<int> sampleSize = GeneratedColumn<int>(
+      'sample_size', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _originMeta = const VerificationMeta('origin');
+  @override
+  late final GeneratedColumn<String> origin = GeneratedColumn<String>(
+      'origin', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('suggested'));
+  static const VerificationMeta _confirmedAtMeta =
+      const VerificationMeta('confirmedAt');
+  @override
+  late final GeneratedColumn<int> confirmedAt = GeneratedColumn<int>(
+      'confirmed_at', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        datasetId,
+        endpointATableId,
+        endpointAColumnDbName,
+        endpointBTableId,
+        endpointBColumnDbName,
+        cardinality,
+        relationshipConfidence,
+        cardinalityConfidence,
+        sampleSize,
+        origin,
+        confirmedAt,
+        createdAt,
+        updatedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'dataset_relationships';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<DatasetRelationship> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('dataset_id')) {
+      context.handle(_datasetIdMeta,
+          datasetId.isAcceptableOrUnknown(data['dataset_id']!, _datasetIdMeta));
+    } else if (isInserting) {
+      context.missing(_datasetIdMeta);
+    }
+    if (data.containsKey('endpoint_a_table_id')) {
+      context.handle(
+          _endpointATableIdMeta,
+          endpointATableId.isAcceptableOrUnknown(
+              data['endpoint_a_table_id']!, _endpointATableIdMeta));
+    } else if (isInserting) {
+      context.missing(_endpointATableIdMeta);
+    }
+    if (data.containsKey('endpoint_a_column_db_name')) {
+      context.handle(
+          _endpointAColumnDbNameMeta,
+          endpointAColumnDbName.isAcceptableOrUnknown(
+              data['endpoint_a_column_db_name']!, _endpointAColumnDbNameMeta));
+    } else if (isInserting) {
+      context.missing(_endpointAColumnDbNameMeta);
+    }
+    if (data.containsKey('endpoint_b_table_id')) {
+      context.handle(
+          _endpointBTableIdMeta,
+          endpointBTableId.isAcceptableOrUnknown(
+              data['endpoint_b_table_id']!, _endpointBTableIdMeta));
+    } else if (isInserting) {
+      context.missing(_endpointBTableIdMeta);
+    }
+    if (data.containsKey('endpoint_b_column_db_name')) {
+      context.handle(
+          _endpointBColumnDbNameMeta,
+          endpointBColumnDbName.isAcceptableOrUnknown(
+              data['endpoint_b_column_db_name']!, _endpointBColumnDbNameMeta));
+    } else if (isInserting) {
+      context.missing(_endpointBColumnDbNameMeta);
+    }
+    if (data.containsKey('cardinality')) {
+      context.handle(
+          _cardinalityMeta,
+          cardinality.isAcceptableOrUnknown(
+              data['cardinality']!, _cardinalityMeta));
+    }
+    if (data.containsKey('relationship_confidence')) {
+      context.handle(
+          _relationshipConfidenceMeta,
+          relationshipConfidence.isAcceptableOrUnknown(
+              data['relationship_confidence']!, _relationshipConfidenceMeta));
+    }
+    if (data.containsKey('cardinality_confidence')) {
+      context.handle(
+          _cardinalityConfidenceMeta,
+          cardinalityConfidence.isAcceptableOrUnknown(
+              data['cardinality_confidence']!, _cardinalityConfidenceMeta));
+    }
+    if (data.containsKey('sample_size')) {
+      context.handle(
+          _sampleSizeMeta,
+          sampleSize.isAcceptableOrUnknown(
+              data['sample_size']!, _sampleSizeMeta));
+    }
+    if (data.containsKey('origin')) {
+      context.handle(_originMeta,
+          origin.isAcceptableOrUnknown(data['origin']!, _originMeta));
+    }
+    if (data.containsKey('confirmed_at')) {
+      context.handle(
+          _confirmedAtMeta,
+          confirmedAt.isAcceptableOrUnknown(
+              data['confirmed_at']!, _confirmedAtMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DatasetRelationship map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DatasetRelationship(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      datasetId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}dataset_id'])!,
+      endpointATableId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}endpoint_a_table_id'])!,
+      endpointAColumnDbName: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}endpoint_a_column_db_name'])!,
+      endpointBTableId: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}endpoint_b_table_id'])!,
+      endpointBColumnDbName: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}endpoint_b_column_db_name'])!,
+      cardinality: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}cardinality'])!,
+      relationshipConfidence: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}relationship_confidence'])!,
+      cardinalityConfidence: attachedDatabase.typeMapping.read(
+          DriftSqlType.double,
+          data['${effectivePrefix}cardinality_confidence'])!,
+      sampleSize: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}sample_size'])!,
+      origin: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}origin'])!,
+      confirmedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}confirmed_at']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $DatasetRelationshipsTable createAlias(String alias) {
+    return $DatasetRelationshipsTable(attachedDatabase, alias);
+  }
+}
+
+class DatasetRelationship extends DataClass
+    implements Insertable<DatasetRelationship> {
+  final int id;
+
+  /// Owning dataset. Rows are removed with the dataset at the application layer.
+  final int datasetId;
+  final int endpointATableId;
+  final String endpointAColumnDbName;
+  final int endpointBTableId;
+  final String endpointBColumnDbName;
+
+  /// `JoinCardinality` name (oneToOne / oneToMany / manyToOne / manyToMany / unknown).
+  final String cardinality;
+
+  /// 0..1 confidence that this is a real relationship.
+  final double relationshipConfidence;
+
+  /// 0..1 confidence in the estimated cardinality specifically.
+  final double cardinalityConfidence;
+
+  /// Rows sampled per side when estimating (0 when not estimated from data).
+  final int sampleSize;
+
+  /// `RelationshipOrigin` name (suggested / userDefined).
+  final String origin;
+
+  /// Unix ms when the user confirmed the relationship (null = unconfirmed).
+  final int? confirmedAt;
+  final int createdAt;
+  final int updatedAt;
+  const DatasetRelationship(
+      {required this.id,
+      required this.datasetId,
+      required this.endpointATableId,
+      required this.endpointAColumnDbName,
+      required this.endpointBTableId,
+      required this.endpointBColumnDbName,
+      required this.cardinality,
+      required this.relationshipConfidence,
+      required this.cardinalityConfidence,
+      required this.sampleSize,
+      required this.origin,
+      this.confirmedAt,
+      required this.createdAt,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['dataset_id'] = Variable<int>(datasetId);
+    map['endpoint_a_table_id'] = Variable<int>(endpointATableId);
+    map['endpoint_a_column_db_name'] = Variable<String>(endpointAColumnDbName);
+    map['endpoint_b_table_id'] = Variable<int>(endpointBTableId);
+    map['endpoint_b_column_db_name'] = Variable<String>(endpointBColumnDbName);
+    map['cardinality'] = Variable<String>(cardinality);
+    map['relationship_confidence'] = Variable<double>(relationshipConfidence);
+    map['cardinality_confidence'] = Variable<double>(cardinalityConfidence);
+    map['sample_size'] = Variable<int>(sampleSize);
+    map['origin'] = Variable<String>(origin);
+    if (!nullToAbsent || confirmedAt != null) {
+      map['confirmed_at'] = Variable<int>(confirmedAt);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  DatasetRelationshipsCompanion toCompanion(bool nullToAbsent) {
+    return DatasetRelationshipsCompanion(
+      id: Value(id),
+      datasetId: Value(datasetId),
+      endpointATableId: Value(endpointATableId),
+      endpointAColumnDbName: Value(endpointAColumnDbName),
+      endpointBTableId: Value(endpointBTableId),
+      endpointBColumnDbName: Value(endpointBColumnDbName),
+      cardinality: Value(cardinality),
+      relationshipConfidence: Value(relationshipConfidence),
+      cardinalityConfidence: Value(cardinalityConfidence),
+      sampleSize: Value(sampleSize),
+      origin: Value(origin),
+      confirmedAt: confirmedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(confirmedAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory DatasetRelationship.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DatasetRelationship(
+      id: serializer.fromJson<int>(json['id']),
+      datasetId: serializer.fromJson<int>(json['datasetId']),
+      endpointATableId: serializer.fromJson<int>(json['endpointATableId']),
+      endpointAColumnDbName:
+          serializer.fromJson<String>(json['endpointAColumnDbName']),
+      endpointBTableId: serializer.fromJson<int>(json['endpointBTableId']),
+      endpointBColumnDbName:
+          serializer.fromJson<String>(json['endpointBColumnDbName']),
+      cardinality: serializer.fromJson<String>(json['cardinality']),
+      relationshipConfidence:
+          serializer.fromJson<double>(json['relationshipConfidence']),
+      cardinalityConfidence:
+          serializer.fromJson<double>(json['cardinalityConfidence']),
+      sampleSize: serializer.fromJson<int>(json['sampleSize']),
+      origin: serializer.fromJson<String>(json['origin']),
+      confirmedAt: serializer.fromJson<int?>(json['confirmedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'datasetId': serializer.toJson<int>(datasetId),
+      'endpointATableId': serializer.toJson<int>(endpointATableId),
+      'endpointAColumnDbName': serializer.toJson<String>(endpointAColumnDbName),
+      'endpointBTableId': serializer.toJson<int>(endpointBTableId),
+      'endpointBColumnDbName': serializer.toJson<String>(endpointBColumnDbName),
+      'cardinality': serializer.toJson<String>(cardinality),
+      'relationshipConfidence':
+          serializer.toJson<double>(relationshipConfidence),
+      'cardinalityConfidence': serializer.toJson<double>(cardinalityConfidence),
+      'sampleSize': serializer.toJson<int>(sampleSize),
+      'origin': serializer.toJson<String>(origin),
+      'confirmedAt': serializer.toJson<int?>(confirmedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  DatasetRelationship copyWith(
+          {int? id,
+          int? datasetId,
+          int? endpointATableId,
+          String? endpointAColumnDbName,
+          int? endpointBTableId,
+          String? endpointBColumnDbName,
+          String? cardinality,
+          double? relationshipConfidence,
+          double? cardinalityConfidence,
+          int? sampleSize,
+          String? origin,
+          Value<int?> confirmedAt = const Value.absent(),
+          int? createdAt,
+          int? updatedAt}) =>
+      DatasetRelationship(
+        id: id ?? this.id,
+        datasetId: datasetId ?? this.datasetId,
+        endpointATableId: endpointATableId ?? this.endpointATableId,
+        endpointAColumnDbName:
+            endpointAColumnDbName ?? this.endpointAColumnDbName,
+        endpointBTableId: endpointBTableId ?? this.endpointBTableId,
+        endpointBColumnDbName:
+            endpointBColumnDbName ?? this.endpointBColumnDbName,
+        cardinality: cardinality ?? this.cardinality,
+        relationshipConfidence:
+            relationshipConfidence ?? this.relationshipConfidence,
+        cardinalityConfidence:
+            cardinalityConfidence ?? this.cardinalityConfidence,
+        sampleSize: sampleSize ?? this.sampleSize,
+        origin: origin ?? this.origin,
+        confirmedAt: confirmedAt.present ? confirmedAt.value : this.confirmedAt,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  DatasetRelationship copyWithCompanion(DatasetRelationshipsCompanion data) {
+    return DatasetRelationship(
+      id: data.id.present ? data.id.value : this.id,
+      datasetId: data.datasetId.present ? data.datasetId.value : this.datasetId,
+      endpointATableId: data.endpointATableId.present
+          ? data.endpointATableId.value
+          : this.endpointATableId,
+      endpointAColumnDbName: data.endpointAColumnDbName.present
+          ? data.endpointAColumnDbName.value
+          : this.endpointAColumnDbName,
+      endpointBTableId: data.endpointBTableId.present
+          ? data.endpointBTableId.value
+          : this.endpointBTableId,
+      endpointBColumnDbName: data.endpointBColumnDbName.present
+          ? data.endpointBColumnDbName.value
+          : this.endpointBColumnDbName,
+      cardinality:
+          data.cardinality.present ? data.cardinality.value : this.cardinality,
+      relationshipConfidence: data.relationshipConfidence.present
+          ? data.relationshipConfidence.value
+          : this.relationshipConfidence,
+      cardinalityConfidence: data.cardinalityConfidence.present
+          ? data.cardinalityConfidence.value
+          : this.cardinalityConfidence,
+      sampleSize:
+          data.sampleSize.present ? data.sampleSize.value : this.sampleSize,
+      origin: data.origin.present ? data.origin.value : this.origin,
+      confirmedAt:
+          data.confirmedAt.present ? data.confirmedAt.value : this.confirmedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DatasetRelationship(')
+          ..write('id: $id, ')
+          ..write('datasetId: $datasetId, ')
+          ..write('endpointATableId: $endpointATableId, ')
+          ..write('endpointAColumnDbName: $endpointAColumnDbName, ')
+          ..write('endpointBTableId: $endpointBTableId, ')
+          ..write('endpointBColumnDbName: $endpointBColumnDbName, ')
+          ..write('cardinality: $cardinality, ')
+          ..write('relationshipConfidence: $relationshipConfidence, ')
+          ..write('cardinalityConfidence: $cardinalityConfidence, ')
+          ..write('sampleSize: $sampleSize, ')
+          ..write('origin: $origin, ')
+          ..write('confirmedAt: $confirmedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      datasetId,
+      endpointATableId,
+      endpointAColumnDbName,
+      endpointBTableId,
+      endpointBColumnDbName,
+      cardinality,
+      relationshipConfidence,
+      cardinalityConfidence,
+      sampleSize,
+      origin,
+      confirmedAt,
+      createdAt,
+      updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DatasetRelationship &&
+          other.id == this.id &&
+          other.datasetId == this.datasetId &&
+          other.endpointATableId == this.endpointATableId &&
+          other.endpointAColumnDbName == this.endpointAColumnDbName &&
+          other.endpointBTableId == this.endpointBTableId &&
+          other.endpointBColumnDbName == this.endpointBColumnDbName &&
+          other.cardinality == this.cardinality &&
+          other.relationshipConfidence == this.relationshipConfidence &&
+          other.cardinalityConfidence == this.cardinalityConfidence &&
+          other.sampleSize == this.sampleSize &&
+          other.origin == this.origin &&
+          other.confirmedAt == this.confirmedAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class DatasetRelationshipsCompanion
+    extends UpdateCompanion<DatasetRelationship> {
+  final Value<int> id;
+  final Value<int> datasetId;
+  final Value<int> endpointATableId;
+  final Value<String> endpointAColumnDbName;
+  final Value<int> endpointBTableId;
+  final Value<String> endpointBColumnDbName;
+  final Value<String> cardinality;
+  final Value<double> relationshipConfidence;
+  final Value<double> cardinalityConfidence;
+  final Value<int> sampleSize;
+  final Value<String> origin;
+  final Value<int?> confirmedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  const DatasetRelationshipsCompanion({
+    this.id = const Value.absent(),
+    this.datasetId = const Value.absent(),
+    this.endpointATableId = const Value.absent(),
+    this.endpointAColumnDbName = const Value.absent(),
+    this.endpointBTableId = const Value.absent(),
+    this.endpointBColumnDbName = const Value.absent(),
+    this.cardinality = const Value.absent(),
+    this.relationshipConfidence = const Value.absent(),
+    this.cardinalityConfidence = const Value.absent(),
+    this.sampleSize = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.confirmedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  DatasetRelationshipsCompanion.insert({
+    this.id = const Value.absent(),
+    required int datasetId,
+    required int endpointATableId,
+    required String endpointAColumnDbName,
+    required int endpointBTableId,
+    required String endpointBColumnDbName,
+    this.cardinality = const Value.absent(),
+    this.relationshipConfidence = const Value.absent(),
+    this.cardinalityConfidence = const Value.absent(),
+    this.sampleSize = const Value.absent(),
+    this.origin = const Value.absent(),
+    this.confirmedAt = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+  })  : datasetId = Value(datasetId),
+        endpointATableId = Value(endpointATableId),
+        endpointAColumnDbName = Value(endpointAColumnDbName),
+        endpointBTableId = Value(endpointBTableId),
+        endpointBColumnDbName = Value(endpointBColumnDbName),
+        createdAt = Value(createdAt),
+        updatedAt = Value(updatedAt);
+  static Insertable<DatasetRelationship> custom({
+    Expression<int>? id,
+    Expression<int>? datasetId,
+    Expression<int>? endpointATableId,
+    Expression<String>? endpointAColumnDbName,
+    Expression<int>? endpointBTableId,
+    Expression<String>? endpointBColumnDbName,
+    Expression<String>? cardinality,
+    Expression<double>? relationshipConfidence,
+    Expression<double>? cardinalityConfidence,
+    Expression<int>? sampleSize,
+    Expression<String>? origin,
+    Expression<int>? confirmedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (datasetId != null) 'dataset_id': datasetId,
+      if (endpointATableId != null) 'endpoint_a_table_id': endpointATableId,
+      if (endpointAColumnDbName != null)
+        'endpoint_a_column_db_name': endpointAColumnDbName,
+      if (endpointBTableId != null) 'endpoint_b_table_id': endpointBTableId,
+      if (endpointBColumnDbName != null)
+        'endpoint_b_column_db_name': endpointBColumnDbName,
+      if (cardinality != null) 'cardinality': cardinality,
+      if (relationshipConfidence != null)
+        'relationship_confidence': relationshipConfidence,
+      if (cardinalityConfidence != null)
+        'cardinality_confidence': cardinalityConfidence,
+      if (sampleSize != null) 'sample_size': sampleSize,
+      if (origin != null) 'origin': origin,
+      if (confirmedAt != null) 'confirmed_at': confirmedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  DatasetRelationshipsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? datasetId,
+      Value<int>? endpointATableId,
+      Value<String>? endpointAColumnDbName,
+      Value<int>? endpointBTableId,
+      Value<String>? endpointBColumnDbName,
+      Value<String>? cardinality,
+      Value<double>? relationshipConfidence,
+      Value<double>? cardinalityConfidence,
+      Value<int>? sampleSize,
+      Value<String>? origin,
+      Value<int?>? confirmedAt,
+      Value<int>? createdAt,
+      Value<int>? updatedAt}) {
+    return DatasetRelationshipsCompanion(
+      id: id ?? this.id,
+      datasetId: datasetId ?? this.datasetId,
+      endpointATableId: endpointATableId ?? this.endpointATableId,
+      endpointAColumnDbName:
+          endpointAColumnDbName ?? this.endpointAColumnDbName,
+      endpointBTableId: endpointBTableId ?? this.endpointBTableId,
+      endpointBColumnDbName:
+          endpointBColumnDbName ?? this.endpointBColumnDbName,
+      cardinality: cardinality ?? this.cardinality,
+      relationshipConfidence:
+          relationshipConfidence ?? this.relationshipConfidence,
+      cardinalityConfidence:
+          cardinalityConfidence ?? this.cardinalityConfidence,
+      sampleSize: sampleSize ?? this.sampleSize,
+      origin: origin ?? this.origin,
+      confirmedAt: confirmedAt ?? this.confirmedAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (datasetId.present) {
+      map['dataset_id'] = Variable<int>(datasetId.value);
+    }
+    if (endpointATableId.present) {
+      map['endpoint_a_table_id'] = Variable<int>(endpointATableId.value);
+    }
+    if (endpointAColumnDbName.present) {
+      map['endpoint_a_column_db_name'] =
+          Variable<String>(endpointAColumnDbName.value);
+    }
+    if (endpointBTableId.present) {
+      map['endpoint_b_table_id'] = Variable<int>(endpointBTableId.value);
+    }
+    if (endpointBColumnDbName.present) {
+      map['endpoint_b_column_db_name'] =
+          Variable<String>(endpointBColumnDbName.value);
+    }
+    if (cardinality.present) {
+      map['cardinality'] = Variable<String>(cardinality.value);
+    }
+    if (relationshipConfidence.present) {
+      map['relationship_confidence'] =
+          Variable<double>(relationshipConfidence.value);
+    }
+    if (cardinalityConfidence.present) {
+      map['cardinality_confidence'] =
+          Variable<double>(cardinalityConfidence.value);
+    }
+    if (sampleSize.present) {
+      map['sample_size'] = Variable<int>(sampleSize.value);
+    }
+    if (origin.present) {
+      map['origin'] = Variable<String>(origin.value);
+    }
+    if (confirmedAt.present) {
+      map['confirmed_at'] = Variable<int>(confirmedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DatasetRelationshipsCompanion(')
+          ..write('id: $id, ')
+          ..write('datasetId: $datasetId, ')
+          ..write('endpointATableId: $endpointATableId, ')
+          ..write('endpointAColumnDbName: $endpointAColumnDbName, ')
+          ..write('endpointBTableId: $endpointBTableId, ')
+          ..write('endpointBColumnDbName: $endpointBColumnDbName, ')
+          ..write('cardinality: $cardinality, ')
+          ..write('relationshipConfidence: $relationshipConfidence, ')
+          ..write('cardinalityConfidence: $cardinalityConfidence, ')
+          ..write('sampleSize: $sampleSize, ')
+          ..write('origin: $origin, ')
+          ..write('confirmedAt: $confirmedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2103,6 +2836,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DatasetFilesTable datasetFiles = $DatasetFilesTable(this);
   late final $SavedMultiSheetQueriesTable savedMultiSheetQueries =
       $SavedMultiSheetQueriesTable(this);
+  late final $DatasetRelationshipsTable datasetRelationships =
+      $DatasetRelationshipsTable(this);
   late final DatasetsDao datasetsDao = DatasetsDao(this as AppDatabase);
   late final DatasetTablesDao datasetTablesDao =
       DatasetTablesDao(this as AppDatabase);
@@ -2110,6 +2845,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       DatasetColumnsDao(this as AppDatabase);
   late final SavedMultiSheetQueriesDao savedMultiSheetQueriesDao =
       SavedMultiSheetQueriesDao(this as AppDatabase);
+  late final DatasetRelationshipsDao datasetRelationshipsDao =
+      DatasetRelationshipsDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2119,7 +2856,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         datasetTables,
         datasetColumns,
         datasetFiles,
-        savedMultiSheetQueries
+        savedMultiSheetQueries,
+        datasetRelationships
       ];
 }
 
@@ -2191,6 +2929,25 @@ final class $$DatasetsTableReferences
 
     final cache =
         $_typedResult.readTableOrNull(_savedMultiSheetQueriesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$DatasetRelationshipsTable,
+      List<DatasetRelationship>> _datasetRelationshipsRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.datasetRelationships,
+          aliasName: $_aliasNameGenerator(
+              db.datasets.id, db.datasetRelationships.datasetId));
+
+  $$DatasetRelationshipsTableProcessedTableManager
+      get datasetRelationshipsRefs {
+    final manager =
+        $$DatasetRelationshipsTableTableManager($_db, $_db.datasetRelationships)
+            .filter((f) => f.datasetId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_datasetRelationshipsRefsTable($_db));
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: cache));
   }
@@ -2290,6 +3047,28 @@ class $$DatasetsTableFilterComposer
                   $removeJoinBuilderFromRootComposer:
                       $removeJoinBuilderFromRootComposer,
                 ));
+    return f(composer);
+  }
+
+  Expression<bool> datasetRelationshipsRefs(
+      Expression<bool> Function($$DatasetRelationshipsTableFilterComposer f)
+          f) {
+    final $$DatasetRelationshipsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.datasetRelationships,
+        getReferencedColumn: (t) => t.datasetId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$DatasetRelationshipsTableFilterComposer(
+              $db: $db,
+              $table: $db.datasetRelationships,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
     return f(composer);
   }
 }
@@ -2422,6 +3201,29 @@ class $$DatasetsTableAnnotationComposer
                 ));
     return f(composer);
   }
+
+  Expression<T> datasetRelationshipsRefs<T extends Object>(
+      Expression<T> Function($$DatasetRelationshipsTableAnnotationComposer a)
+          f) {
+    final $$DatasetRelationshipsTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.datasetRelationships,
+            getReferencedColumn: (t) => t.datasetId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$DatasetRelationshipsTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.datasetRelationships,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
 }
 
 class $$DatasetsTableTableManager extends RootTableManager<
@@ -2438,7 +3240,8 @@ class $$DatasetsTableTableManager extends RootTableManager<
     PrefetchHooks Function(
         {bool datasetTablesRefs,
         bool datasetFilesRefs,
-        bool savedMultiSheetQueriesRefs})> {
+        bool savedMultiSheetQueriesRefs,
+        bool datasetRelationshipsRefs})> {
   $$DatasetsTableTableManager(_$AppDatabase db, $DatasetsTable table)
       : super(TableManagerState(
           db: db,
@@ -2492,13 +3295,15 @@ class $$DatasetsTableTableManager extends RootTableManager<
           prefetchHooksCallback: (
               {datasetTablesRefs = false,
               datasetFilesRefs = false,
-              savedMultiSheetQueriesRefs = false}) {
+              savedMultiSheetQueriesRefs = false,
+              datasetRelationshipsRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
                 if (datasetTablesRefs) db.datasetTables,
                 if (datasetFilesRefs) db.datasetFiles,
-                if (savedMultiSheetQueriesRefs) db.savedMultiSheetQueries
+                if (savedMultiSheetQueriesRefs) db.savedMultiSheetQueries,
+                if (datasetRelationshipsRefs) db.datasetRelationships
               ],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
@@ -2541,6 +3346,19 @@ class $$DatasetsTableTableManager extends RootTableManager<
                         referencedItemsForCurrentItem:
                             (item, referencedItems) => referencedItems
                                 .where((e) => e.datasetId == item.id),
+                        typedResults: items),
+                  if (datasetRelationshipsRefs)
+                    await $_getPrefetchedData<Dataset, $DatasetsTable,
+                            DatasetRelationship>(
+                        currentTable: table,
+                        referencedTable: $$DatasetsTableReferences
+                            ._datasetRelationshipsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$DatasetsTableReferences(db, table, p0)
+                                .datasetRelationshipsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.datasetId == item.id),
                         typedResults: items)
                 ];
               },
@@ -2563,7 +3381,8 @@ typedef $$DatasetsTableProcessedTableManager = ProcessedTableManager<
     PrefetchHooks Function(
         {bool datasetTablesRefs,
         bool datasetFilesRefs,
-        bool savedMultiSheetQueriesRefs})>;
+        bool savedMultiSheetQueriesRefs,
+        bool datasetRelationshipsRefs})>;
 typedef $$DatasetTablesTableCreateCompanionBuilder = DatasetTablesCompanion
     Function({
   Value<int> id,
@@ -3870,6 +4689,428 @@ typedef $$SavedMultiSheetQueriesTableProcessedTableManager
         (SavedMultiSheetQuery, $$SavedMultiSheetQueriesTableReferences),
         SavedMultiSheetQuery,
         PrefetchHooks Function({bool datasetId})>;
+typedef $$DatasetRelationshipsTableCreateCompanionBuilder
+    = DatasetRelationshipsCompanion Function({
+  Value<int> id,
+  required int datasetId,
+  required int endpointATableId,
+  required String endpointAColumnDbName,
+  required int endpointBTableId,
+  required String endpointBColumnDbName,
+  Value<String> cardinality,
+  Value<double> relationshipConfidence,
+  Value<double> cardinalityConfidence,
+  Value<int> sampleSize,
+  Value<String> origin,
+  Value<int?> confirmedAt,
+  required int createdAt,
+  required int updatedAt,
+});
+typedef $$DatasetRelationshipsTableUpdateCompanionBuilder
+    = DatasetRelationshipsCompanion Function({
+  Value<int> id,
+  Value<int> datasetId,
+  Value<int> endpointATableId,
+  Value<String> endpointAColumnDbName,
+  Value<int> endpointBTableId,
+  Value<String> endpointBColumnDbName,
+  Value<String> cardinality,
+  Value<double> relationshipConfidence,
+  Value<double> cardinalityConfidence,
+  Value<int> sampleSize,
+  Value<String> origin,
+  Value<int?> confirmedAt,
+  Value<int> createdAt,
+  Value<int> updatedAt,
+});
+
+final class $$DatasetRelationshipsTableReferences extends BaseReferences<
+    _$AppDatabase, $DatasetRelationshipsTable, DatasetRelationship> {
+  $$DatasetRelationshipsTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $DatasetsTable _datasetIdTable(_$AppDatabase db) =>
+      db.datasets.createAlias($_aliasNameGenerator(
+          db.datasetRelationships.datasetId, db.datasets.id));
+
+  $$DatasetsTableProcessedTableManager get datasetId {
+    final $_column = $_itemColumn<int>('dataset_id')!;
+
+    final manager = $$DatasetsTableTableManager($_db, $_db.datasets)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_datasetIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$DatasetRelationshipsTableFilterComposer
+    extends Composer<_$AppDatabase, $DatasetRelationshipsTable> {
+  $$DatasetRelationshipsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get endpointATableId => $composableBuilder(
+      column: $table.endpointATableId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get endpointAColumnDbName => $composableBuilder(
+      column: $table.endpointAColumnDbName,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get endpointBTableId => $composableBuilder(
+      column: $table.endpointBTableId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get endpointBColumnDbName => $composableBuilder(
+      column: $table.endpointBColumnDbName,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get cardinality => $composableBuilder(
+      column: $table.cardinality, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get relationshipConfidence => $composableBuilder(
+      column: $table.relationshipConfidence,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get cardinalityConfidence => $composableBuilder(
+      column: $table.cardinalityConfidence,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get sampleSize => $composableBuilder(
+      column: $table.sampleSize, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get origin => $composableBuilder(
+      column: $table.origin, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get confirmedAt => $composableBuilder(
+      column: $table.confirmedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$DatasetsTableFilterComposer get datasetId {
+    final $$DatasetsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.datasetId,
+        referencedTable: $db.datasets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$DatasetsTableFilterComposer(
+              $db: $db,
+              $table: $db.datasets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$DatasetRelationshipsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DatasetRelationshipsTable> {
+  $$DatasetRelationshipsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get endpointATableId => $composableBuilder(
+      column: $table.endpointATableId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get endpointAColumnDbName => $composableBuilder(
+      column: $table.endpointAColumnDbName,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get endpointBTableId => $composableBuilder(
+      column: $table.endpointBTableId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get endpointBColumnDbName => $composableBuilder(
+      column: $table.endpointBColumnDbName,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get cardinality => $composableBuilder(
+      column: $table.cardinality, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get relationshipConfidence => $composableBuilder(
+      column: $table.relationshipConfidence,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get cardinalityConfidence => $composableBuilder(
+      column: $table.cardinalityConfidence,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get sampleSize => $composableBuilder(
+      column: $table.sampleSize, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get origin => $composableBuilder(
+      column: $table.origin, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get confirmedAt => $composableBuilder(
+      column: $table.confirmedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$DatasetsTableOrderingComposer get datasetId {
+    final $$DatasetsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.datasetId,
+        referencedTable: $db.datasets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$DatasetsTableOrderingComposer(
+              $db: $db,
+              $table: $db.datasets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$DatasetRelationshipsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DatasetRelationshipsTable> {
+  $$DatasetRelationshipsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get endpointATableId => $composableBuilder(
+      column: $table.endpointATableId, builder: (column) => column);
+
+  GeneratedColumn<String> get endpointAColumnDbName => $composableBuilder(
+      column: $table.endpointAColumnDbName, builder: (column) => column);
+
+  GeneratedColumn<int> get endpointBTableId => $composableBuilder(
+      column: $table.endpointBTableId, builder: (column) => column);
+
+  GeneratedColumn<String> get endpointBColumnDbName => $composableBuilder(
+      column: $table.endpointBColumnDbName, builder: (column) => column);
+
+  GeneratedColumn<String> get cardinality => $composableBuilder(
+      column: $table.cardinality, builder: (column) => column);
+
+  GeneratedColumn<double> get relationshipConfidence => $composableBuilder(
+      column: $table.relationshipConfidence, builder: (column) => column);
+
+  GeneratedColumn<double> get cardinalityConfidence => $composableBuilder(
+      column: $table.cardinalityConfidence, builder: (column) => column);
+
+  GeneratedColumn<int> get sampleSize => $composableBuilder(
+      column: $table.sampleSize, builder: (column) => column);
+
+  GeneratedColumn<String> get origin =>
+      $composableBuilder(column: $table.origin, builder: (column) => column);
+
+  GeneratedColumn<int> get confirmedAt => $composableBuilder(
+      column: $table.confirmedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$DatasetsTableAnnotationComposer get datasetId {
+    final $$DatasetsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.datasetId,
+        referencedTable: $db.datasets,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$DatasetsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.datasets,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$DatasetRelationshipsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $DatasetRelationshipsTable,
+    DatasetRelationship,
+    $$DatasetRelationshipsTableFilterComposer,
+    $$DatasetRelationshipsTableOrderingComposer,
+    $$DatasetRelationshipsTableAnnotationComposer,
+    $$DatasetRelationshipsTableCreateCompanionBuilder,
+    $$DatasetRelationshipsTableUpdateCompanionBuilder,
+    (DatasetRelationship, $$DatasetRelationshipsTableReferences),
+    DatasetRelationship,
+    PrefetchHooks Function({bool datasetId})> {
+  $$DatasetRelationshipsTableTableManager(
+      _$AppDatabase db, $DatasetRelationshipsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DatasetRelationshipsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DatasetRelationshipsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DatasetRelationshipsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> datasetId = const Value.absent(),
+            Value<int> endpointATableId = const Value.absent(),
+            Value<String> endpointAColumnDbName = const Value.absent(),
+            Value<int> endpointBTableId = const Value.absent(),
+            Value<String> endpointBColumnDbName = const Value.absent(),
+            Value<String> cardinality = const Value.absent(),
+            Value<double> relationshipConfidence = const Value.absent(),
+            Value<double> cardinalityConfidence = const Value.absent(),
+            Value<int> sampleSize = const Value.absent(),
+            Value<String> origin = const Value.absent(),
+            Value<int?> confirmedAt = const Value.absent(),
+            Value<int> createdAt = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+          }) =>
+              DatasetRelationshipsCompanion(
+            id: id,
+            datasetId: datasetId,
+            endpointATableId: endpointATableId,
+            endpointAColumnDbName: endpointAColumnDbName,
+            endpointBTableId: endpointBTableId,
+            endpointBColumnDbName: endpointBColumnDbName,
+            cardinality: cardinality,
+            relationshipConfidence: relationshipConfidence,
+            cardinalityConfidence: cardinalityConfidence,
+            sampleSize: sampleSize,
+            origin: origin,
+            confirmedAt: confirmedAt,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int datasetId,
+            required int endpointATableId,
+            required String endpointAColumnDbName,
+            required int endpointBTableId,
+            required String endpointBColumnDbName,
+            Value<String> cardinality = const Value.absent(),
+            Value<double> relationshipConfidence = const Value.absent(),
+            Value<double> cardinalityConfidence = const Value.absent(),
+            Value<int> sampleSize = const Value.absent(),
+            Value<String> origin = const Value.absent(),
+            Value<int?> confirmedAt = const Value.absent(),
+            required int createdAt,
+            required int updatedAt,
+          }) =>
+              DatasetRelationshipsCompanion.insert(
+            id: id,
+            datasetId: datasetId,
+            endpointATableId: endpointATableId,
+            endpointAColumnDbName: endpointAColumnDbName,
+            endpointBTableId: endpointBTableId,
+            endpointBColumnDbName: endpointBColumnDbName,
+            cardinality: cardinality,
+            relationshipConfidence: relationshipConfidence,
+            cardinalityConfidence: cardinalityConfidence,
+            sampleSize: sampleSize,
+            origin: origin,
+            confirmedAt: confirmedAt,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$DatasetRelationshipsTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({datasetId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (datasetId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.datasetId,
+                    referencedTable: $$DatasetRelationshipsTableReferences
+                        ._datasetIdTable(db),
+                    referencedColumn: $$DatasetRelationshipsTableReferences
+                        ._datasetIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$DatasetRelationshipsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $DatasetRelationshipsTable,
+        DatasetRelationship,
+        $$DatasetRelationshipsTableFilterComposer,
+        $$DatasetRelationshipsTableOrderingComposer,
+        $$DatasetRelationshipsTableAnnotationComposer,
+        $$DatasetRelationshipsTableCreateCompanionBuilder,
+        $$DatasetRelationshipsTableUpdateCompanionBuilder,
+        (DatasetRelationship, $$DatasetRelationshipsTableReferences),
+        DatasetRelationship,
+        PrefetchHooks Function({bool datasetId})>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3885,4 +5126,6 @@ class $AppDatabaseManager {
   $$SavedMultiSheetQueriesTableTableManager get savedMultiSheetQueries =>
       $$SavedMultiSheetQueriesTableTableManager(
           _db, _db.savedMultiSheetQueries);
+  $$DatasetRelationshipsTableTableManager get datasetRelationships =>
+      $$DatasetRelationshipsTableTableManager(_db, _db.datasetRelationships);
 }
