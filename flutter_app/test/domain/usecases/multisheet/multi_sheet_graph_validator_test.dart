@@ -44,12 +44,10 @@ void main() {
   MultiSheetJoin join(
     int relationshipId, {
     SheetJoinType type = SheetJoinType.inner,
-    int? preserved,
   }) {
     return MultiSheetJoin(
       relationshipId: relationshipId,
       joinType: type,
-      preservedTableId: preserved,
     );
   }
 
@@ -99,13 +97,48 @@ void main() {
     expect(plan.steps.map((s) => s.newTableId), [2, 3]);
   });
 
-  test('a LEFT join preserving the accumulated side is accepted', () {
+  test('a LEFT join derives the preserved side from the rooted plan', () {
     final plan = run(spec(
       base: 1,
       tables: [1, 2],
-      joins: [join(10, type: SheetJoinType.left, preserved: 1)],
+      joins: [join(10, type: SheetJoinType.left)],
     ));
     expect(plan.steps.first.joinType, SheetJoinType.left);
+    expect(plan.steps.first.existingTableId, 1);
+  });
+
+  test('LEFT preservation follows graph growth, not sheet selection order', () {
+    final plan = run(spec(
+      base: 1,
+      tables: [1, 3, 2],
+      joins: [
+        join(10),
+        join(20, type: SheetJoinType.left),
+      ],
+    ));
+
+    final leftStep =
+        plan.steps.singleWhere((step) => step.relationshipId == 20);
+    expect(plan.orderedTableIds, [1, 2, 3]);
+    expect(leftStep.existingTableId, 2);
+    expect(leftStep.newTableId, 3);
+  });
+
+  test('changing the base recalculates the LEFT-preserved side', () {
+    final plan = run(spec(
+      base: 3,
+      tables: [1, 3, 2],
+      joins: [
+        join(10),
+        join(20, type: SheetJoinType.left),
+      ],
+    ));
+
+    final leftStep =
+        plan.steps.singleWhere((step) => step.relationshipId == 20);
+    expect(plan.orderedTableIds, [3, 2, 1]);
+    expect(leftStep.existingTableId, 3);
+    expect(leftStep.newTableId, 2);
   });
 
   test('rejects fewer than two tables', () {
@@ -167,26 +200,6 @@ void main() {
     expectCode(
       spec(base: 1, tables: [1, 2, 3], joins: [join(10), join(20), join(30)]),
       MultiSheetGraphValidator.cycleDetectedCode,
-    );
-  });
-
-  test('rejects a LEFT join with no explicit preserved side', () {
-    expectCode(
-      spec(
-          base: 1, tables: [1, 2], joins: [join(10, type: SheetJoinType.left)]),
-      MultiSheetGraphValidator.invalidLeftJoinDirectionCode,
-    );
-  });
-
-  test('rejects a LEFT join preserving the newly added side', () {
-    // base is 1; preserving 2 (the new table) is invalid.
-    expectCode(
-      spec(
-        base: 1,
-        tables: [1, 2],
-        joins: [join(10, type: SheetJoinType.left, preserved: 2)],
-      ),
-      MultiSheetGraphValidator.invalidLeftJoinDirectionCode,
     );
   });
 

@@ -128,15 +128,11 @@ class MultiSheetAnalysisService {
     required List<MultiSheetSheetInfo> sheets,
     required Map<int, DatasetRelationship> relationshipsById,
   }) {
-    final plan = graphValidator.validate(
+    final plan = resolvePlan(
       datasetId: datasetId,
       spec: spec,
+      sheets: sheets,
       relationshipsById: relationshipsById,
-      availableTableIds: {for (final sheet in sheets) sheet.tableId},
-      availableColumnsByTableId: {
-        for (final sheet in sheets)
-          sheet.tableId: {for (final column in sheet.columns) column.dbName},
-      },
     );
 
     return sqlBuilder.build(
@@ -154,6 +150,27 @@ class MultiSheetAnalysisService {
             for (final column in sheet.columns)
               column.dbName: column.originalName,
           },
+      },
+    );
+  }
+
+  /// Resolves the current rooted join tree without generating or executing SQL.
+  /// For a LEFT join, each step's [ResolvedJoinStep.existingTableId] is the side
+  /// preserved by SQLite.
+  ResolvedJoinPlan resolvePlan({
+    required int datasetId,
+    required MultiSheetQuerySpec spec,
+    required List<MultiSheetSheetInfo> sheets,
+    required Map<int, DatasetRelationship> relationshipsById,
+  }) {
+    return graphValidator.validate(
+      datasetId: datasetId,
+      spec: spec,
+      relationshipsById: relationshipsById,
+      availableTableIds: {for (final sheet in sheets) sheet.tableId},
+      availableColumnsByTableId: {
+        for (final sheet in sheets)
+          sheet.tableId: {for (final column in sheet.columns) column.dbName},
       },
     );
   }

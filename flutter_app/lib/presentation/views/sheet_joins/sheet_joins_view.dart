@@ -388,30 +388,28 @@ class _RelationshipTile extends StatelessWidget {
           // user changes the base table rather than picking an invalid side.
           if (join.isLeft) ...[
             const SizedBox(height: 6),
-            Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    AppStrings.datasetJoinsLeftKeeps.tr(
-                      namedArgs: {
-                        'sheet': _sheetLabel(
-                          state,
-                          join.preservedTableId ??
-                              relationship.endpointATableId,
-                        ),
-                      },
-                    ),
-                    style: Theme.of(context).textTheme.bodySmall,
+            if (controller.preservedSideFor(join.relationshipId)
+                case final preservedTableId?)
+              Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      AppStrings.datasetJoinsLeftKeeps.tr(
+                        namedArgs: {
+                          'sheet': _sheetLabel(state, preservedTableId),
+                        },
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ],
       ),
@@ -754,8 +752,6 @@ String _errorMessage(String code) {
       AppStrings.datasetJoinsErrorDisconnectedGraph.tr(),
     MultiSheetGraphValidator.cycleDetectedCode =>
       AppStrings.datasetJoinsErrorCycleDetected.tr(),
-    MultiSheetGraphValidator.invalidLeftJoinDirectionCode =>
-      AppStrings.datasetJoinsErrorInvalidLeftJoinDirection.tr(),
     MultiSheetSqlBuilder.noOutputColumnsCode =>
       AppStrings.datasetJoinsErrorNoOutputColumns.tr(),
     _ => AppStrings.datasetJoinsErrorGeneric.tr(),

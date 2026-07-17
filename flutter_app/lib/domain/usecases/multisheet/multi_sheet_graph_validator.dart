@@ -78,9 +78,6 @@ class MultiSheetGraphValidator {
   static const String duplicateRelationshipCode = 'duplicate_relationship';
   static const String disconnectedGraphCode = 'disconnected_graph';
   static const String cycleDetectedCode = 'cycle_detected';
-  static const String invalidLeftJoinDirectionCode =
-      'invalid_left_join_direction';
-
   const MultiSheetGraphValidator();
 
   ResolvedJoinPlan validate({
@@ -188,7 +185,6 @@ class MultiSheetGraphValidator {
         bTableId: b,
         bColumnDbName: relationship.endpointBColumnDbName,
         joinType: join.joinType,
-        preservedTableId: join.preservedTableId,
         cardinality: relationship.cardinality,
         cardinalityConfidence: relationship.cardinalityConfidence,
         sampleSize: relationship.sampleSize,
@@ -230,16 +226,6 @@ class MultiSheetGraphValidator {
         // Relationship cardinality is stored A → B; re-orient it to existing → new.
         final orientedCardinality =
             existingIsEndpointA ? edge.cardinality : edge.cardinality.inverted;
-
-        // A LEFT join must explicitly preserve the already-accumulated side.
-        if (edge.joinType == SheetJoinType.left) {
-          final preserved = edge.preservedTableId;
-          if (preserved == null ||
-              (preserved != edge.aTableId && preserved != edge.bTableId) ||
-              preserved != existingTableId) {
-            throw const MultiSheetGraphException(invalidLeftJoinDirectionCode);
-          }
-        }
 
         steps.add(ResolvedJoinStep(
           existingTableId: existingTableId,
@@ -298,7 +284,6 @@ class _JoinEdge {
   final int bTableId;
   final String bColumnDbName;
   final SheetJoinType joinType;
-  final int? preservedTableId;
   final JoinCardinality cardinality;
   final double cardinalityConfidence;
   final int sampleSize;
@@ -310,7 +295,6 @@ class _JoinEdge {
     required this.bTableId,
     required this.bColumnDbName,
     required this.joinType,
-    required this.preservedTableId,
     required this.cardinality,
     required this.cardinalityConfidence,
     required this.sampleSize,

@@ -323,14 +323,9 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
           if (join.relationshipId == relationshipId)
             join.copyWith(
               joinType: joinType,
-              // The preserved side of a LEFT join is derived, not user-chosen:
-              // SQL always accumulates from the base, so only the accumulated
-              // side can be preserved. INNER clears it. To preserve the other
-              // side the user changes the base table.
-              preservedTableId: joinType == SheetJoinType.left
-                  ? preservedSideFor(relationshipId)
-                  : null,
-              clearPreservedTableId: joinType == SheetJoinType.inner,
+              // LEFT preservation is derived from the resolved rooted plan.
+              // Never persist a second, potentially stale source of truth.
+              clearPreservedTableId: true,
             )
           else
             join,
@@ -338,24 +333,23 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     ));
   }
 
-  /// The side a LEFT join on [relationshipId] preserves: the endpoint accumulated
-  /// first when growing the tree from the base (base itself if it is an endpoint,
-  /// otherwise the endpoint appearing earlier in selection order). This mirrors
-  /// the graph validator's deterministic ordering, so the UI never offers a side
-  /// that would be rejected as [MultiSheetGraphValidator.invalidLeftJoinDirectionCode].
+  /// Returns the side actually preserved by the resolved rooted LEFT-join plan.
+  /// An incomplete/invalid graph has no reliable preserved side yet.
   int? preservedSideFor(int relationshipId) {
-    final relationship = state.relationshipsById[relationshipId];
-    if (relationship == null) return null;
-    final base = state.spec.baseTableId;
-    if (base != null && relationship.involvesTable(base)) return base;
-    final selected = state.spec.selectedTableIds;
-    final ia = selected.indexOf(relationship.endpointATableId);
-    final ib = selected.indexOf(relationship.endpointBTableId);
-    if (ib < 0) return relationship.endpointATableId;
-    if (ia < 0) return relationship.endpointBTableId;
-    return ia <= ib
-        ? relationship.endpointATableId
-        : relationship.endpointBTableId;
+    try {
+      final plan = service.resolvePlan(
+        datasetId: datasetId,
+        spec: state.spec,
+        sheets: state.sheets,
+        relationshipsById: state.relationshipsById,
+      );
+      return plan.steps
+          .where((step) => step.relationshipId == relationshipId)
+          .map((step) => step.existingTableId)
+          .firstOrNull;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Validates and generates the SQL without running it, so the UI can show the
