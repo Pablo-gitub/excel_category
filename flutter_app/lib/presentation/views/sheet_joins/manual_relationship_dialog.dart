@@ -45,6 +45,7 @@ class _ManualRelationshipDialogState extends State<_ManualRelationshipDialog> {
   String? _leftColumnDbName;
   String? _rightColumnDbName;
   bool _saving = false;
+  String? _submitError;
 
   @override
   void initState() {
@@ -98,20 +99,30 @@ class _ManualRelationshipDialogState extends State<_ManualRelationshipDialog> {
     final rightColumnDbName = _rightColumnDbName;
     if (leftColumnDbName == null || rightColumnDbName == null) return;
 
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _submitError = null;
+    });
 
-    final success = await widget.controller.addManualRelationship(
-      leftTableId: _leftSheet.tableId,
-      leftColumnDbName: leftColumnDbName,
-      rightTableId: _rightSheet.tableId,
-      rightColumnDbName: rightColumnDbName,
-    );
-
-    if (!mounted) return;
-    if (success) {
-      Navigator.of(context).pop();
-    } else {
-      setState(() => _saving = false);
+    try {
+      final success = await widget.controller.addManualRelationship(
+        leftTableId: _leftSheet.tableId,
+        leftColumnDbName: leftColumnDbName,
+        rightTableId: _rightSheet.tableId,
+        rightColumnDbName: rightColumnDbName,
+      );
+      if (!mounted) return;
+      if (success) {
+        Navigator.of(context).pop();
+      } else {
+        setState(() => _saving = false);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _saving = false;
+        _submitError = AppStrings.datasetJoinsErrorGeneric.tr();
+      });
     }
   }
 
@@ -153,7 +164,7 @@ class _ManualRelationshipDialogState extends State<_ManualRelationshipDialog> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              key: const ValueKey('manual_left_column'),
+              key: ValueKey('manual_left_column_${_leftSheet.tableId}'),
               isExpanded: true,
               initialValue: _leftColumnDbName,
               items: [
@@ -173,7 +184,7 @@ class _ManualRelationshipDialogState extends State<_ManualRelationshipDialog> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<int>(
-              key: const ValueKey('manual_right_sheet'),
+              key: ValueKey('manual_right_sheet_${_rightSheet.tableId}'),
               isExpanded: true,
               initialValue: _rightSheet.tableId,
               items: [
@@ -196,7 +207,7 @@ class _ManualRelationshipDialogState extends State<_ManualRelationshipDialog> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              key: const ValueKey('manual_right_column'),
+              key: ValueKey('manual_right_column_${_rightSheet.tableId}'),
               isExpanded: true,
               initialValue: _rightColumnDbName,
               items: [
@@ -214,6 +225,16 @@ class _ManualRelationshipDialogState extends State<_ManualRelationshipDialog> {
                 labelText: AppStrings.datasetJoinsRightColumn.tr(),
               ),
             ),
+            if (_submitError != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                _submitError!,
+                key: const ValueKey('manual_relationship_error'),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ],
           ],
         ),
       ),

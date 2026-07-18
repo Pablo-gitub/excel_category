@@ -447,9 +447,11 @@ void main() {
     expect(find.byKey(const ValueKey('manual_relationship_dialog')),
         findsOneWidget);
     expect(find.byKey(const ValueKey('manual_left_sheet')), findsOneWidget);
-    expect(find.byKey(const ValueKey('manual_left_column')), findsOneWidget);
-    expect(find.byKey(const ValueKey('manual_right_sheet')), findsOneWidget);
-    expect(find.byKey(const ValueKey('manual_right_column')), findsOneWidget);
+    // Column/right-sheet keys encode the selected sheet id so Flutter recreates
+    // the FormField when the sheet changes. Initial: left=1, right=2.
+    expect(find.byKey(const ValueKey('manual_left_column_1')), findsOneWidget);
+    expect(find.byKey(const ValueKey('manual_right_sheet_2')), findsOneWidget);
+    expect(find.byKey(const ValueKey('manual_right_column_2')), findsOneWidget);
   });
 
   testWidgets(
@@ -550,6 +552,42 @@ void main() {
   });
 
   testWidgets(
+      'a persistence error keeps the dialog open and re-enables submission',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['Product ID']),
+          sheet(2, 'Products', ['Product']),
+        ]);
+    when(() => service.createRelationship(any()))
+        .thenThrow(StateError('persistence failed'));
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    await tester.tap(find.byKey(const ValueKey('join_sheet_1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_sheet_2')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('manual_relationship_open')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('manual_relationship_submit')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('manual_relationship_dialog')),
+        findsOneWidget);
+    expect(find.byKey(const ValueKey('manual_relationship_error')),
+        findsOneWidget);
+    final submit = tester.widget<FilledButton>(
+      find.byKey(const ValueKey('manual_relationship_submit')),
+    );
+    expect(submit.onPressed, isNotNull);
+    expect(find.textContaining('Sales.Product ID'), findsNothing);
+    verify(() => service.createRelationship(any())).called(1);
+  });
+
+  testWidgets(
       'dialog lays out without overflow on a narrow phone-sized surface',
       (tester) async {
     when(() => service.loadSheets(any())).thenAnswer((_) async => [
@@ -595,13 +633,6 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('join_sheet_2')));
     await tester.pumpAndSettle();
 
-    // The test-only Ahem font (1em per glyph) causes "Find relationships"
-    // to measure ~308 px at 14 sp, overflowing the 296 px card at 360 px.
-    // In production (Roboto/SF Pro) the same string is ~176 px and fits fine.
-    // Drain that pre-existing test-font exception so the remaining assertion
-    // targets only the dialog layout.
-    tester.takeException();
-
     await tester.tap(find.byKey(const ValueKey('manual_relationship_open')));
     await tester.pumpAndSettle();
 
@@ -609,5 +640,59 @@ void main() {
         findsOneWidget);
     expect(tester.takeException(), isNull,
         reason: 'no overflow when opening dialog at 360px width');
+  });
+
+  testWidgets(
+      'changing left sheet resets column, repairs right, and submits updated endpoints',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Alpha', ['id']),
+          sheet(2, 'Beta', ['ref']),
+          sheet(3, 'Gamma', ['code']),
+        ]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    // Select all three sheets.
+    await tester.tap(find.byKey(const ValueKey('join_sheet_1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_sheet_2')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_sheet_3')));
+    await tester.pumpAndSettle();
+
+    // Open dialog (default: left=Alpha, right=Beta).
+    await tester.tap(find.byKey(const ValueKey('manual_relationship_open')));
+    await tester.pumpAndSettle();
+
+    // Change left sheet to Beta (id=2), collides with current right=Beta(2),
+    // so right auto-repairs to Alpha (id=1). Left column resets to 'ref'.
+    await tester.tap(find.byKey(const ValueKey('manual_left_sheet')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Beta').last);
+    await tester.pumpAndSettle();
+
+    // Submit with the updated dropdowns.
+    await tester.tap(find.byKey(const ValueKey('manual_relationship_submit')));
+    await tester.pumpAndSettle();
+
+    // Dialog should close on success.
+    expect(
+        find.byKey(const ValueKey('manual_relationship_dialog')), findsNothing);
+
+    // Verify the updated endpoints were sent: left=Beta(2,ref), right=Alpha(1,id).
+    final calls =
+        verify(() => service.createRelationship(captureAny())).captured;
+    final rel = calls.single as DatasetRelationship;
+    expect(rel.endpointATableId, 2,
+        reason: 'left sheet should be Beta after change');
+    expect(rel.endpointAColumnDbName, 'ref',
+        reason: 'left column should reset to first column of Beta');
+    expect(rel.endpointBTableId, 1,
+        reason: 'right sheet should auto-repair to Alpha');
+    expect(rel.endpointBColumnDbName, 'id',
+        reason: 'right column should reset to first column of Alpha');
   });
 }

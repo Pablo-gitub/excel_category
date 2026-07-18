@@ -117,13 +117,12 @@ class _SectionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 if (trailing != null) trailing!,
               ],
