@@ -485,6 +485,16 @@ class AppStrings {
       'dataset.joins.reason_value_overlap';
   static const String datasetJoinsReasonTypeMatch =
       'dataset.joins.reason_type_match';
+  static const String datasetJoinsAddRelationship =
+      'dataset.joins.add_relationship';
+  static const String datasetJoinsManualRelationshipTitle =
+      'dataset.joins.manual_relationship_title';
+  static const String datasetJoinsManualRelationshipHint =
+      'dataset.joins.manual_relationship_hint';
+  static const String datasetJoinsLeftSheet = 'dataset.joins.left_sheet';
+  static const String datasetJoinsLeftColumn = 'dataset.joins.left_column';
+  static const String datasetJoinsRightSheet = 'dataset.joins.right_sheet';
+  static const String datasetJoinsRightColumn = 'dataset.joins.right_column';
   static const String datasetJoinsWarningManyToMany =
       'dataset.joins.warning_many_to_many';
   static const String datasetJoinsWarningUnknownCardinality =

@@ -11,6 +11,7 @@ import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:exlser/domain/value_objects/sheet_relationship_suggestion.dart';
+import 'package:exlser/presentation/views/sheet_joins/manual_relationship_dialog.dart';
 import 'package:exlser/presentation/views/sheet_joins/multi_sheet_join_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -313,6 +314,16 @@ class _RelationshipsSection extends StatelessWidget {
     final joins = state.spec.joins;
     return _SectionCard(
       title: AppStrings.datasetJoinsRelationships.tr(),
+      trailing: TextButton.icon(
+        key: const ValueKey('manual_relationship_open'),
+        onPressed: () => showManualRelationshipDialog(
+          context: context,
+          state: state,
+          controller: controller,
+        ),
+        icon: const Icon(Icons.add_link),
+        label: Text(AppStrings.datasetJoinsAddRelationship.tr()),
+      ),
       child: joins.isEmpty
           ? Text(AppStrings.datasetJoinsNoRelationships.tr())
           : Column(

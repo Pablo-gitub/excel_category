@@ -6,6 +6,7 @@ import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/entities/dataset_table.dart';
 import 'package:exlser/domain/entities/saved_multi_sheet_query.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
+import 'package:exlser/domain/usecases/multisheet/manage_dataset_relationships_usecases.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_sql_builder.dart';
 import 'package:exlser/domain/value_objects/column_type.dart';
@@ -336,6 +337,165 @@ void main() {
     expect(captured.sampleSize, 42);
     expect(captured.origin, RelationshipOrigin.suggested);
     expect(captured.confirmedAt, isNotNull);
+  });
+
+  // R4.4 — addManualRelationship contract
+
+  test(
+      'addManualRelationship returns true and persists a userDefined relationship',
+      () async {
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+
+    final result = await controller.addManualRelationship(
+      leftTableId: 1,
+      leftColumnDbName: 'product_id',
+      rightTableId: 2,
+      rightColumnDbName: 'product',
+    );
+
+    expect(result, isTrue);
+    expect(controller.state.spec.joins, hasLength(1));
+
+    final captured = verify(() => service.createRelationship(captureAny()))
+        .captured
+        .single as DatasetRelationship;
+    expect(captured.endpointATableId, 1);
+    expect(captured.endpointAColumnDbName, 'product_id');
+    expect(captured.endpointBTableId, 2);
+    expect(captured.endpointBColumnDbName, 'product');
+    expect(captured.origin, RelationshipOrigin.userDefined);
+    expect(captured.confirmedAt, isNotNull);
+    expect(captured.cardinality, JoinCardinality.unknown);
+    expect(captured.cardinalityConfidence, 0);
+    expect(captured.sampleSize, 0);
+  });
+
+  test(
+      'addManualRelationship returns false and sets incompleteRelationshipCode for same table',
+      () async {
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+
+    final result = await controller.addManualRelationship(
+      leftTableId: 1,
+      leftColumnDbName: 'product_id',
+      rightTableId: 1,
+      rightColumnDbName: 'qty',
+    );
+
+    expect(result, isFalse);
+    expect(controller.state.status, MultiSheetJoinStatus.validationError);
+    expect(controller.state.errorCode,
+        MultiSheetGraphValidator.incompleteRelationshipCode);
+    verifyNever(() => service.createRelationship(any()));
+  });
+
+  test('addManualRelationship returns false for an unselected table', () async {
+    await controller.load();
+    controller.toggleSheet(1); // only sheet 1 selected
+
+    final result = await controller.addManualRelationship(
+      leftTableId: 1,
+      leftColumnDbName: 'product_id',
+      rightTableId: 2,
+      rightColumnDbName: 'product',
+    );
+
+    expect(result, isFalse);
+    expect(controller.state.status, MultiSheetJoinStatus.validationError);
+    expect(controller.state.errorCode,
+        MultiSheetGraphValidator.unavailableTableOrColumnCode);
+    verifyNever(() => service.createRelationship(any()));
+  });
+
+  test('addManualRelationship returns false for a missing column', () async {
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+
+    final result = await controller.addManualRelationship(
+      leftTableId: 1,
+      leftColumnDbName: 'nonexistent',
+      rightTableId: 2,
+      rightColumnDbName: 'product',
+    );
+
+    expect(result, isFalse);
+    expect(controller.state.status, MultiSheetJoinStatus.validationError);
+    expect(controller.state.errorCode,
+        MultiSheetGraphValidator.unavailableTableOrColumnCode);
+    verifyNever(() => service.createRelationship(any()));
+  });
+
+  test('addManualRelationship returns false for a current-spec duplicate',
+      () async {
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+
+    await controller.addManualRelationship(
+      leftTableId: 1,
+      leftColumnDbName: 'product_id',
+      rightTableId: 2,
+      rightColumnDbName: 'product',
+    );
+    expect(controller.state.spec.joins, hasLength(1));
+
+    // Swapped endpoints are the same endpoint key.
+    final result = await controller.addManualRelationship(
+      leftTableId: 2,
+      leftColumnDbName: 'product',
+      rightTableId: 1,
+      rightColumnDbName: 'product_id',
+    );
+
+    expect(result, isFalse);
+    expect(controller.state.spec.joins, hasLength(1));
+    expect(controller.state.errorCode,
+        MultiSheetGraphValidator.duplicateRelationshipCode);
+  });
+
+  test(
+      'addManualRelationship reuses a dataset-level duplicate and returns true',
+      () async {
+    // Simulate the repository already having an equivalent row; it throws
+    // DuplicateRelationshipException with the existing id.
+    const existingId = 42;
+    when(() => service.createRelationship(any()))
+        .thenThrow(const DuplicateRelationshipException(existingId));
+
+    // The controller recovers by loading relationships and reusing the existing one.
+    final existing = const DatasetRelationship(
+      id: existingId,
+      datasetId: 1,
+      endpointATableId: 1,
+      endpointAColumnDbName: 'product_id',
+      endpointBTableId: 2,
+      endpointBColumnDbName: 'product',
+      origin: RelationshipOrigin.userDefined,
+    );
+    when(() => service.loadRelationships(any()))
+        .thenAnswer((_) async => [existing]);
+
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+
+    final result = await controller.addManualRelationship(
+      leftTableId: 1,
+      leftColumnDbName: 'product_id',
+      rightTableId: 2,
+      rightColumnDbName: 'product',
+    );
+
+    expect(result, isTrue);
+    expect(controller.state.spec.joins, hasLength(1));
+    expect(controller.state.spec.joins.first.relationshipId, existingId);
+    // Only one createRelationship call — no second metadata row.
+    verify(() => service.createRelationship(any())).called(1);
   });
 
   test('deselecting the last sheet clears the stale base table id', () async {

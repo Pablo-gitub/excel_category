@@ -256,12 +256,45 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
   }
 
   /// Creates a user-defined relationship between two columns and adds a join.
-  Future<void> addManualRelationship({
+  ///
+  /// Returns `true` only when the join is present in the spec after the call.
+  /// Returns `false` and sets a validation error for invalid input or a
+  /// relation already in the current spec.
+  Future<bool> addManualRelationship({
     required int leftTableId,
     required String leftColumnDbName,
     required int rightTableId,
     required String rightColumnDbName,
   }) async {
+    if (leftTableId == rightTableId ||
+        leftColumnDbName.isEmpty ||
+        rightColumnDbName.isEmpty) {
+      state = state.copyWith(
+        status: MultiSheetJoinStatus.validationError,
+        errorCode: MultiSheetGraphValidator.incompleteRelationshipCode,
+      );
+      return false;
+    }
+
+    final selected = state.spec.selectedTableIds;
+    final leftSheet =
+        state.sheets.where((s) => s.tableId == leftTableId).firstOrNull;
+    final rightSheet =
+        state.sheets.where((s) => s.tableId == rightTableId).firstOrNull;
+
+    if (!selected.contains(leftTableId) ||
+        !selected.contains(rightTableId) ||
+        leftSheet == null ||
+        rightSheet == null ||
+        !leftSheet.columns.any((c) => c.dbName == leftColumnDbName) ||
+        !rightSheet.columns.any((c) => c.dbName == rightColumnDbName)) {
+      state = state.copyWith(
+        status: MultiSheetJoinStatus.validationError,
+        errorCode: MultiSheetGraphValidator.unavailableTableOrColumnCode,
+      );
+      return false;
+    }
+
     final relationship = DatasetRelationship(
       datasetId: datasetId,
       endpointATableId: leftTableId,
@@ -271,17 +304,17 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       origin: RelationshipOrigin.userDefined,
       confirmedAt: DateTime.now(),
     );
-    await _persistAndAddJoin(relationship);
+    return _persistAndAddJoin(relationship);
   }
 
-  Future<void> _persistAndAddJoin(DatasetRelationship relationship) async {
+  Future<bool> _persistAndAddJoin(DatasetRelationship relationship) async {
     if (state.spec.referencedRelationshipIds.any((id) =>
         state.relationshipsById[id]?.endpointKey == relationship.endpointKey)) {
       state = state.copyWith(
         status: MultiSheetJoinStatus.validationError,
         errorCode: MultiSheetGraphValidator.duplicateRelationshipCode,
       );
-      return;
+      return false;
     }
 
     DatasetRelationship persisted;
@@ -293,10 +326,10 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
           (await service.loadRelationships(datasetId))
               .where((r) => r.endpointKey == relationship.endpointKey)
               .firstOrNull;
-      if (existing == null) return;
+      if (existing == null) return false;
       persisted = existing;
     }
-    if (!mounted || persisted.id == null) return;
+    if (!mounted || persisted.id == null) return false;
 
     _updateSpec(
       state.spec.copyWith(
@@ -307,6 +340,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       ),
       relationshipsById: {...state.relationshipsById, persisted.id!: persisted},
     );
+    return true;
   }
 
   void removeJoin(int relationshipId) {
