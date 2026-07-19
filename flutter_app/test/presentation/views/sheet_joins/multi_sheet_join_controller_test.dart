@@ -270,6 +270,44 @@ void main() {
     expect(controller.state.status, MultiSheetJoinStatus.success);
   });
 
+  test('startNewConfiguration ignores a preview from the discarded spec',
+      () async {
+    when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
+        )).thenReturn(const GeneratedMultiSheetQuery(
+      sql: 'SELECT 1',
+      outputColumns: [],
+      displayLabelsByAlias: {},
+    ));
+    final pendingPreview = Completer<MultiSheetPreviewResult>();
+    when(() => service.runPreview(
+          datasetId: any(named: 'datasetId'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
+        )).thenAnswer((_) => pendingPreview.future);
+
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+    await addProductRelationship();
+
+    final run = controller.runPreview();
+    await Future<void>.delayed(Duration.zero);
+    controller.startNewConfiguration();
+
+    pendingPreview.complete(preview);
+    await run;
+
+    expect(controller.state.status, MultiSheetJoinStatus.editing);
+    expect(controller.state.spec.isEmpty, isTrue);
+    expect(controller.state.preview, isNull);
+    expect(controller.state.generated, isNull);
+  });
+
   test('flags a saved spec that references a missing column as stale',
       () async {
     final saved = SavedMultiSheetQuery(
@@ -570,12 +608,13 @@ void main() {
     int id = 1,
     int datasetId = 1,
     String name = 'My Config',
+    MultiSheetQuerySpec spec = const MultiSheetQuerySpec(),
   }) =>
       SavedMultiSheetQuery(
         id: id,
         datasetId: datasetId,
         name: name,
-        spec: const MultiSheetQuerySpec(),
+        spec: spec,
         createdAt: DateTime(2026),
         updatedAt: DateTime(2026),
       );
@@ -694,6 +733,41 @@ void main() {
     expect(controller.state.preview, isNull);
     expect(controller.state.generated, isNull);
     expect(controller.state.errorCode, isNull);
+  });
+
+  test(
+      'loadSaved applies only the latest request when completions are reversed',
+      () async {
+    final first = savedQuery(
+      id: 11,
+      name: 'First',
+      spec: const MultiSheetQuerySpec(selectedTableIds: [1]),
+    );
+    final second = savedQuery(
+      id: 12,
+      name: 'Second',
+      spec: const MultiSheetQuerySpec(selectedTableIds: [2]),
+    );
+    final firstResult = Completer<SavedMultiSheetQuery?>();
+    final secondResult = Completer<SavedMultiSheetQuery?>();
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [first, second]);
+    when(() => service.loadSavedQuery(11))
+        .thenAnswer((_) => firstResult.future);
+    when(() => service.loadSavedQuery(12))
+        .thenAnswer((_) => secondResult.future);
+
+    await controller.load();
+    final firstLoad = controller.loadSaved(11);
+    final secondLoad = controller.loadSaved(12);
+
+    secondResult.complete(second);
+    expect(await secondLoad, isTrue);
+    firstResult.complete(first);
+    expect(await firstLoad, isFalse);
+
+    expect(controller.state.activeSavedQueryId, 12);
+    expect(controller.state.spec.selectedTableIds, [2]);
   });
 
   test(

@@ -1037,6 +1037,40 @@ void main() {
     expect(btn.onPressed, isNotNull);
   });
 
+  testWidgets('delete failure keeps dialog open and re-enables confirmation',
+      (tester) async {
+    final q = savedQ(id: 6, name: 'Keep me');
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q]);
+    when(() => service.deleteSavedQuery(6))
+        .thenThrow(StateError('delete failed'));
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    await tester
+        .tap(find.byKey(const ValueKey('saved_configuration_delete_6')));
+    await tester.pumpAndSettle();
+    await tester
+        .tap(find.byKey(const ValueKey('delete_configuration_confirm')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('delete_configuration_dialog')),
+        findsOneWidget);
+    expect(find.byKey(const ValueKey('delete_configuration_error')),
+        findsOneWidget);
+    final confirm = tester.widget<FilledButton>(
+      find.byKey(const ValueKey('delete_configuration_confirm')),
+    );
+    expect(confirm.onPressed, isNotNull);
+    expect(find.byKey(const ValueKey('saved_configuration_6')), findsOneWidget);
+    verify(() => service.deleteSavedQuery(6)).called(1);
+  });
+
   testWidgets('panel and dialogs do not overflow at 360 px', (tester) async {
     final q = savedQ(id: 1, name: 'Configuration with a fairly long name');
     when(() => service.loadSheets(any())).thenAnswer((_) async => [

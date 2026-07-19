@@ -125,6 +125,10 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
   /// Incremented on every suggestion request so stale results are ignored.
   int _suggestionToken = 0;
 
+  /// Incremented on every saved-configuration load so only the latest request
+  /// may replace the workspace state.
+  int _savedLoadToken = 0;
+
   MultiSheetJoinController({
     required this.service,
     required this.datasetId,
@@ -490,8 +494,10 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
   /// Discards the current (possibly stale/unsupported) spec and starts a clean
   /// v2 configuration, detached from any saved query.
   void startNewConfiguration() {
+    _invalidatePendingWorkspaceRequests();
     state = state.copyWith(
       spec: const MultiSheetQuerySpec(),
+      suggestions: const [],
       clearActiveSavedQuery: true,
       clearPreview: true,
       clearGenerated: true,
@@ -505,9 +511,14 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       state = state.copyWith(errorCode: 'load_saved_failed');
       return false;
     }
+
+    final token = ++_savedLoadToken;
+    // Results produced for the previous spec must never appear after a load.
+    _runToken++;
+    _suggestionToken++;
     try {
       final saved = await service.loadSavedQuery(id);
-      if (!mounted) return false;
+      if (!mounted || token != _savedLoadToken) return false;
       if (saved == null || saved.datasetId != datasetId) {
         state = state.copyWith(errorCode: 'load_saved_failed');
         return false;
@@ -518,6 +529,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       if (saved.spec.unsupportedVersion) {
         state = state.copyWith(
           spec: saved.spec,
+          suggestions: const [],
           activeSavedQueryId: saved.id,
           clearPreview: true,
           clearGenerated: true,
@@ -530,6 +542,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
 
       state = state.copyWith(
         spec: saved.spec,
+        suggestions: const [],
         activeSavedQueryId: saved.id,
         clearPreview: true,
         clearGenerated: true,
@@ -560,7 +573,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       }
       return true;
     } catch (_) {
-      if (!mounted) return false;
+      if (!mounted || token != _savedLoadToken) return false;
       state = state.copyWith(errorCode: 'load_saved_failed');
       return false;
     }
@@ -610,6 +623,10 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     MultiSheetQuerySpec spec, {
     Map<int, DatasetRelationship>? relationshipsById,
   }) {
+    // Editing the spec supersedes analysis started for its previous value.
+    _runToken++;
+    _suggestionToken++;
+    _savedLoadToken++;
     state = state.copyWith(
       spec: spec,
       relationshipsById: relationshipsById,
@@ -618,6 +635,12 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
       clearPreview: true,
       clearGenerated: true,
     );
+  }
+
+  void _invalidatePendingWorkspaceRequests() {
+    _runToken++;
+    _suggestionToken++;
+    _savedLoadToken++;
   }
 
   String _errorCode(Object error) {
