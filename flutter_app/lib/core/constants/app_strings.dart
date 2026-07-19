@@ -501,6 +501,11 @@ class AppStrings {
       'dataset.joins.warning_unknown_cardinality';
   static const String datasetJoinsWarningLowConfidence =
       'dataset.joins.warning_low_confidence';
+  static const String datasetJoinsRiskConfirmationTitle =
+      'dataset.joins.risk_confirmation_title';
+  static const String datasetJoinsRiskConfirmationMessage =
+      'dataset.joins.risk_confirmation_message';
+  static const String datasetJoinsRunAnyway = 'dataset.joins.run_anyway';
   static const String datasetJoinsStaleSpec = 'dataset.joins.stale_spec';
   static const String datasetJoinsErrorNotEnoughTables =
       'dataset.joins.error_not_enough_tables';

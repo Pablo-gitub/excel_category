@@ -12,6 +12,7 @@ import 'package:exlser/domain/value_objects/sheet_join_relationship.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:exlser/domain/value_objects/sheet_relationship_suggestion.dart';
 import 'package:exlser/presentation/views/sheet_joins/manual_relationship_dialog.dart';
+import 'package:exlser/presentation/views/sheet_joins/join_risk_confirmation_dialog.dart';
 import 'package:exlser/presentation/views/sheet_joins/multi_sheet_join_controller.dart';
 import 'package:exlser/presentation/views/sheet_joins/saved_join_configurations_panel.dart';
 import 'package:flutter/material.dart';
@@ -550,27 +551,13 @@ class _WarningsBanner extends StatelessWidget {
                 children: [
                   const Icon(Icons.warning_amber_outlined),
                   const SizedBox(width: 12),
-                  Expanded(child: Text(_warningText(warning))),
+                  Expanded(child: Text(localizedJoinRiskWarning(warning))),
                 ],
               ),
           ],
         ),
       ),
     );
-  }
-
-  String _warningText(JoinRiskWarning warning) {
-    final key = switch (warning.code) {
-      JoinRiskWarning.unknownCardinalityRiskCode =>
-        AppStrings.datasetJoinsWarningUnknownCardinality,
-      JoinRiskWarning.lowCardinalityConfidenceRiskCode =>
-        AppStrings.datasetJoinsWarningLowConfidence,
-      _ => AppStrings.datasetJoinsWarningManyToMany,
-    };
-    return key.tr(namedArgs: {
-      'left': warning.leftSheetLabel,
-      'right': warning.rightSheetLabel,
-    });
   }
 }
 
@@ -579,6 +566,21 @@ class _RunBar extends StatelessWidget {
   final MultiSheetJoinController controller;
 
   const _RunBar({required this.state, required this.controller});
+
+  Future<void> _requestPreview(BuildContext context) async {
+    final generated = controller.prepare();
+    if (generated == null) return;
+
+    if (generated.hasWarnings) {
+      final confirmed = await showJoinRiskConfirmationDialog(
+        context: context,
+        warnings: generated.warnings,
+      );
+      if (!confirmed || !context.mounted) return;
+    }
+
+    await controller.executePreparedPreview();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -590,7 +592,7 @@ class _RunBar extends StatelessWidget {
           key: const ValueKey('join_run_button'),
           onPressed: (!state.hasEnoughSheets || running)
               ? null
-              : controller.runPreview,
+              : () => _requestPreview(context),
           icon: running
               ? const SizedBox(
                   width: 16,

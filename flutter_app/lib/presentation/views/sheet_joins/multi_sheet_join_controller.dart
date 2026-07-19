@@ -394,7 +394,7 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
 
   /// Validates and generates the SQL without running it, so the UI can show the
   /// query and its warnings before the user commits to a risky join.
-  bool prepare() {
+  GeneratedMultiSheetQuery? prepare() {
     try {
       final generated = service.buildQuery(
         datasetId: datasetId,
@@ -408,19 +408,23 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
         clearError: true,
         clearPreview: true,
       );
-      return true;
+      return generated;
     } catch (error) {
       state = state.copyWith(
         status: MultiSheetJoinStatus.validationError,
         errorCode: _errorCode(error),
         clearGenerated: true,
       );
-      return false;
+      return null;
     }
   }
 
-  Future<void> runPreview() async {
-    if (!prepare()) return;
+  /// Executes the exact query stored by [prepare]. If the spec changes after
+  /// preparation, `_updateSpec` clears [MultiSheetJoinState.generated] and this
+  /// method refuses to run.
+  Future<bool> executePreparedPreview() async {
+    final generated = state.generated;
+    if (generated == null) return false;
 
     final token = ++_runToken;
     state = state.copyWith(
@@ -429,24 +433,25 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     );
 
     try {
-      final preview = await service.runPreview(
-        datasetId: datasetId,
+      final preview = await service.executePreparedPreview(
+        generated: generated,
         spec: state.spec,
         sheets: state.sheets,
-        relationshipsById: state.relationshipsById,
       );
       // Ignore results of a superseded run.
-      if (!mounted || token != _runToken) return;
+      if (!mounted || token != _runToken) return false;
       state = state.copyWith(
         status: MultiSheetJoinStatus.success,
         preview: preview,
       );
+      return true;
     } catch (error) {
-      if (!mounted || token != _runToken) return;
+      if (!mounted || token != _runToken) return false;
       state = state.copyWith(
         status: MultiSheetJoinStatus.executionError,
         errorCode: _errorCode(error),
       );
+      return false;
     }
   }
 

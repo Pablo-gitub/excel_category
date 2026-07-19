@@ -91,6 +91,11 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await EasyLocalization.ensureInitialized();
     registerFallbackValue(const MultiSheetQuerySpec());
+    registerFallbackValue(const GeneratedMultiSheetQuery(
+      sql: 'SELECT 1',
+      outputColumns: [],
+      displayLabelsByAlias: {},
+    ));
     registerFallbackValue(const DatasetRelationship(
       datasetId: 0,
       endpointATableId: 0,
@@ -221,11 +226,10 @@ void main() {
       ],
       displayLabelsByAlias: {'t0__product_id': 'Sales.Product ID'},
     ));
-    when(() => service.runPreview(
-          datasetId: any(named: 'datasetId'),
+    when(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
-          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) async => const MultiSheetPreviewResult(
           rows: [],
           outputColumns: [
@@ -308,7 +312,7 @@ void main() {
         findsOneWidget);
   });
 
-  testWidgets('shows the many-to-many warning after a risky run',
+  testWidgets('risky preview requires confirmation and cancel does not execute',
       (tester) async {
     when(() => service.loadSheets(any())).thenAnswer((_) async => [
           sheet(1, 'Sales', ['Qty']),
@@ -332,11 +336,10 @@ void main() {
         ),
       ],
     ));
-    when(() => service.runPreview(
-          datasetId: any(named: 'datasetId'),
+    when(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
-          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) async => const MultiSheetPreviewResult(
           rows: [],
           outputColumns: [],
@@ -357,11 +360,92 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('join_run_button')));
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const ValueKey('join_risk_confirmation_dialog')),
+        findsOneWidget);
     expect(find.byKey(const ValueKey('join_warning_banner')), findsOneWidget);
     expect(
       find.text('Sales and Products have no unique key: rows may multiply.'),
-      findsOneWidget,
+      findsNWidgets(2),
     );
+    verifyNever(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+        ));
+
+    await tester.tap(find.byKey(const ValueKey('join_risk_cancel')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('join_risk_confirmation_dialog')),
+        findsNothing);
+    verifyNever(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+        ));
+
+    await tester.tap(find.byKey(const ValueKey('join_run_button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_risk_confirm')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('join_risk_confirmation_dialog')),
+        findsNothing);
+    verify(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+        )).called(1);
+  });
+
+  testWidgets('risk dialog localizes unknown and low-confidence warnings',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['Qty']),
+          sheet(2, 'Products', ['Price']),
+        ]);
+    when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
+        )).thenReturn(const GeneratedMultiSheetQuery(
+      sql: 'SELECT 1',
+      outputColumns: [],
+      displayLabelsByAlias: {},
+      warnings: [
+        JoinRiskWarning(
+          code: JoinRiskWarning.unknownCardinalityRiskCode,
+          relationshipId: 1,
+          leftSheetLabel: 'Sales',
+          rightSheetLabel: 'Products',
+        ),
+        JoinRiskWarning(
+          code: JoinRiskWarning.lowCardinalityConfidenceRiskCode,
+          relationshipId: 2,
+          leftSheetLabel: 'Orders',
+          rightSheetLabel: 'Customers',
+        ),
+      ],
+    ));
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    await tester.tap(find.byKey(const ValueKey('join_sheet_1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_sheet_2')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_run_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('join_risk_warning_0')), findsOneWidget);
+    expect(find.byKey(const ValueKey('join_risk_warning_1')), findsOneWidget);
+    expect(find.textContaining('cardinality is unknown'), findsNWidgets(2));
+    expect(find.textContaining('limited sample'), findsNWidgets(2));
+
+    await tester.tap(find.byKey(const ValueKey('join_risk_cancel')));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('shows a localized error banner when the graph is invalid',

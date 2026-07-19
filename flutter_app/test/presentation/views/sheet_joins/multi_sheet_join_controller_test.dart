@@ -72,8 +72,18 @@ void main() {
     );
   }
 
+  Future<bool> prepareAndExecutePreview() {
+    if (controller.prepare() == null) return Future.value(false);
+    return controller.executePreparedPreview();
+  }
+
   setUpAll(() {
     registerFallbackValue(const MultiSheetQuerySpec());
+    registerFallbackValue(const GeneratedMultiSheetQuery(
+      sql: 'SELECT 1',
+      outputColumns: [],
+      displayLabelsByAlias: {},
+    ));
     registerFallbackValue(const DatasetRelationship(
       datasetId: 0,
       endpointATableId: 0,
@@ -181,7 +191,7 @@ void main() {
     await controller.load();
     controller.toggleSheet(1);
     controller.toggleSheet(2);
-    await controller.runPreview();
+    await prepareAndExecutePreview();
 
     expect(controller.state.status, MultiSheetJoinStatus.validationError);
     expect(
@@ -201,21 +211,60 @@ void main() {
       outputColumns: [],
       displayLabelsByAlias: {},
     ));
-    when(() => service.runPreview(
-          datasetId: any(named: 'datasetId'),
+    when(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
-          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) async => preview);
 
     await controller.load();
     controller.toggleSheet(1);
     controller.toggleSheet(2);
     await addProductRelationship();
-    await controller.runPreview();
+    await prepareAndExecutePreview();
 
     expect(controller.state.status, MultiSheetJoinStatus.success);
     expect(controller.state.preview, isNotNull);
+  });
+
+  test('executePreparedPreview refuses to run without a valid preparation',
+      () async {
+    await controller.load();
+
+    expect(await controller.executePreparedPreview(), isFalse);
+    verifyNever(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+        ));
+  });
+
+  test('editing the spec invalidates a prepared preview', () async {
+    when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
+        )).thenReturn(const GeneratedMultiSheetQuery(
+      sql: 'SELECT prepared',
+      outputColumns: [],
+      displayLabelsByAlias: {},
+    ));
+
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+    expect(controller.prepare(), isNotNull);
+
+    controller.setResultLimit(25);
+
+    expect(controller.state.generated, isNull);
+    expect(await controller.executePreparedPreview(), isFalse);
+    verifyNever(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+        ));
   });
 
   test('ignores the result of a superseded run', () async {
@@ -232,11 +281,10 @@ void main() {
 
     final slow = Completer<MultiSheetPreviewResult>();
     var call = 0;
-    when(() => service.runPreview(
-          datasetId: any(named: 'datasetId'),
+    when(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
-          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) {
       call++;
       return call == 1 ? slow.future : Future.value(preview);
@@ -247,8 +295,8 @@ void main() {
     controller.toggleSheet(2);
     await addProductRelationship();
 
-    final first = controller.runPreview(); // stays pending
-    await controller.runPreview(); // supersedes it
+    final first = prepareAndExecutePreview(); // stays pending
+    await prepareAndExecutePreview(); // supersedes it
     expect(controller.state.status, MultiSheetJoinStatus.success);
 
     // The stale run finishing must not overwrite the newer state.
@@ -283,11 +331,10 @@ void main() {
       displayLabelsByAlias: {},
     ));
     final pendingPreview = Completer<MultiSheetPreviewResult>();
-    when(() => service.runPreview(
-          datasetId: any(named: 'datasetId'),
+    when(() => service.executePreparedPreview(
+          generated: any(named: 'generated'),
           spec: any(named: 'spec'),
           sheets: any(named: 'sheets'),
-          relationshipsById: any(named: 'relationshipsById'),
         )).thenAnswer((_) => pendingPreview.future);
 
     await controller.load();
@@ -295,7 +342,7 @@ void main() {
     controller.toggleSheet(2);
     await addProductRelationship();
 
-    final run = controller.runPreview();
+    final run = prepareAndExecutePreview();
     await Future<void>.delayed(Duration.zero);
     controller.startNewConfiguration();
 
