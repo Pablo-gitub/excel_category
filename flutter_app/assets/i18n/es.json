@@ -307,7 +307,20 @@
             "error_cycle_detected": "Las relaciones forman un ciclo.",
             "error_invalid_left_join_direction": "Invierte los lados: un LEFT join debe conservar la hoja ya conectada.",
             "error_no_output_columns": "Selecciona al menos una columna a mostrar.",
-            "error_generic": "No se pudo ejecutar la vista previa."
+            "error_generic": "No se pudo ejecutar la vista previa.",
+            "new_configuration": "Nueva configuración",
+            "no_saved_queries": "Sin configuraciones guardadas",
+            "open_configuration": "Abrir",
+            "active_configuration": "Activa",
+            "save_configuration_title": "Guardar configuración",
+            "save_name_required": "Introduce un nombre",
+            "save_failed": "Error al guardar la configuración",
+            "load_saved_failed": "Error al cargar la configuración",
+            "delete_saved_failed": "Error al eliminar la configuración",
+            "discard_configuration_title": "¿Descartar configuración?",
+            "discard_configuration_message": "La configuración actual se perderá.",
+            "delete_configuration_title": "¿Eliminar configuración?",
+            "delete_configuration_message": "¿Eliminar \"{name}\"? Solo se elimina la configuración guardada, no los datos del dataset ni las relaciones."
         }
     },
     "settings": {

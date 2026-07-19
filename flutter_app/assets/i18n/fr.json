@@ -307,7 +307,20 @@
             "error_cycle_detected": "Les relations forment une boucle.",
             "error_invalid_left_join_direction": "Inversez les côtés : une LEFT join doit conserver la feuille déjà reliée.",
             "error_no_output_columns": "Sélectionnez au moins une colonne à afficher.",
-            "error_generic": "Impossible de lancer l'aperçu."
+            "error_generic": "Impossible de lancer l'aperçu.",
+            "new_configuration": "Nouvelle configuration",
+            "no_saved_queries": "Aucune configuration enregistrée",
+            "open_configuration": "Ouvrir",
+            "active_configuration": "Active",
+            "save_configuration_title": "Enregistrer la configuration",
+            "save_name_required": "Veuillez saisir un nom",
+            "save_failed": "Échec de l'enregistrement",
+            "load_saved_failed": "Échec du chargement",
+            "delete_saved_failed": "Échec de la suppression",
+            "discard_configuration_title": "Abandonner la configuration ?",
+            "discard_configuration_message": "La configuration actuelle sera perdue.",
+            "delete_configuration_title": "Supprimer la configuration ?",
+            "delete_configuration_message": "Supprimer « {name} » ? Seule la configuration enregistrée est supprimée, pas les données du dataset ni les relations."
         }
     },
     "settings": {

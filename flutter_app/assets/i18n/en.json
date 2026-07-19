@@ -307,7 +307,20 @@
             "error_cycle_detected": "The relationships form a loop.",
             "error_invalid_left_join_direction": "Swap the sides: a LEFT join must keep the already connected sheet.",
             "error_no_output_columns": "Select at least one column to show.",
-            "error_generic": "Could not run the preview."
+            "error_generic": "Could not run the preview.",
+            "new_configuration": "New configuration",
+            "no_saved_queries": "No saved configurations",
+            "open_configuration": "Open",
+            "active_configuration": "Active",
+            "save_configuration_title": "Save configuration",
+            "save_name_required": "Please enter a name",
+            "save_failed": "Failed to save configuration",
+            "load_saved_failed": "Failed to load configuration",
+            "delete_saved_failed": "Failed to delete configuration",
+            "discard_configuration_title": "Discard configuration?",
+            "discard_configuration_message": "The current configuration will be lost.",
+            "delete_configuration_title": "Delete configuration?",
+            "delete_configuration_message": "Delete \"{name}\"? Only the saved configuration is deleted, not dataset data or relationships."
         }
     },
     "settings": {

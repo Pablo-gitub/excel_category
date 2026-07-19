@@ -307,7 +307,20 @@
             "error_cycle_detected": "Связи образуют цикл.",
             "error_invalid_left_join_direction": "Поменяйте стороны: LEFT-соединение должно сохранять уже связанный лист.",
             "error_no_output_columns": "Выберите хотя бы один столбец для показа.",
-            "error_generic": "Не удалось выполнить предпросмотр."
+            "error_generic": "Не удалось выполнить предпросмотр.",
+            "new_configuration": "Новая конфигурация",
+            "no_saved_queries": "Нет сохранённых конфигураций",
+            "open_configuration": "Открыть",
+            "active_configuration": "Активна",
+            "save_configuration_title": "Сохранить конфигурацию",
+            "save_name_required": "Введите название",
+            "save_failed": "Не удалось сохранить конфигурацию",
+            "load_saved_failed": "Не удалось загрузить конфигурацию",
+            "delete_saved_failed": "Не удалось удалить конфигурацию",
+            "discard_configuration_title": "Сбросить конфигурацию?",
+            "discard_configuration_message": "Текущая конфигурация будет потеряна.",
+            "delete_configuration_title": "Удалить конфигурацию?",
+            "delete_configuration_message": "Удалить «{name}»? Будет удалена только сохранённая конфигурация, данные датасета и связи останутся."
         }
     },
     "settings": {

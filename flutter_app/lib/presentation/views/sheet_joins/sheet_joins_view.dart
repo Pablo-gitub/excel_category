@@ -13,6 +13,7 @@ import 'package:exlser/domain/value_objects/sheet_join_type.dart';
 import 'package:exlser/domain/value_objects/sheet_relationship_suggestion.dart';
 import 'package:exlser/presentation/views/sheet_joins/manual_relationship_dialog.dart';
 import 'package:exlser/presentation/views/sheet_joins/multi_sheet_join_controller.dart';
+import 'package:exlser/presentation/views/sheet_joins/saved_join_configurations_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -68,6 +69,8 @@ class _SheetJoinsViewState extends ConsumerState<SheetJoinsView> {
               AppStrings.datasetJoinsSubtitle.tr(),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
+            const SizedBox(height: 16),
+            SavedJoinConfigurationsPanel(state: state, controller: controller),
             const SizedBox(height: 16),
             _SheetPicker(state: state, controller: controller),
             const SizedBox(height: 16),
@@ -769,6 +772,10 @@ String _errorMessage(String code) {
       AppStrings.datasetJoinsErrorCycleDetected.tr(),
     MultiSheetSqlBuilder.noOutputColumnsCode =>
       AppStrings.datasetJoinsErrorNoOutputColumns.tr(),
+    'save_name_required' => AppStrings.datasetJoinsSaveNameRequired.tr(),
+    'save_failed' => AppStrings.datasetJoinsSaveFailed.tr(),
+    'load_saved_failed' => AppStrings.datasetJoinsLoadSavedFailed.tr(),
+    'delete_saved_failed' => AppStrings.datasetJoinsDeleteSavedFailed.tr(),
     _ => AppStrings.datasetJoinsErrorGeneric.tr(),
   };
 }

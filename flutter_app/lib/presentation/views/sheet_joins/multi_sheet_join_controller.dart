@@ -446,7 +446,15 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     }
   }
 
-  Future<void> save(String name) async {
+  Future<bool> save(String name) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) {
+      state = state.copyWith(
+        status: MultiSheetJoinStatus.validationError,
+        errorCode: 'save_name_required',
+      );
+      return false;
+    }
     // A legacy/future spec must never be re-persisted; the user has to start a
     // clean v2 configuration first (see [startNewConfiguration]).
     if (state.spec.unsupportedVersion) {
@@ -454,25 +462,28 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
         status: MultiSheetJoinStatus.staleSpec,
         errorCode: unsupportedSpecVersionCode,
       );
-      return;
+      return false;
     }
     try {
       final saved = await service.saveQuery(
         id: state.activeSavedQueryId,
         datasetId: datasetId,
-        name: name,
+        name: trimmed,
         spec: state.spec,
       );
       final list = await service.listSavedQueries(datasetId);
-      if (!mounted) return;
+      if (!mounted) return false;
       state = state.copyWith(
         savedQueries: list,
         activeSavedQueryId: saved.id,
         clearError: true,
+        status: MultiSheetJoinStatus.editing,
       );
+      return true;
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted) return false;
       state = state.copyWith(errorCode: 'save_failed');
+      return false;
     }
   }
 
@@ -489,64 +500,93 @@ class MultiSheetJoinController extends StateNotifier<MultiSheetJoinState> {
     );
   }
 
-  Future<void> loadSaved(int id) async {
-    final saved = await service.loadSavedQuery(id);
-    if (!mounted || saved == null) return;
+  Future<bool> loadSaved(int id) async {
+    if (!state.savedQueries.any((q) => q.id == id)) {
+      state = state.copyWith(errorCode: 'load_saved_failed');
+      return false;
+    }
+    try {
+      final saved = await service.loadSavedQuery(id);
+      if (!mounted) return false;
+      if (saved == null || saved.datasetId != datasetId) {
+        state = state.copyWith(errorCode: 'load_saved_failed');
+        return false;
+      }
 
-    // A spec serialized by a version this build does not understand is stale by
-    // definition — never silently present it as an empty editable query.
-    if (saved.spec.unsupportedVersion) {
+      // A spec serialized by a version this build does not understand is stale
+      // — never silently present it as an empty editable query.
+      if (saved.spec.unsupportedVersion) {
+        state = state.copyWith(
+          spec: saved.spec,
+          activeSavedQueryId: saved.id,
+          clearPreview: true,
+          clearGenerated: true,
+          clearError: true,
+          status: MultiSheetJoinStatus.staleSpec,
+          errorCode: unsupportedSpecVersionCode,
+        );
+        return true;
+      }
+
       state = state.copyWith(
         spec: saved.spec,
         activeSavedQueryId: saved.id,
         clearPreview: true,
         clearGenerated: true,
         clearError: true,
-        status: MultiSheetJoinStatus.staleSpec,
-        errorCode: unsupportedSpecVersionCode,
+        status: MultiSheetJoinStatus.editing,
       );
-      return;
-    }
 
-    state = state.copyWith(
-      spec: saved.spec,
-      activeSavedQueryId: saved.id,
-      clearPreview: true,
-      clearGenerated: true,
-      clearError: true,
-      status: MultiSheetJoinStatus.editing,
-    );
-
-    // A saved spec may reference relationships/tables/columns that no longer exist.
-    try {
-      service.buildQuery(
-        datasetId: datasetId,
-        spec: saved.spec,
-        sheets: state.sheets,
-        relationshipsById: state.relationshipsById,
-      );
-    } on MultiSheetGraphException catch (error) {
-      if (error.code == MultiSheetGraphValidator.unavailableTableOrColumnCode ||
-          error.code == MultiSheetGraphValidator.missingRelationshipCode ||
-          error.code == MultiSheetGraphValidator.foreignRelationshipCode) {
-        state = state.copyWith(
-          status: MultiSheetJoinStatus.staleSpec,
-          errorCode: error.code,
+      // A saved spec may reference relationships/tables/columns that no longer exist.
+      try {
+        service.buildQuery(
+          datasetId: datasetId,
+          spec: saved.spec,
+          sheets: state.sheets,
+          relationshipsById: state.relationshipsById,
         );
+      } on MultiSheetGraphException catch (error) {
+        if (error.code ==
+                MultiSheetGraphValidator.unavailableTableOrColumnCode ||
+            error.code == MultiSheetGraphValidator.missingRelationshipCode ||
+            error.code == MultiSheetGraphValidator.foreignRelationshipCode) {
+          state = state.copyWith(
+            status: MultiSheetJoinStatus.staleSpec,
+            errorCode: error.code,
+          );
+        }
+      } catch (_) {
+        // Other issues (e.g. no output columns) surface when the user runs it.
       }
+      return true;
     } catch (_) {
-      // Other issues (e.g. no output columns) surface when the user runs it.
+      if (!mounted) return false;
+      state = state.copyWith(errorCode: 'load_saved_failed');
+      return false;
     }
   }
 
-  Future<void> deleteSaved(int id) async {
-    await service.deleteSavedQuery(id);
-    final list = await service.listSavedQueries(datasetId);
-    if (!mounted) return;
-    state = state.copyWith(
-      savedQueries: list,
-      clearActiveSavedQuery: state.activeSavedQueryId == id,
-    );
+  Future<bool> deleteSaved(int id) async {
+    if (!state.savedQueries.any((q) => q.id == id)) {
+      state = state.copyWith(errorCode: 'delete_saved_failed');
+      return false;
+    }
+    final wasActive = state.activeSavedQueryId == id;
+    try {
+      await service.deleteSavedQuery(id);
+      final list = await service.listSavedQueries(datasetId);
+      if (!mounted) return false;
+      state = state.copyWith(
+        savedQueries: list,
+        clearActiveSavedQuery: wasActive,
+        clearError: true,
+      );
+      return true;
+    } catch (_) {
+      if (!mounted) return false;
+      state = state.copyWith(errorCode: 'delete_saved_failed');
+      return false;
+    }
   }
 
   bool _joinWithinSelection(MultiSheetJoin join, List<int> selected) {

@@ -307,7 +307,20 @@
             "error_cycle_detected": "这些关系形成了环。",
             "error_invalid_left_join_direction": "请交换两侧：LEFT 连接必须保留已连接的工作表。",
             "error_no_output_columns": "请至少选择一列进行显示。",
-            "error_generic": "无法运行预览。"
+            "error_generic": "无法运行预览。",
+            "new_configuration": "新建配置",
+            "no_saved_queries": "无已保存的配置",
+            "open_configuration": "打开",
+            "active_configuration": "当前",
+            "save_configuration_title": "保存配置",
+            "save_name_required": "请输入名称",
+            "save_failed": "保存配置失败",
+            "load_saved_failed": "加载配置失败",
+            "delete_saved_failed": "删除配置失败",
+            "discard_configuration_title": "放弃配置？",
+            "discard_configuration_message": "当前配置将会丢失。",
+            "delete_configuration_title": "删除配置？",
+            "delete_configuration_message": "删除\"{name}\"？仅删除已保存的配置，不会删除数据集数据或关系。"
         }
     },
     "settings": {

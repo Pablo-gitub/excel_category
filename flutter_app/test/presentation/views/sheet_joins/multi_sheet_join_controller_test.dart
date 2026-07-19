@@ -284,6 +284,8 @@ void main() {
       createdAt: DateTime(2026),
       updatedAt: DateTime(2026),
     );
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [saved]);
     when(() => service.loadSavedQuery(7)).thenAnswer((_) async => saved);
     when(() => service.buildQuery(
           datasetId: any(named: 'datasetId'),
@@ -518,14 +520,17 @@ void main() {
       createdAt: DateTime(2026),
       updatedAt: DateTime(2026),
     );
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [saved]);
     when(() => service.loadSavedQuery(3)).thenAnswer((_) async => saved);
 
     await controller.load();
     await controller.loadSaved(3);
     expect(controller.state.status, MultiSheetJoinStatus.staleSpec);
 
-    await controller.save('anything');
+    final result = await controller.save('anything');
 
+    expect(result, isFalse);
     expect(controller.state.status, MultiSheetJoinStatus.staleSpec);
     verifyNever(() => service.saveQuery(
           id: any(named: 'id'),
@@ -544,6 +549,8 @@ void main() {
       createdAt: DateTime(2026),
       updatedAt: DateTime(2026),
     );
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [saved]);
     when(() => service.loadSavedQuery(3)).thenAnswer((_) async => saved);
 
     await controller.load();
@@ -555,5 +562,237 @@ void main() {
     expect(controller.state.spec.isEmpty, isTrue);
     expect(controller.state.activeSavedQueryId, isNull);
     expect(controller.state.status, MultiSheetJoinStatus.editing);
+  });
+
+  // R5.7 — save / load / delete contract
+
+  SavedMultiSheetQuery savedQuery({
+    int id = 1,
+    int datasetId = 1,
+    String name = 'My Config',
+  }) =>
+      SavedMultiSheetQuery(
+        id: id,
+        datasetId: datasetId,
+        name: name,
+        spec: const MultiSheetQuerySpec(),
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+      );
+
+  test(
+      'save: trims name, passes null id for create, refreshes list, sets active id',
+      () async {
+    final created = savedQuery(id: 10, name: 'My Config');
+    int? capturedId = -1; // sentinel
+    String? capturedName;
+    when(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        )).thenAnswer((inv) async {
+      capturedId = inv.namedArguments[const Symbol('id')] as int?;
+      capturedName = inv.namedArguments[const Symbol('name')] as String;
+      return created;
+    });
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [created]);
+
+    await controller.load();
+    final result = await controller.save('  My Config  ');
+
+    expect(result, isTrue);
+    expect(controller.state.activeSavedQueryId, 10);
+    expect(controller.state.savedQueries, [created]);
+    expect(controller.state.errorCode, isNull);
+    expect(controller.state.status, MultiSheetJoinStatus.editing);
+    expect(capturedId, isNull); // null → create
+    expect(capturedName, 'My Config'); // trimmed
+  });
+
+  test('save: active id is passed as overwrite target', () async {
+    final existing = savedQuery(id: 5, name: 'Old');
+    final updated = savedQuery(id: 5, name: 'New');
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [existing]);
+    when(() => service.loadSavedQuery(5)).thenAnswer((_) async => existing);
+
+    int? capturedId = -1; // sentinel
+    String? capturedName;
+    when(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        )).thenAnswer((inv) async {
+      capturedId = inv.namedArguments[const Symbol('id')] as int?;
+      capturedName = inv.namedArguments[const Symbol('name')] as String;
+      return updated;
+    });
+
+    await controller.load();
+    await controller.loadSaved(5);
+    expect(controller.state.activeSavedQueryId, 5);
+
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [updated]);
+    final result = await controller.save('New');
+
+    expect(result, isTrue);
+    expect(controller.state.activeSavedQueryId, 5);
+    expect(capturedId, 5); // non-null → overwrite
+    expect(capturedName, 'New');
+  });
+
+  test(
+      'save: empty name returns false and sets save_name_required, no service call',
+      () async {
+    await controller.load();
+    final result = await controller.save('   ');
+
+    expect(result, isFalse);
+    expect(controller.state.errorCode, 'save_name_required');
+    expect(controller.state.status, MultiSheetJoinStatus.validationError);
+    verifyNever(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        ));
+  });
+
+  test('save: exception returns false and sets save_failed without throwing',
+      () async {
+    when(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        )).thenThrow(Exception('db error'));
+
+    await controller.load();
+    final result = await controller.save('Config');
+
+    expect(result, isFalse);
+    expect(controller.state.errorCode, 'save_failed');
+    expect(controller.state.savedQueries, isEmpty); // list unchanged
+  });
+
+  test('loadSaved: valid config replaces spec, sets active id, returns true',
+      () async {
+    final saved = savedQuery(id: 2, name: 'Work Config');
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [saved]);
+    when(() => service.loadSavedQuery(2)).thenAnswer((_) async => saved);
+
+    await controller.load();
+    final result = await controller.loadSaved(2);
+
+    expect(result, isTrue);
+    expect(controller.state.activeSavedQueryId, 2);
+    expect(controller.state.preview, isNull);
+    expect(controller.state.generated, isNull);
+    expect(controller.state.errorCode, isNull);
+  });
+
+  test(
+      'loadSaved: id absent from savedQueries returns false, leaves spec unchanged',
+      () async {
+    await controller.load(); // savedQueries = []
+    controller.toggleSheet(1);
+    final specBefore = controller.state.spec;
+
+    final result = await controller.loadSaved(99);
+
+    expect(result, isFalse);
+    expect(controller.state.errorCode, 'load_saved_failed');
+    expect(controller.state.spec, specBefore); // unchanged
+    verifyNever(() => service.loadSavedQuery(any()));
+  });
+
+  test('loadSaved: foreign datasetId returns false, leaves spec unchanged',
+      () async {
+    final foreign = SavedMultiSheetQuery(
+      id: 8,
+      datasetId: 999, // wrong dataset
+      name: 'Foreign',
+      spec: const MultiSheetQuerySpec(),
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [foreign]);
+    when(() => service.loadSavedQuery(8)).thenAnswer((_) async => foreign);
+
+    await controller.load();
+    controller.toggleSheet(1);
+    final specBefore = controller.state.spec;
+
+    final result = await controller.loadSaved(8);
+
+    expect(result, isFalse);
+    expect(controller.state.errorCode, 'load_saved_failed');
+    expect(controller.state.spec, specBefore);
+  });
+
+  test(
+      'deleteSaved: inactive item is removed, active id unchanged, returns true',
+      () async {
+    final q1 = savedQuery(id: 1, name: 'A');
+    final q2 = savedQuery(id: 2, name: 'B');
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [q1, q2]);
+    when(() => service.loadSavedQuery(1)).thenAnswer((_) async => q1);
+    when(() => service.deleteSavedQuery(any())).thenAnswer((_) async {});
+
+    await controller.load();
+    await controller.loadSaved(1); // active = 1
+
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [q1]); // q2 removed
+    final result = await controller.deleteSaved(2);
+
+    expect(result, isTrue);
+    expect(controller.state.activeSavedQueryId, 1); // unchanged
+    expect(controller.state.savedQueries, [q1]);
+    expect(controller.state.errorCode, isNull);
+  });
+
+  test('deleteSaved: active item clears activeSavedQueryId but preserves spec',
+      () async {
+    final q1 = savedQuery(id: 1, name: 'Active');
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q1]);
+    when(() => service.loadSavedQuery(1)).thenAnswer((_) async => q1);
+    when(() => service.deleteSavedQuery(any())).thenAnswer((_) async {});
+
+    await controller.load();
+    await controller.loadSaved(1); // loads empty spec
+    // Edit the spec after loading so we can verify it is preserved on delete.
+    controller.toggleSheet(1);
+    expect(controller.state.activeSavedQueryId, 1);
+    expect(controller.state.spec.selectedTableIds, [1]);
+
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => []);
+    final result = await controller.deleteSaved(1);
+
+    expect(result, isTrue);
+    expect(controller.state.activeSavedQueryId, isNull); // detached
+    expect(controller.state.spec.selectedTableIds, [1]); // preserved
+  });
+
+  test('deleteSaved: exception preserves list and active id, returns false',
+      () async {
+    final q1 = savedQuery(id: 1);
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q1]);
+    when(() => service.deleteSavedQuery(any()))
+        .thenThrow(Exception('db error'));
+
+    await controller.load();
+    final result = await controller.deleteSaved(1);
+
+    expect(result, isFalse);
+    expect(controller.state.errorCode, 'delete_saved_failed');
+    expect(controller.state.savedQueries, [q1]); // preserved
   });
 }

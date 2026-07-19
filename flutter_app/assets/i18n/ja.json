@@ -307,7 +307,20 @@
             "error_cycle_detected": "リレーションが循環しています。",
             "error_invalid_left_join_direction": "左右を入れ替えてください。LEFT 結合は既に接続済みのシートを保持する必要があります。",
             "error_no_output_columns": "表示する列を1つ以上選択してください。",
-            "error_generic": "プレビューを実行できませんでした。"
+            "error_generic": "プレビューを実行できませんでした。",
+            "new_configuration": "新しい設定",
+            "no_saved_queries": "保存済み設定はありません",
+            "open_configuration": "開く",
+            "active_configuration": "有効",
+            "save_configuration_title": "設定を保存",
+            "save_name_required": "名前を入力してください",
+            "save_failed": "設定の保存に失敗しました",
+            "load_saved_failed": "設定の読み込みに失敗しました",
+            "delete_saved_failed": "設定の削除に失敗しました",
+            "discard_configuration_title": "設定を破棄しますか？",
+            "discard_configuration_message": "現在の設定は失われます。",
+            "delete_configuration_title": "設定を削除しますか？",
+            "delete_configuration_message": "「{name}」を削除しますか？保存済みの設定のみ削除されます。データセットのデータや関係は削除されません。"
         }
     },
     "settings": {

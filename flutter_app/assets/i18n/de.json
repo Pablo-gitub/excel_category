@@ -307,7 +307,20 @@
             "error_cycle_detected": "Die Beziehungen bilden einen Zyklus.",
             "error_invalid_left_join_direction": "Tausche die Seiten: ein LEFT Join muss das bereits verbundene Blatt behalten.",
             "error_no_output_columns": "Wähle mindestens eine anzuzeigende Spalte.",
-            "error_generic": "Die Vorschau konnte nicht ausgeführt werden."
+            "error_generic": "Die Vorschau konnte nicht ausgeführt werden.",
+            "new_configuration": "Neue Konfiguration",
+            "no_saved_queries": "Keine gespeicherten Konfigurationen",
+            "open_configuration": "Öffnen",
+            "active_configuration": "Aktiv",
+            "save_configuration_title": "Konfiguration speichern",
+            "save_name_required": "Bitte gib einen Namen ein",
+            "save_failed": "Konfiguration konnte nicht gespeichert werden",
+            "load_saved_failed": "Konfiguration konnte nicht geladen werden",
+            "delete_saved_failed": "Konfiguration konnte nicht gelöscht werden",
+            "discard_configuration_title": "Konfiguration verwerfen?",
+            "discard_configuration_message": "Die aktuelle Konfiguration geht verloren.",
+            "delete_configuration_title": "Konfiguration löschen?",
+            "delete_configuration_message": "„{name}\" löschen? Nur die gespeicherte Konfiguration wird gelöscht, nicht die Datensatzdaten oder Beziehungen."
         }
     },
     "settings": {

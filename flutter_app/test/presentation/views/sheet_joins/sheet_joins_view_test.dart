@@ -3,6 +3,7 @@ import 'package:exlser/application/services/multi_sheet_analysis_service.dart';
 import 'package:exlser/domain/entities/dataset_column.dart';
 import 'package:exlser/domain/entities/dataset_relationship.dart';
 import 'package:exlser/domain/entities/dataset_table.dart';
+import 'package:exlser/domain/entities/saved_multi_sheet_query.dart';
 import 'package:exlser/domain/usecases/multisheet/execute_multi_sheet_preview_usecase.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_graph_validator.dart';
 import 'package:exlser/domain/usecases/multisheet/multi_sheet_join_risk_analyzer.dart';
@@ -109,6 +110,16 @@ void main() {
     );
   }
 
+  SavedMultiSheetQuery savedQ({int id = 1, String name = 'Test Config'}) =>
+      SavedMultiSheetQuery(
+        id: id,
+        datasetId: 1,
+        name: name,
+        spec: const MultiSheetQuerySpec(),
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026, 7, 19),
+      );
+
   setUp(() {
     service = MockService();
     when(() => service.listSavedQueries(any())).thenAnswer((_) async => []);
@@ -119,6 +130,15 @@ void main() {
       final r = inv.positionalArguments.first as DatasetRelationship;
       return r.copyWith(id: ++nextId);
     });
+    // saveQuery / loadSavedQuery / deleteSavedQuery default stubs.
+    when(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        )).thenAnswer((_) async => savedQ());
+    when(() => service.loadSavedQuery(any())).thenAnswer((_) async => null);
+    when(() => service.deleteSavedQuery(any())).thenAnswer((_) async {});
   });
 
   testWidgets('asks for more sheets when the dataset has only one',
@@ -694,5 +714,378 @@ void main() {
         reason: 'right sheet should auto-repair to Alpha');
     expect(rel.endpointBColumnDbName, 'id',
         reason: 'right column should reset to first column of Alpha');
+  });
+
+  // R5.8 — saved configurations panel widget tests
+
+  testWidgets('panel renders empty state and New / Save actions are reachable',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    expect(find.byKey(const ValueKey('saved_configurations_panel')),
+        findsOneWidget);
+    expect(find.byKey(const ValueKey('saved_configuration_empty')),
+        findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('saved_configuration_new')), findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('saved_configuration_save')), findsOneWidget);
+  });
+
+  testWidgets('save dialog rejects blank name without a service call',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_save')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('save_configuration_dialog')),
+        findsOneWidget);
+
+    // Submit with empty field.
+    await tester.tap(find.byKey(const ValueKey('save_configuration_submit')));
+    await tester.pumpAndSettle();
+
+    // Dialog must stay open with an inline error.
+    expect(find.byKey(const ValueKey('save_configuration_dialog')),
+        findsOneWidget);
+    expect(
+        find.byKey(const ValueKey('save_configuration_error')), findsOneWidget);
+    verifyNever(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        ));
+  });
+
+  testWidgets(
+      'create save closes dialog, refreshes list and shows active indicator',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    final q = savedQ(id: 1, name: 'My Config');
+    when(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        )).thenAnswer((_) async => q);
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_save')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+        find.byKey(const ValueKey('saved_configuration_name')), 'My Config');
+    await tester.tap(find.byKey(const ValueKey('save_configuration_submit')));
+    await tester.pumpAndSettle();
+
+    // Dialog closed.
+    expect(
+        find.byKey(const ValueKey('save_configuration_dialog')), findsNothing);
+    // Row and active indicator visible.
+    expect(find.byKey(const ValueKey('saved_configuration_1')), findsOneWidget);
+    expect(find.byKey(const ValueKey('saved_configuration_active_1')),
+        findsOneWidget);
+  });
+
+  testWidgets(
+      'save dialog is prefilled with active name and submits an overwrite',
+      (tester) async {
+    final q = savedQ(id: 5, name: 'Existing');
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q]);
+    when(() => service.loadSavedQuery(5)).thenAnswer((_) async => q);
+
+    // Return the updated query after overwrite.
+    when(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        )).thenAnswer((_) async => q);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    // Load the saved configuration first.
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_open_5')));
+    await tester.pumpAndSettle();
+
+    // Open save dialog — should be prefilled.
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_save')));
+    await tester.pumpAndSettle();
+
+    final nameField = tester.widget<TextFormField>(
+        find.byKey(const ValueKey('saved_configuration_name')));
+    expect(
+      (nameField.controller ?? TextEditingController()).text,
+      'Existing',
+      reason: 'dialog should be prefilled with the active name',
+    );
+
+    await tester.tap(find.byKey(const ValueKey('save_configuration_submit')));
+    await tester.pumpAndSettle();
+
+    expect(
+        find.byKey(const ValueKey('save_configuration_dialog')), findsNothing);
+    // Verify id=5 was passed (overwrite, not create).
+    verify(() => service.saveQuery(
+          id: 5,
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        )).called(1);
+  });
+
+  testWidgets('Open loads a configuration and moves the active indicator',
+      (tester) async {
+    final q = savedQ(id: 3, name: 'Loaded');
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q]);
+    when(() => service.loadSavedQuery(3)).thenAnswer((_) async => q);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    // No active indicator before loading.
+    expect(find.byKey(const ValueKey('saved_configuration_active_3')),
+        findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_open_3')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('saved_configuration_active_3')),
+        findsOneWidget);
+  });
+
+  testWidgets('New with non-empty config shows confirmation and resets editor',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    // Select a sheet to make the spec non-empty.
+    await tester.tap(find.byKey(const ValueKey('join_sheet_1')));
+    await tester.pumpAndSettle();
+
+    // New must show confirmation.
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_new')));
+    await tester.pumpAndSettle();
+
+    expect(
+        find.byKey(const ValueKey('new_configuration_dialog')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('new_configuration_confirm')));
+    await tester.pumpAndSettle();
+
+    expect(
+        find.byKey(const ValueKey('new_configuration_dialog')), findsNothing);
+    // Sheet picker reverts to unselected.
+    final chip =
+        tester.widget<FilterChip>(find.byKey(const ValueKey('join_sheet_1')));
+    expect(chip.selected, isFalse);
+  });
+
+  testWidgets('delete requires confirmation and removes the row',
+      (tester) async {
+    final q = savedQ(id: 2, name: 'To Delete');
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    expect(find.byKey(const ValueKey('saved_configuration_2')), findsOneWidget);
+
+    await tester
+        .tap(find.byKey(const ValueKey('saved_configuration_delete_2')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('delete_configuration_dialog')),
+        findsOneWidget);
+
+    // Stub the list to be empty after deletion.
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => []);
+    await tester
+        .tap(find.byKey(const ValueKey('delete_configuration_confirm')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('delete_configuration_dialog')),
+        findsNothing);
+    expect(find.byKey(const ValueKey('saved_configuration_2')), findsNothing);
+    verify(() => service.deleteSavedQuery(2)).called(1);
+  });
+
+  testWidgets(
+      'deleting the active row removes the indicator but keeps editor selections',
+      (tester) async {
+    final q = savedQ(id: 4, name: 'Active');
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q]);
+    when(() => service.loadSavedQuery(4)).thenAnswer((_) async => q);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    // Load the saved config first, then edit the spec so we can verify it is
+    // preserved after deleting the active item.
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_open_4')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_sheet_1')));
+    await tester.pumpAndSettle();
+
+    // Active indicator is visible.
+    expect(find.byKey(const ValueKey('saved_configuration_active_4')),
+        findsOneWidget);
+
+    // Delete the active item.
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => []);
+    await tester
+        .tap(find.byKey(const ValueKey('saved_configuration_delete_4')));
+    await tester.pumpAndSettle();
+    await tester
+        .tap(find.byKey(const ValueKey('delete_configuration_confirm')));
+    await tester.pumpAndSettle();
+
+    // Row and active indicator gone.
+    expect(find.byKey(const ValueKey('saved_configuration_4')), findsNothing);
+    expect(find.byKey(const ValueKey('saved_configuration_active_4')),
+        findsNothing);
+    // Sheet picker still selected (spec preserved).
+    final chip =
+        tester.widget<FilterChip>(find.byKey(const ValueKey('join_sheet_1')));
+    expect(chip.selected, isTrue);
+  });
+
+  testWidgets('save failure keeps dialog open and re-enables submit',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    when(() => service.saveQuery(
+          id: any(named: 'id'),
+          datasetId: any(named: 'datasetId'),
+          name: any(named: 'name'),
+          spec: any(named: 'spec'),
+        )).thenThrow(Exception('db error'));
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_save')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+        find.byKey(const ValueKey('saved_configuration_name')), 'Config');
+    await tester.tap(find.byKey(const ValueKey('save_configuration_submit')));
+    await tester.pumpAndSettle();
+
+    // Dialog stays open.
+    expect(find.byKey(const ValueKey('save_configuration_dialog')),
+        findsOneWidget);
+    // Inline error shown.
+    expect(
+        find.byKey(const ValueKey('save_configuration_error')), findsOneWidget);
+    // Submit button re-enabled.
+    final btn = tester.widget<FilledButton>(
+        find.byKey(const ValueKey('save_configuration_submit')));
+    expect(btn.onPressed, isNotNull);
+  });
+
+  testWidgets('panel and dialogs do not overflow at 360 px', (tester) async {
+    final q = savedQ(id: 1, name: 'Configuration with a fairly long name');
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    when(() => service.listSavedQueries(any())).thenAnswer((_) async => [q]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+
+    tester.view.physicalSize = const Size(360, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    await tester.runAsync(() async {
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('en')],
+          path: 'assets/i18n',
+          fallbackLocale: const Locale('en'),
+          startLocale: const Locale('en'),
+          child: UncontrolledProviderScope(
+            container: container,
+            child: Builder(
+              builder: (context) => MaterialApp(
+                locale: context.locale,
+                supportedLocales: context.supportedLocales,
+                localizationsDelegates: context.localizationDelegates,
+                home: const Scaffold(body: SheetJoinsView(datasetId: 1)),
+              ),
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    });
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull,
+        reason: 'panel with a saved row must not overflow at 360 px');
+
+    // Open save dialog and verify no overflow.
+    await tester.tap(find.byKey(const ValueKey('saved_configuration_save')));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull,
+        reason: 'save dialog must not overflow at 360 px');
   });
 }

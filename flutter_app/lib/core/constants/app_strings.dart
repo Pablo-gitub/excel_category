@@ -519,4 +519,29 @@ class AppStrings {
   static const String datasetJoinsErrorNoOutputColumns =
       'dataset.joins.error_no_output_columns';
   static const String datasetJoinsErrorGeneric = 'dataset.joins.error_generic';
+  static const String datasetJoinsNewConfiguration =
+      'dataset.joins.new_configuration';
+  static const String datasetJoinsNoSavedQueries =
+      'dataset.joins.no_saved_queries';
+  static const String datasetJoinsOpenConfiguration =
+      'dataset.joins.open_configuration';
+  static const String datasetJoinsActiveConfiguration =
+      'dataset.joins.active_configuration';
+  static const String datasetJoinsSaveConfigurationTitle =
+      'dataset.joins.save_configuration_title';
+  static const String datasetJoinsSaveNameRequired =
+      'dataset.joins.save_name_required';
+  static const String datasetJoinsSaveFailed = 'dataset.joins.save_failed';
+  static const String datasetJoinsLoadSavedFailed =
+      'dataset.joins.load_saved_failed';
+  static const String datasetJoinsDeleteSavedFailed =
+      'dataset.joins.delete_saved_failed';
+  static const String datasetJoinsDiscardConfigurationTitle =
+      'dataset.joins.discard_configuration_title';
+  static const String datasetJoinsDiscardConfigurationMessage =
+      'dataset.joins.discard_configuration_message';
+  static const String datasetJoinsDeleteConfigurationTitle =
+      'dataset.joins.delete_configuration_title';
+  static const String datasetJoinsDeleteConfigurationMessage =
+      'dataset.joins.delete_configuration_message';
 }

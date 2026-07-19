@@ -307,7 +307,20 @@
             "error_cycle_detected": "As relações formam um ciclo.",
             "error_invalid_left_join_direction": "Inverta os lados: um LEFT join deve manter a planilha já conectada.",
             "error_no_output_columns": "Selecione ao menos uma coluna para exibir.",
-            "error_generic": "Não foi possível executar a prévia."
+            "error_generic": "Não foi possível executar a prévia.",
+            "new_configuration": "Nova configuração",
+            "no_saved_queries": "Nenhuma configuração guardada",
+            "open_configuration": "Abrir",
+            "active_configuration": "Ativa",
+            "save_configuration_title": "Guardar configuração",
+            "save_name_required": "Por favor, introduza um nome",
+            "save_failed": "Falha ao guardar a configuração",
+            "load_saved_failed": "Falha ao carregar a configuração",
+            "delete_saved_failed": "Falha ao eliminar a configuração",
+            "discard_configuration_title": "Descartar configuração?",
+            "discard_configuration_message": "A configuração atual será perdida.",
+            "delete_configuration_title": "Eliminar configuração?",
+            "delete_configuration_message": "Eliminar \"{name}\"? Apenas a configuração guardada é eliminada, não os dados do dataset nem as relações."
         }
     },
     "settings": {

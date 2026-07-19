@@ -307,7 +307,20 @@
             "error_cycle_detected": "Le relazioni formano un ciclo.",
             "error_invalid_left_join_direction": "Inverti i lati: una LEFT join deve conservare il foglio già collegato.",
             "error_no_output_columns": "Seleziona almeno una colonna da mostrare.",
-            "error_generic": "Non è stato possibile eseguire l'anteprima."
+            "error_generic": "Non è stato possibile eseguire l'anteprima.",
+            "new_configuration": "Nuova configurazione",
+            "no_saved_queries": "Nessuna configurazione salvata",
+            "open_configuration": "Apri",
+            "active_configuration": "Attiva",
+            "save_configuration_title": "Salva configurazione",
+            "save_name_required": "Inserisci un nome",
+            "save_failed": "Salvataggio non riuscito",
+            "load_saved_failed": "Caricamento non riuscito",
+            "delete_saved_failed": "Eliminazione non riuscita",
+            "discard_configuration_title": "Eliminare la configurazione?",
+            "discard_configuration_message": "La configurazione corrente andrà persa.",
+            "delete_configuration_title": "Eliminare la configurazione?",
+            "delete_configuration_message": "Eliminare \"{name}\"? Verrà eliminata solo la configurazione salvata, non i dati o le relazioni del dataset."
         }
     },
     "settings": {
