@@ -323,7 +323,9 @@
             "discard_configuration_title": "放弃配置？",
             "discard_configuration_message": "当前配置将会丢失。",
             "delete_configuration_title": "删除配置？",
-            "delete_configuration_message": "删除\"{name}\"？仅删除已保存的配置，不会删除数据集数据或关系。"
+            "delete_configuration_message": "删除\"{name}\"？仅删除已保存的配置，不会删除数据集数据或关系。",
+            "loading": "正在加载工作表…",
+            "relationship_already_added": "已添加"
         }
     },
     "settings": {

@@ -323,7 +323,9 @@
             "discard_configuration_title": "設定を破棄しますか？",
             "discard_configuration_message": "現在の設定は失われます。",
             "delete_configuration_title": "設定を削除しますか？",
-            "delete_configuration_message": "「{name}」を削除しますか？保存済みの設定のみ削除されます。データセットのデータや関係は削除されません。"
+            "delete_configuration_message": "「{name}」を削除しますか？保存済みの設定のみ削除されます。データセットのデータや関係は削除されません。",
+            "loading": "シートを読み込んでいます…",
+            "relationship_already_added": "追加済み"
         }
     },
     "settings": {

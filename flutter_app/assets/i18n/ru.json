@@ -323,7 +323,9 @@
             "discard_configuration_title": "Сбросить конфигурацию?",
             "discard_configuration_message": "Текущая конфигурация будет потеряна.",
             "delete_configuration_title": "Удалить конфигурацию?",
-            "delete_configuration_message": "Удалить «{name}»? Будет удалена только сохранённая конфигурация, данные датасета и связи останутся."
+            "delete_configuration_message": "Удалить «{name}»? Будет удалена только сохранённая конфигурация, данные датасета и связи останутся.",
+            "loading": "Загрузка листов…",
+            "relationship_already_added": "Уже добавлено"
         }
     },
     "settings": {

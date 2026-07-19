@@ -28,25 +28,7 @@ class SavedJoinConfigurationsPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(
-                  AppStrings.datasetJoinsSavedQueries.tr(),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                TextButton(
-                  key: const ValueKey('saved_configuration_new'),
-                  onPressed: () => _onNew(context),
-                  child: Text(AppStrings.datasetJoinsNewConfiguration.tr()),
-                ),
-                TextButton(
-                  key: const ValueKey('saved_configuration_save'),
-                  onPressed: () => _showSaveDialog(context),
-                  child: Text(AppStrings.datasetJoinsSave.tr()),
-                ),
-              ],
-            ),
+            _buildHeader(context),
             const SizedBox(height: 8),
             if (state.savedQueries.isEmpty)
               Text(
@@ -66,6 +48,51 @@ class SavedJoinConfigurationsPanel extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    final title = Text(
+      AppStrings.datasetJoinsSavedQueries.tr(),
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+    final newButton = TextButton(
+      key: const ValueKey('saved_configuration_new'),
+      onPressed: () => _onNew(context),
+      child: Text(AppStrings.datasetJoinsNewConfiguration.tr()),
+    );
+    final saveButton = TextButton(
+      key: const ValueKey('saved_configuration_save'),
+      onPressed: () => _showSaveDialog(context),
+      child: Text(AppStrings.datasetJoinsSave.tr()),
+    );
+
+    final actions = Wrap(
+      alignment: WrapAlignment.end,
+      spacing: 8,
+      runSpacing: 4,
+      children: [newButton, saveButton],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Narrow: title on its own row, actions wrap below so the two buttons
+        // never crowd the heading or overflow. Wide: title and actions share a
+        // row with the actions kept to the right.
+        if (constraints.maxWidth < 520) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [title, const SizedBox(height: 4), actions],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: title),
+            const SizedBox(width: 8),
+            actions,
+          ],
+        );
+      },
     );
   }
 
@@ -149,7 +176,11 @@ class _SavedQueryTileState extends State<_SavedQueryTile> {
             )
           : const SizedBox(width: 24),
       selected: widget.isActive,
-      title: Text(widget.query.name),
+      title: Text(
+        widget.query.name,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       subtitle: Text(
         MaterialLocalizations.of(context)
             .formatShortDate(widget.query.updatedAt),

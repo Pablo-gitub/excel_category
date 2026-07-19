@@ -1206,4 +1206,173 @@ void main() {
     expect(tester.takeException(), isNull,
         reason: 'save dialog must not overflow at 360 px');
   });
+
+  // --- Responsive / accessibility polish (graphic pass) ---
+
+  testWidgets('long saved configuration names are ellipsized', (tester) async {
+    const longName =
+        'Configuration with an extremely long name that would otherwise '
+        'overflow the row and collide with the action buttons';
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['id']),
+          sheet(2, 'Products', ['ref']),
+        ]);
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [savedQ(id: 1, name: longName)]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    final titleText = tester.widget<Text>(
+      find.descendant(
+        of: find.byKey(const ValueKey('saved_configuration_1')),
+        matching: find.text(longName),
+      ),
+    );
+    expect(titleText.overflow, TextOverflow.ellipsis);
+    expect(titleText.maxLines, 1);
+  });
+
+  testWidgets('base sheet dropdown is expanded and handles long sheet labels',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(
+              1, 'A sheet with a very very very long descriptive name', ['id']),
+          sheet(2, 'Another equally long descriptive sheet name here', ['ref']),
+        ]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+
+    tester.view.physicalSize = const Size(360, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    await tester.runAsync(() async {
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('en')],
+          path: 'assets/i18n',
+          fallbackLocale: const Locale('en'),
+          startLocale: const Locale('en'),
+          child: UncontrolledProviderScope(
+            container: container,
+            child: Builder(
+              builder: (context) => MaterialApp(
+                locale: context.locale,
+                supportedLocales: context.supportedLocales,
+                localizationsDelegates: context.localizationDelegates,
+                home: const Scaffold(body: SheetJoinsView(datasetId: 1)),
+              ),
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    });
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('join_sheet_1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_sheet_2')));
+    await tester.pumpAndSettle();
+
+    // Items ellipsize long labels, and isExpanded keeps the field bounded so
+    // nothing overflows at 360 px.
+    final labelText = tester
+        .widgetList<Text>(
+          find.descendant(
+            of: find.byKey(const ValueKey('join_base_sheet')),
+            matching: find
+                .text('A sheet with a very very very long descriptive name'),
+          ),
+        )
+        .first;
+    expect(labelText.overflow, TextOverflow.ellipsis);
+    expect(tester.takeException(), isNull,
+        reason: 'long base sheet labels must not overflow at 360 px');
+  });
+
+  testWidgets('confidence is conveyed by icon and text, not color alone',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['Product ID']),
+          sheet(2, 'Products', ['Product']),
+        ]);
+    when(() => service.suggestRelationships(
+          sheets: any(named: 'sheets'),
+          selectedTableIds: any(named: 'selectedTableIds'),
+        )).thenAnswer((_) async => const [
+          SheetRelationshipSuggestion(
+            relationship: SheetJoinRelationship(
+              leftTableId: 1,
+              leftColumnDbName: 'product id',
+              rightTableId: 2,
+              rightColumnDbName: 'product',
+            ),
+            score: 0.9,
+            confidence: SuggestionConfidence.high,
+            reasons: [RelationshipReason.nameMatch],
+          ),
+        ]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    await tester.tap(find.byKey(const ValueKey('join_sheet_1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_sheet_2')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_suggest_button')));
+    await tester.pumpAndSettle();
+
+    // The level is readable from the text label, so it does not depend on color.
+    expect(find.text('High'), findsOneWidget);
+    // A distinct icon shape reinforces the level.
+    expect(find.byIcon(Icons.signal_cellular_alt), findsOneWidget);
+  });
+
+  testWidgets('an already-added suggestion exposes an "already added" tooltip',
+      (tester) async {
+    when(() => service.loadSheets(any())).thenAnswer((_) async => [
+          sheet(1, 'Sales', ['Product ID']),
+          sheet(2, 'Products', ['Product']),
+        ]);
+    when(() => service.suggestRelationships(
+          sheets: any(named: 'sheets'),
+          selectedTableIds: any(named: 'selectedTableIds'),
+        )).thenAnswer((_) async => const [
+          SheetRelationshipSuggestion(
+            relationship: SheetJoinRelationship(
+              leftTableId: 1,
+              leftColumnDbName: 'product id',
+              rightTableId: 2,
+              rightColumnDbName: 'product',
+            ),
+            score: 0.9,
+            confidence: SuggestionConfidence.high,
+            reasons: [RelationshipReason.nameMatch],
+          ),
+        ]);
+
+    final container = containerWith(service);
+    addTearDown(container.dispose);
+    await pumpView(tester, container);
+
+    await tester.tap(find.byKey(const ValueKey('join_sheet_1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_sheet_2')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('join_suggest_button')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Already added'), findsOneWidget);
+  });
 }

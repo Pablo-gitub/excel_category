@@ -323,7 +323,9 @@
             "discard_configuration_title": "Abandonner la configuration ?",
             "discard_configuration_message": "La configuration actuelle sera perdue.",
             "delete_configuration_title": "Supprimer la configuration ?",
-            "delete_configuration_message": "Supprimer « {name} » ? Seule la configuration enregistrée est supprimée, pas les données du dataset ni les relations."
+            "delete_configuration_message": "Supprimer « {name} » ? Seule la configuration enregistrée est supprimée, pas les données du dataset ni les relations.",
+            "loading": "Chargement des feuilles…",
+            "relationship_already_added": "Déjà ajoutée"
         }
     },
     "settings": {

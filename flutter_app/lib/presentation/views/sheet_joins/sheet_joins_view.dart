@@ -50,50 +50,71 @@ class _SheetJoinsViewState extends ConsumerState<SheetJoinsView> {
 
     if (state.status == MultiSheetJoinStatus.initial ||
         state.status == MultiSheetJoinStatus.loadingMetadata) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(
+              AppStrings.datasetJoinsLoading.tr(),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+      );
     }
 
     if (!state.canConfigure) {
-      return _Message(text: AppStrings.datasetJoinsErrorNotEnoughTables.tr());
+      return _Message(
+        icon: Icons.grid_view_outlined,
+        text: AppStrings.datasetJoinsErrorNotEnoughTables.tr(),
+      );
     }
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final horizontalPadding = constraints.maxWidth >= 720 ? 24.0 : 12.0;
-        return ListView(
-          padding: EdgeInsets.symmetric(
-            horizontal: horizontalPadding,
-            vertical: 16,
-          ),
-          children: [
-            Text(
-              AppStrings.datasetJoinsSubtitle.tr(),
-              style: Theme.of(context).textTheme.bodyMedium,
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 900),
+            child: ListView(
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+                vertical: 16,
+              ),
+              children: [
+                Text(
+                  AppStrings.datasetJoinsSubtitle.tr(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                SavedJoinConfigurationsPanel(
+                    state: state, controller: controller),
+                const SizedBox(height: 16),
+                _SheetPicker(state: state, controller: controller),
+                const SizedBox(height: 16),
+                if (state.hasEnoughSheets) ...[
+                  _BaseSheetPicker(state: state, controller: controller),
+                  const SizedBox(height: 16),
+                  _SuggestionsSection(state: state, controller: controller),
+                  const SizedBox(height: 16),
+                  _RelationshipsSection(state: state, controller: controller),
+                  const SizedBox(height: 16),
+                  _OutputColumnsSection(state: state, controller: controller),
+                  const SizedBox(height: 16),
+                ],
+                _ErrorBanner(state: state),
+                _WarningsBanner(state: state),
+                const SizedBox(height: 8),
+                _RunBar(state: state, controller: controller),
+                const SizedBox(height: 16),
+                _PreviewSection(state: state),
+                const SizedBox(height: 16),
+                _GeneratedSqlSection(state: state),
+              ],
             ),
-            const SizedBox(height: 16),
-            SavedJoinConfigurationsPanel(state: state, controller: controller),
-            const SizedBox(height: 16),
-            _SheetPicker(state: state, controller: controller),
-            const SizedBox(height: 16),
-            if (state.hasEnoughSheets) ...[
-              _BaseSheetPicker(state: state, controller: controller),
-              const SizedBox(height: 16),
-              _SuggestionsSection(state: state, controller: controller),
-              const SizedBox(height: 16),
-              _RelationshipsSection(state: state, controller: controller),
-              const SizedBox(height: 16),
-              _OutputColumnsSection(state: state, controller: controller),
-              const SizedBox(height: 16),
-            ],
-            _ErrorBanner(state: state),
-            _WarningsBanner(state: state),
-            const SizedBox(height: 8),
-            _RunBar(state: state, controller: controller),
-            const SizedBox(height: 16),
-            _PreviewSection(state: state),
-            const SizedBox(height: 16),
-            _GeneratedSqlSection(state: state),
-          ],
+          ),
         );
       },
     );
@@ -113,6 +134,37 @@ class _SectionCard extends StatelessWidget {
     this.trailing,
   });
 
+  Widget _buildHeader(BuildContext context) {
+    final titleText = Text(
+      title,
+      style: Theme.of(context).textTheme.titleMedium,
+    );
+    if (trailing == null) return titleText;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // On roomy rows keep the action right-aligned; on narrow widths let it
+        // wrap below the title instead of overflowing.
+        if (constraints.maxWidth >= 420) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: titleText),
+              const SizedBox(width: 8),
+              trailing!,
+            ],
+          );
+        }
+        return Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
+          runSpacing: 4,
+          children: [titleText, trailing!],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -121,16 +173,7 @@ class _SectionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                if (trailing != null) trailing!,
-              ],
-            ),
+            _buildHeader(context),
             if (hint != null) ...[
               const SizedBox(height: 4),
               Text(
@@ -149,15 +192,29 @@ class _SectionCard extends StatelessWidget {
 
 class _Message extends StatelessWidget {
   final String text;
+  final IconData? icon;
 
-  const _Message({required this.text});
+  const _Message({required this.text, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Center(
-        child: Text(text, textAlign: TextAlign.center),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 48,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+              const SizedBox(height: 12),
+            ],
+            Text(text, textAlign: TextAlign.center),
+          ],
+        ),
       ),
     );
   }
@@ -208,10 +265,14 @@ class _BaseSheetPicker extends StatelessWidget {
       hint: AppStrings.datasetJoinsBaseSheetHint.tr(),
       child: DropdownButtonFormField<int>(
         key: const ValueKey('join_base_sheet'),
+        isExpanded: true,
         initialValue: state.spec.baseTableId,
         items: [
           for (final sheet in selected)
-            DropdownMenuItem(value: sheet.tableId, child: Text(sheet.label)),
+            DropdownMenuItem(
+              value: sheet.tableId,
+              child: Text(sheet.label, overflow: TextOverflow.ellipsis),
+            ),
         ],
         onChanged: (value) {
           if (value != null) controller.setBaseTable(value);
@@ -285,10 +346,7 @@ class _SuggestionTile extends StatelessWidget {
         spacing: 6,
         runSpacing: 4,
         children: [
-          Chip(
-            label: Text(_confidenceLabel(suggestion.confidence)),
-            visualDensity: VisualDensity.compact,
-          ),
+          _ConfidenceChip(confidence: suggestion.confidence),
           for (final reason in suggestion.reasons)
             Chip(
               label: Text(_reasonLabel(reason)),
@@ -297,11 +355,47 @@ class _SuggestionTile extends StatelessWidget {
         ],
       ),
       trailing: already
-          ? const Icon(Icons.check_circle_outline)
+          ? Tooltip(
+              message: AppStrings.datasetJoinsRelationshipAlreadyAdded.tr(),
+              child: Icon(
+                Icons.check_circle_outline,
+                semanticLabel:
+                    AppStrings.datasetJoinsRelationshipAlreadyAdded.tr(),
+              ),
+            )
           : FilledButton.tonal(
               onPressed: () => controller.confirmSuggestion(suggestion),
               child: Text(AppStrings.datasetJoinsConfirm.tr()),
             ),
+    );
+  }
+}
+
+/// Confidence indicator that does not rely on color alone: each level carries a
+/// distinct icon shape and a text label, with color as reinforcement only.
+class _ConfidenceChip extends StatelessWidget {
+  final SuggestionConfidence confidence;
+
+  const _ConfidenceChip({required this.confidence});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final (icon, color) = switch (confidence) {
+      SuggestionConfidence.high => (Icons.signal_cellular_alt, scheme.primary),
+      SuggestionConfidence.medium => (
+          Icons.signal_cellular_alt_2_bar,
+          scheme.tertiary,
+        ),
+      SuggestionConfidence.low => (
+          Icons.signal_cellular_alt_1_bar,
+          scheme.outline,
+        ),
+    };
+    return Chip(
+      avatar: Icon(icon, size: 16, color: color),
+      label: Text(_confidenceLabel(confidence)),
+      visualDensity: VisualDensity.compact,
     );
   }
 }
@@ -546,14 +640,17 @@ class _WarningsBanner extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (final warning in warnings)
+            for (var i = 0; i < warnings.length; i++) ...[
+              if (i > 0) const SizedBox(height: 12),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Icon(Icons.warning_amber_outlined),
                   const SizedBox(width: 12),
-                  Expanded(child: Text(localizedJoinRiskWarning(warning))),
+                  Expanded(child: Text(localizedJoinRiskWarning(warnings[i]))),
                 ],
               ),
+            ],
           ],
         ),
       ),
@@ -586,23 +683,25 @@ class _RunBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final running = state.status == MultiSheetJoinStatus.executing;
 
-    return Row(
-      children: [
-        FilledButton.icon(
-          key: const ValueKey('join_run_button'),
-          onPressed: (!state.hasEnoughSheets || running)
-              ? null
-              : () => _requestPreview(context),
-          icon: running
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.play_arrow),
-          label: Text(AppStrings.datasetJoinsRun.tr()),
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        key: const ValueKey('join_run_button'),
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
         ),
-      ],
+        onPressed: (!state.hasEnoughSheets || running)
+            ? null
+            : () => _requestPreview(context),
+        icon: running
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.play_arrow),
+        label: Text(AppStrings.datasetJoinsRun.tr()),
+      ),
     );
   }
 }

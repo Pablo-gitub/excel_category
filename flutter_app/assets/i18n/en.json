@@ -323,7 +323,9 @@
             "discard_configuration_title": "Discard configuration?",
             "discard_configuration_message": "The current configuration will be lost.",
             "delete_configuration_title": "Delete configuration?",
-            "delete_configuration_message": "Delete \"{name}\"? Only the saved configuration is deleted, not dataset data or relationships."
+            "delete_configuration_message": "Delete \"{name}\"? Only the saved configuration is deleted, not dataset data or relationships.",
+            "loading": "Loading sheets…",
+            "relationship_already_added": "Already added"
         }
     },
     "settings": {

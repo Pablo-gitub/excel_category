@@ -549,4 +549,7 @@ class AppStrings {
       'dataset.joins.delete_configuration_title';
   static const String datasetJoinsDeleteConfigurationMessage =
       'dataset.joins.delete_configuration_message';
+  static const String datasetJoinsLoading = 'dataset.joins.loading';
+  static const String datasetJoinsRelationshipAlreadyAdded =
+      'dataset.joins.relationship_already_added';
 }

@@ -323,7 +323,9 @@
             "discard_configuration_title": "Konfiguration verwerfen?",
             "discard_configuration_message": "Die aktuelle Konfiguration geht verloren.",
             "delete_configuration_title": "Konfiguration löschen?",
-            "delete_configuration_message": "„{name}\" löschen? Nur die gespeicherte Konfiguration wird gelöscht, nicht die Datensatzdaten oder Beziehungen."
+            "delete_configuration_message": "„{name}\" löschen? Nur die gespeicherte Konfiguration wird gelöscht, nicht die Datensatzdaten oder Beziehungen.",
+            "loading": "Blätter werden geladen…",
+            "relationship_already_added": "Bereits hinzugefügt"
         }
     },
     "settings": {

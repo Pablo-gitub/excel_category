@@ -323,7 +323,9 @@
             "discard_configuration_title": "Descartar configuração?",
             "discard_configuration_message": "A configuração atual será perdida.",
             "delete_configuration_title": "Eliminar configuração?",
-            "delete_configuration_message": "Eliminar \"{name}\"? Apenas a configuração guardada é eliminada, não os dados do dataset nem as relações."
+            "delete_configuration_message": "Eliminar \"{name}\"? Apenas a configuração guardada é eliminada, não os dados do dataset nem as relações.",
+            "loading": "Carregando planilhas…",
+            "relationship_already_added": "Já adicionada"
         }
     },
     "settings": {
