@@ -1222,7 +1222,38 @@ void main() {
 
     final container = containerWith(service);
     addTearDown(container.dispose);
-    await pumpView(tester, container);
+
+    // A real phone-sized viewport: the ellipsis only matters where the row is
+    // actually too narrow for the name.
+    tester.view.physicalSize = const Size(360, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    await tester.runAsync(() async {
+      await tester.pumpWidget(
+        EasyLocalization(
+          supportedLocales: const [Locale('en')],
+          path: 'assets/i18n',
+          fallbackLocale: const Locale('en'),
+          startLocale: const Locale('en'),
+          child: UncontrolledProviderScope(
+            container: container,
+            child: Builder(
+              builder: (context) => MaterialApp(
+                locale: context.locale,
+                supportedLocales: context.supportedLocales,
+                localizationsDelegates: context.localizationDelegates,
+                home: const Scaffold(body: SheetJoinsView(datasetId: 1)),
+              ),
+            ),
+          ),
+        ),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    });
+    await tester.pumpAndSettle();
 
     final titleText = tester.widget<Text>(
       find.descendant(
@@ -1232,6 +1263,8 @@ void main() {
     );
     expect(titleText.overflow, TextOverflow.ellipsis);
     expect(titleText.maxLines, 1);
+    expect(tester.takeException(), isNull,
+        reason: 'a long configuration name must not overflow at 360 px');
   });
 
   testWidgets('base sheet dropdown is expanded and handles long sheet labels',

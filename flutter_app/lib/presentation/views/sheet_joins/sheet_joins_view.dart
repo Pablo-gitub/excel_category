@@ -355,12 +355,12 @@ class _SuggestionTile extends StatelessWidget {
         ],
       ),
       trailing: already
+          // The tooltip is the single semantic source; the icon itself is
+          // decorative and stays out of the semantics tree.
           ? Tooltip(
               message: AppStrings.datasetJoinsRelationshipAlreadyAdded.tr(),
-              child: Icon(
-                Icons.check_circle_outline,
-                semanticLabel:
-                    AppStrings.datasetJoinsRelationshipAlreadyAdded.tr(),
+              child: const ExcludeSemantics(
+                child: Icon(Icons.check_circle_outline),
               ),
             )
           : FilledButton.tonal(
