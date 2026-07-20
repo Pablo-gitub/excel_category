@@ -448,6 +448,45 @@ void main() {
     expect(controller.state.activeSavedQueryId, 7);
   });
 
+  test('flags a saved spec that references a missing relationship as stale',
+      () async {
+    final saved = SavedMultiSheetQuery(
+      id: 8,
+      datasetId: 1,
+      name: 'missing relationship',
+      spec: MultiSheetQuerySpec(
+        baseTableId: 1,
+        selectedTableIds: const [1, 2],
+        joins: [MultiSheetJoin(relationshipId: 99)],
+      ),
+      createdAt: DateTime(2026),
+      updatedAt: DateTime(2026),
+    );
+    when(() => service.listSavedQueries(any()))
+        .thenAnswer((_) async => [saved]);
+    when(() => service.loadSavedQuery(8)).thenAnswer((_) async => saved);
+    when(() => service.buildQuery(
+          datasetId: any(named: 'datasetId'),
+          spec: any(named: 'spec'),
+          sheets: any(named: 'sheets'),
+          relationshipsById: any(named: 'relationshipsById'),
+        )).thenThrow(
+      const MultiSheetGraphException(
+        MultiSheetGraphValidator.missingRelationshipCode,
+      ),
+    );
+
+    await controller.load();
+    expect(await controller.loadSaved(8), isTrue);
+
+    expect(controller.state.status, MultiSheetJoinStatus.staleSpec);
+    expect(
+      controller.state.errorCode,
+      MultiSheetGraphValidator.missingRelationshipCode,
+    );
+    expect(controller.state.activeSavedQueryId, 8);
+  });
+
   test('confirming a suggestion persists all cardinality evidence', () async {
     await controller.load();
     controller.toggleSheet(1);

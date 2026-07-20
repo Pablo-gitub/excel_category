@@ -492,7 +492,9 @@ void main() {
 
     final chain = MultiSheetQuerySpec(
       baseTableId: salesTableId,
-      selectedTableIds: [salesTableId, productsTableId, regionsTableId],
+      // Selection order deliberately differs from the only valid resolved
+      // plan, which must still grow Sales -> Products -> Regions.
+      selectedTableIds: [salesTableId, regionsTableId, productsTableId],
       selectedColumnsByTableId: {
         salesTableId: const ['product_id', 'qty'],
         productsTableId: const ['product'],

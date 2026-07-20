@@ -43,36 +43,6 @@ void main() {
       );
     });
 
-    test('should delete file reference, schema and dataset', () async {
-      /// Arrange
-      const datasetId = 123;
-
-      when(() => datasetFileRepository.deleteByDatasetId(any()))
-          .thenAnswer((_) async {});
-      when(() => savedMultiSheetQueryRepository.deleteForDataset(any()))
-          .thenAnswer((_) async {});
-      when(() => datasetRelationshipRepository.deleteForDataset(any()))
-          .thenAnswer((_) async {});
-      when(() => schemaRepository.deleteSchemaForDataset(any()))
-          .thenAnswer((_) async {});
-      when(() => datasetsRepository.deleteDataset(any()))
-          .thenAnswer((_) async {});
-
-      /// Act
-      await useCase(datasetId);
-
-      /// Assert
-      verifyInOrder([
-        () => datasetFileRepository.deleteByDatasetId(datasetId),
-        () => schemaRepository.deleteSchemaForDataset(datasetId),
-        () => datasetsRepository.deleteDataset(datasetId),
-      ]);
-
-      verifyNoMoreInteractions(datasetFileRepository);
-      verifyNoMoreInteractions(schemaRepository);
-      verifyNoMoreInteractions(datasetsRepository);
-    });
-
     test(
         'should delete files, saved queries, relationships, schema and dataset in order',
         () async {
@@ -108,14 +78,6 @@ void main() {
       verifyNoMoreInteractions(datasetsRepository);
     });
 
-    test('should not touch owned rows when the dataset id is invalid',
-        () async {
-      expect(() => useCase(0), throwsException);
-
-      verifyNever(() => savedMultiSheetQueryRepository.deleteForDataset(any()));
-      verifyNever(() => datasetRelationshipRepository.deleteForDataset(any()));
-    });
-
     test('should throw when dataset id is invalid', () async {
       expect(
         () => useCase(0),
@@ -123,6 +85,8 @@ void main() {
       );
 
       verifyNever(() => datasetFileRepository.deleteByDatasetId(any()));
+      verifyNever(() => savedMultiSheetQueryRepository.deleteForDataset(any()));
+      verifyNever(() => datasetRelationshipRepository.deleteForDataset(any()));
       verifyNever(() => schemaRepository.deleteSchemaForDataset(any()));
       verifyNever(() => datasetsRepository.deleteDataset(any()));
     });
