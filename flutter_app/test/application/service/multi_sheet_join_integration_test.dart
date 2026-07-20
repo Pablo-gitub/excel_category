@@ -27,6 +27,7 @@ import 'package:exlser/domain/value_objects/column_type.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_join.dart';
 import 'package:exlser/domain/value_objects/multi_sheet_query_spec.dart';
 import 'package:exlser/domain/value_objects/sheet_join_type.dart';
+import 'package:exlser/presentation/views/sheet_joins/multi_sheet_join_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -375,6 +376,162 @@ void main() {
     expect(s.cardinality, JoinCardinality.manyToOne);
     expect(s.sampleSize, greaterThan(0));
     expect(s.cardinalityConfidence, greaterThan(0));
+  });
+
+  test('a configuration saved by one controller runs in a freshly built one',
+      () async {
+    // Controller A: build a configuration against the real database and save it.
+    final controllerA = MultiSheetJoinController(
+      service: service,
+      datasetId: datasetId,
+    );
+    await controllerA.load();
+    controllerA.toggleSheet(salesTableId);
+    controllerA.toggleSheet(productsTableId);
+    final added = await controllerA.addManualRelationship(
+      leftTableId: salesTableId,
+      leftColumnDbName: 'product_id',
+      rightTableId: productsTableId,
+      rightColumnDbName: 'product',
+    );
+    expect(added, isTrue);
+    expect(await controllerA.save('cross-session'), isTrue);
+    final savedId = controllerA.state.activeSavedQueryId;
+    expect(savedId, isNotNull);
+
+    // The workspace goes away entirely.
+    controllerA.dispose();
+
+    // Controller B is a brand new instance over the same database.
+    final controllerB = MultiSheetJoinController(
+      service: service,
+      datasetId: datasetId,
+    );
+    addTearDown(controllerB.dispose);
+    await controllerB.load();
+    expect(controllerB.state.spec.joins, isEmpty,
+        reason: 'a fresh controller starts empty');
+
+    expect(await controllerB.loadSaved(savedId!), isTrue);
+    expect(controllerB.state.spec.joins.single.relationshipId,
+        defaultRelationshipId);
+
+    expect(controllerB.prepare(), isNotNull,
+        reason: 'the reloaded configuration must validate');
+    expect(await controllerB.executePreparedPreview(), isTrue);
+
+    final preview = controllerB.state.preview;
+    expect(preview, isNotNull);
+    expect(preview!.rows, hasLength(3),
+        reason: 'the INNER join really ran against SQLite');
+  });
+
+  test('two saved queries reuse one relationship without duplicating endpoints',
+      () async {
+    final first = await service.saveQuery(
+      datasetId: datasetId,
+      name: 'inner view',
+      spec: spec(),
+    );
+    final second = await service.saveQuery(
+      datasetId: datasetId,
+      name: 'left view',
+      spec: spec(joinType: SheetJoinType.left),
+    );
+
+    // The endpoints live in exactly one relationship row, not once per query.
+    final relationships = await service.loadRelationships(datasetId);
+    expect(relationships, hasLength(1));
+    expect(relationships.single.id, defaultRelationshipId);
+
+    expect(first.id, isNot(second.id));
+    final reloadedFirst = await service.loadSavedQuery(first.id!);
+    final reloadedSecond = await service.loadSavedQuery(second.id!);
+    expect(
+        reloadedFirst!.spec.joins.single.relationshipId, defaultRelationshipId);
+    expect(reloadedSecond!.spec.joins.single.relationshipId,
+        defaultRelationshipId);
+
+    // The stored spec references the relationship by id only: no endpoint
+    // table/column is copied into the query json.
+    final rows = await database
+        .customSelect(
+            'SELECT specification_json FROM saved_multi_sheet_queries')
+        .get();
+    expect(rows, hasLength(2));
+    for (final row in rows) {
+      final json = row.read<String>('specification_json');
+      expect(json, contains('relationshipId'));
+      expect(json, isNot(contains('endpoint')));
+      expect(json, isNot(contains('ColumnDbName')));
+    }
+  });
+
+  test('a LEFT chain over three sheets preserves the accumulated plan side',
+      () async {
+    // Regions only matches A1, so a correct LEFT chain keeps every Sales row
+    // and nulls the region for A2 (matched product) as well as for A9/null.
+    final regionsTableId = await createSheet(
+      sheetName: 'Regions',
+      sqlTableName: 'regions_t',
+      columns: [
+        column('product_ref', ColumnType.text),
+        column('region', ColumnType.text),
+      ],
+      rows: const [
+        {'product_ref': 'A1', 'region': 'North'},
+      ],
+    );
+
+    final productsToRegions = await makeRelationship(
+      leftTableId: productsTableId,
+      leftColumn: 'product',
+      rightTableId: regionsTableId,
+      rightColumn: 'product_ref',
+    );
+
+    final chain = MultiSheetQuerySpec(
+      baseTableId: salesTableId,
+      selectedTableIds: [salesTableId, productsTableId, regionsTableId],
+      selectedColumnsByTableId: {
+        salesTableId: const ['product_id', 'qty'],
+        productsTableId: const ['product'],
+        regionsTableId: const ['region'],
+      },
+      joins: [
+        MultiSheetJoin(
+          relationshipId: defaultRelationshipId,
+          joinType: SheetJoinType.left,
+          preservedTableId: salesTableId,
+        ),
+        MultiSheetJoin(
+          relationshipId: productsToRegions,
+          joinType: SheetJoinType.left,
+          // Preserved side is the already-connected sheet, not the order in
+          // which the user picked the sheets.
+          preservedTableId: productsTableId,
+        ),
+      ],
+      resultLimit: 100,
+    );
+
+    final result = await run(chain);
+
+    expect(result.rows, hasLength(5),
+        reason: 'every Sales row survives a LEFT chain');
+    final a1 = result.rows.where((r) => r['t0__product_id'] == 'A1');
+    expect(a1, hasLength(2));
+    expect(a1.map((r) => r['t2__region']).toSet(), {'North'});
+
+    final a2 = result.rows.where((r) => r['t0__product_id'] == 'A2').single;
+    expect(a2['t1__product'], 'A2', reason: 'A2 matches a product');
+    expect(a2['t2__region'], isNull,
+        reason: 'A2 has no region: the second LEFT must keep the accumulated '
+            'side rather than dropping the row');
+
+    final a9 = result.rows.where((r) => r['t0__product_id'] == 'A9').single;
+    expect(a9['t1__product'], isNull);
+    expect(a9['t2__region'], isNull);
   });
 
   test('a relationship owned by another dataset is rejected', () async {

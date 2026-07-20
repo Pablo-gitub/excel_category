@@ -73,6 +73,49 @@ void main() {
       verifyNoMoreInteractions(datasetsRepository);
     });
 
+    test(
+        'should delete files, saved queries, relationships, schema and dataset in order',
+        () async {
+      const datasetId = 123;
+
+      when(() => datasetFileRepository.deleteByDatasetId(any()))
+          .thenAnswer((_) async {});
+      when(() => savedMultiSheetQueryRepository.deleteForDataset(any()))
+          .thenAnswer((_) async {});
+      when(() => datasetRelationshipRepository.deleteForDataset(any()))
+          .thenAnswer((_) async {});
+      when(() => schemaRepository.deleteSchemaForDataset(any()))
+          .thenAnswer((_) async {});
+      when(() => datasetsRepository.deleteDataset(any()))
+          .thenAnswer((_) async {});
+
+      await useCase(datasetId);
+
+      // There is no database-level cascade (the foreign_keys PRAGMA is off), so
+      // every owned row must be removed explicitly, before the dataset itself.
+      verifyInOrder([
+        () => datasetFileRepository.deleteByDatasetId(datasetId),
+        () => savedMultiSheetQueryRepository.deleteForDataset(datasetId),
+        () => datasetRelationshipRepository.deleteForDataset(datasetId),
+        () => schemaRepository.deleteSchemaForDataset(datasetId),
+        () => datasetsRepository.deleteDataset(datasetId),
+      ]);
+
+      verifyNoMoreInteractions(datasetFileRepository);
+      verifyNoMoreInteractions(savedMultiSheetQueryRepository);
+      verifyNoMoreInteractions(datasetRelationshipRepository);
+      verifyNoMoreInteractions(schemaRepository);
+      verifyNoMoreInteractions(datasetsRepository);
+    });
+
+    test('should not touch owned rows when the dataset id is invalid',
+        () async {
+      expect(() => useCase(0), throwsException);
+
+      verifyNever(() => savedMultiSheetQueryRepository.deleteForDataset(any()));
+      verifyNever(() => datasetRelationshipRepository.deleteForDataset(any()));
+    });
+
     test('should throw when dataset id is invalid', () async {
       expect(
         () => useCase(0),

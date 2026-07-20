@@ -318,6 +318,61 @@ void main() {
     expect(controller.state.status, MultiSheetJoinStatus.success);
   });
 
+  test('ignores the result of a superseded suggestion request', () async {
+    final slow = Completer<List<SheetRelationshipSuggestion>>();
+    const staleSuggestion = SheetRelationshipSuggestion(
+      relationship: SheetJoinRelationship(
+        leftTableId: 1,
+        leftColumnDbName: 'stale',
+        rightTableId: 2,
+        rightColumnDbName: 'stale',
+      ),
+      score: 0.1,
+      confidence: SuggestionConfidence.low,
+      reasons: [RelationshipReason.nameMatch],
+    );
+    const freshSuggestion = SheetRelationshipSuggestion(
+      relationship: SheetJoinRelationship(
+        leftTableId: 1,
+        leftColumnDbName: 'fresh',
+        rightTableId: 2,
+        rightColumnDbName: 'fresh',
+      ),
+      score: 0.9,
+      confidence: SuggestionConfidence.high,
+      reasons: [RelationshipReason.valueOverlap],
+    );
+
+    var call = 0;
+    when(() => service.suggestRelationships(
+          sheets: any(named: 'sheets'),
+          selectedTableIds: any(named: 'selectedTableIds'),
+        )).thenAnswer((_) {
+      call++;
+      return call == 1 ? slow.future : Future.value(const [freshSuggestion]);
+    });
+
+    await controller.load();
+    controller.toggleSheet(1);
+    controller.toggleSheet(2);
+
+    final first = controller.generateSuggestions(); // stays pending
+    await controller.generateSuggestions(); // supersedes it
+
+    expect(controller.state.suggestions.single.relationship.leftColumnDbName,
+        'fresh');
+
+    // The stale request finishing must not overwrite the newer suggestions.
+    slow.complete(const [staleSuggestion]);
+    await first;
+
+    expect(
+      controller.state.suggestions.single.relationship.leftColumnDbName,
+      'fresh',
+      reason: 'the stale suggestion run must not overwrite the newer results',
+    );
+  });
+
   test('startNewConfiguration ignores a preview from the discarded spec',
       () async {
     when(() => service.buildQuery(
