@@ -80,6 +80,22 @@ void main() {
     );
 
     test(
+      'should parse absolute workbook relationship targets',
+      () async {
+        final bytes = await File(
+          'test/fixtures/excel/absolute_relationship_targets.xlsx',
+        ).readAsBytes();
+        final sheets = await parser.parseBytes(bytes);
+
+        expect(
+          sheets.map((sheet) => sheet.name),
+          ['Sales', 'Products', 'Regions'],
+        );
+        expect(sheets.first.rows, hasLength(6));
+      },
+    );
+
+    test(
       'should preserve sheet names',
       () async {
         final sheets = await parser.parsePath(

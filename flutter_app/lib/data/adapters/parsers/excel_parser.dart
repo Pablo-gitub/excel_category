@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:archive/archive.dart';
 import 'package:excel_community/excel_community.dart';
 import 'package:exlser/data/adapters/mappers/table_row_mapper.dart';
 import 'package:exlser/data/adapters/parsers/spreadsheet_parser.dart';
@@ -31,7 +34,7 @@ class ExcelParser implements SpreadsheetParser {
 
   @override
   Future<List<ParsedSheet>> parseBytes(List<int> bytes) async {
-    final excel = Excel.decodeBytes(bytes);
+    final excel = Excel.decodeBytes(_normalizePackageForDecoder(bytes));
 
     final sheets = <ParsedSheet>[];
 
@@ -79,6 +82,54 @@ class ExcelParser implements SpreadsheetParser {
     }
 
     return sheets;
+  }
+
+  /// Normalizes valid OOXML variants that `excel_community` 1.x does not read:
+  /// absolute workbook targets and the optional `x:` SpreadsheetML prefix.
+  static List<int> _normalizePackageForDecoder(List<int> bytes) {
+    const relationshipsPath = 'xl/_rels/workbook.xml.rels';
+    final source = ZipDecoder().decodeBytes(bytes);
+    final relationships = source.findFile(relationshipsPath);
+    final workbook = source.findFile('xl/workbook.xml');
+    if (relationships == null || workbook == null) return bytes;
+
+    final relationshipsXml = utf8.decode(relationships.content);
+    final hasAbsoluteTargets =
+        RegExp(r'''Target=(["'])/xl/''').hasMatch(relationshipsXml);
+    final hasSpreadsheetPrefix = utf8.decode(workbook.content).contains('<x:');
+    if (!hasAbsoluteTargets && !hasSpreadsheetPrefix) return bytes;
+
+    final normalizedArchive = Archive();
+
+    for (final file in source.files) {
+      if (file.isDirectory) {
+        normalizedArchive.addFile(ArchiveFile.directory(file.name));
+        continue;
+      }
+
+      var content = file.content;
+      if (file.name == relationshipsPath || file.name.endsWith('.xml')) {
+        final xml = utf8.decode(content);
+        var normalized = xml;
+        if (file.name == relationshipsPath) {
+          normalized = normalized.replaceAllMapped(
+            RegExp(r'''Target=(["'])/xl/'''),
+            (match) => 'Target=${match[1]}',
+          );
+        }
+        if (file.name.endsWith('.xml')) {
+          normalized =
+              normalized.replaceAll('<x:', '<').replaceAll('</x:', '</');
+        }
+        if (normalized != xml) {
+          content = Uint8List.fromList(utf8.encode(normalized));
+        }
+      }
+
+      normalizedArchive.addFile(ArchiveFile.bytes(file.name, content));
+    }
+
+    return ZipEncoder().encode(normalizedArchive);
   }
 
   static final _currencyInFormat = RegExp(r'[$€£¥₹₽¢₩₪₫]');
